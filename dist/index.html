@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101210">
-  <meta name="description" content="Your favourite classics, one tab away. Discover browser games, save your favourites, and get straight to playing.">
+  <meta name="description" content="Old favourites, played right here. Curated browser games and ports launch inside the gameflex player. Save favourites, no account, no launcher.">
   <title>gameflex — one more game.</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/pixel.ttf" as="font" type="font/ttf" crossorigin>
@@ -27,9 +27,9 @@
       <div class="hero-image" aria-hidden="true"></div><div class="hero-shade" aria-hidden="true"></div>
       <div class="hero-content">
         <div class="eyebrow"><span class="live-dot"></span> THE BROWSER IS YOUR CONSOLE</div>
-        <h1 id="hero-heading">Old favourites.<br><span>New tab.</span></h1>
-        <p>The games you grew up on. A few you missed.<br>No installs. Just pick one and jump in.</p>
-        <div class="hero-actions"><button class="button lime" id="hero-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>Let's play <span aria-hidden="true">↗</span></button><a class="button ghost" href="#catalogue">Explore the collection <span aria-hidden="true">↓</span></a></div>
+        <h1 id="hero-heading">Old favourites.<br><span>Right here.</span></h1>
+        <p>The games you grew up on. A few you missed.<br>They load inside gameflex. No installs, no extra tabs.</p>
+        <div class="hero-actions"><button class="button lime" id="hero-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>Let's play</button><a class="button ghost" href="#catalogue">Explore the collection <span aria-hidden="true">↓</span></a></div>
         <span class="hero-note">Some ports need your original game files.</span>
       </div>
       <div class="featured-caption"><span class="eyebrow">IN THE SPOTLIGHT</span><strong id="spotlight-name">Halo: Combat Evolved</strong><span id="spotlight-genre">An old-school classic, back in your browser.</span></div>
@@ -40,12 +40,36 @@
       <div class="browse-tools"><div class="filters" role="group" aria-label="Filter by genre"><button class="filter active" data-category="all" aria-pressed="true">All games</button><button class="filter" data-category="shooters" aria-pressed="false">Shooters</button><button class="filter" data-category="zombies" aria-pressed="false">Zombies</button><button class="filter" data-category="sports" aria-pressed="false">Skate & sports</button><button class="filter" data-category="adventure" aria-pressed="false">Adventure</button><button class="filter" data-category="strategy" aria-pressed="false">Strategy</button></div><button id="surprise" class="surprise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c5 0 7-12 12-12h3m-4-4 4 4-4 4"/></svg>Pick for me</button></div>
       <div id="results" aria-live="polite" class="sr-only"></div><div id="shelves"></div>
       <div id="empty-state" class="empty-state" hidden><span class="pixel-decoration" aria-hidden="true">+ +</span><h3 id="empty-heading">Nothing here. Yet.</h3><p id="empty-copy"></p><button class="button lime" id="reset">Explore all games</button></div>
-      <aside class="small-print"><span class="pixel-decoration" aria-hidden="true">i</span><div><strong>One tab. A whole lot of nostalgia.</strong><p>Games open on independent websites. We check the launch pages; availability and performance can change. Look for the “Own files” label before you play.</p></div><button id="about-button">How it works <span aria-hidden="true">↗</span></button></aside>
+      <aside class="small-print"><span class="pixel-decoration" aria-hidden="true">i</span><div><strong>Stay here. Keep playing.</strong><p>Choose a game to open the player. Some ports need your original game files; others may not run here yet. Check the notes before you start.</p></div><button id="about-button">How it works</button></aside>
     </section>
   </main>
   <footer><a class="wordmark footer-logo" href="#">GAMEFLEX<span class="logo-pixel" aria-hidden="true"></span></a><span>Made for the “one more game” crowd.</span><span class="footer-right">Curated classics. Zero launchers.<span class="tiny-cross" aria-hidden="true">✚</span></span></footer>
+  <section class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="player-title" hidden>
+    <div class="player-shell">
+      <div class="player-bar">
+        <button class="player-back" id="player-close" type="button" aria-label="Leave the player and go back to the games"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>Back</button>
+        <div class="player-heading">
+          <span class="eyebrow" id="player-tag"></span>
+          <h2 id="player-title" tabindex="-1">Player</h2>
+          <p class="player-meta" id="player-meta"></p>
+        </div>
+        <div class="player-actions">
+          <button class="button lime" id="player-start" type="button" hidden>Start game</button>
+          <button class="button ghost" id="player-remote" type="button" hidden>Remote session</button>
+          <button class="button ghost" id="player-fullscreen" type="button" aria-pressed="false" hidden>Fullscreen</button>
+          <button class="button ghost heart-inline" id="player-favourite" type="button" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg><span>Favourite</span></button>
+        </div>
+      </div>
+      <div class="player-stage" id="player-stage" data-state="idle"></div>
+      <p class="sr-only" id="player-status" role="status" aria-live="polite"></p>
+      <div class="player-foot">
+        <div class="requirements" id="player-requirements" hidden><strong>BEFORE YOU JUMP IN</strong><p id="player-requirements-copy"></p></div>
+        <p class="player-note" id="player-note">If the game stays blank, try Restart game. Some ports may not run here yet.</p>
+      </div>
+    </div>
+  </section>
   <dialog id="details" aria-labelledby="dialog-title"><button class="dialog-close icon-button" aria-label="Close game details">×</button><div id="dialog-content"></div></dialog>
-  <dialog id="about" aria-labelledby="about-title"><button class="dialog-close icon-button" aria-label="Close about gameflex">×</button><div class="about-content"><span class="eyebrow lime-text">PLAYER NOTES</span><h2 id="about-title">Pick. Click. Play.</h2><p>gameflex is a hand-picked directory of browser games and ports. Play opens the game’s website in a new tab.</p><p>Some engines ask you to supply files from a game you own. These entries carry an <strong>Own files</strong> label. You never need a launcher from gameflex.</p><p>“Checked” means we inspected the destination and its browser launch interface. It does not mean every game mode or device has been tested.</p><p>Your favourites stay in this browser. No account needed. gameflex is an independent curation project; game names and artwork belong to their respective owners.</p></div></dialog>
+  <dialog id="about" aria-labelledby="about-title"><button class="dialog-close icon-button" aria-label="Close about gameflex">×</button><div class="about-content"><span class="eyebrow lime-text">PLAYER NOTES</span><h2 id="about-title">Pick. Click. Play.</h2><p>gameflex is a hand-picked directory of browser games and ports. Play loads the host’s own page inside the gameflex player, on this page, with no launcher and no detour.</p><p>Some engines ask you to supply files from a game you own. These entries carry an <strong>Own files</strong> label.</p><p>Playing inside a frame is not guaranteed. Some hosts block framing, and a few say so in their terms. Those entries stay unplayable here rather than opening somewhere else, and the player tells you why.</p><p>“Checked” means we inspected the destination and its browser launch page. It does not mean gameplay, every game mode, or every device has been tested.</p><p>Your favourites stay in this browser. No account needed. gameflex is an independent curation project; game names and artwork belong to their respective owners.</p></div></dialog>
   <div id="toast" role="status" class="toast"></div>
 </body>
 </html>

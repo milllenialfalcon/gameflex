@@ -1,3 +1,5 @@
+import { initPlayer, openPlayer, isPlayerOpen, syncPlayerFavourite, gameMode } from './player.mjs';
+
 const $ = (selector, root = document) => root.querySelector(selector);
 const icons = {
   heart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>',
@@ -23,6 +25,7 @@ function syncHearts() {
     button.classList.toggle('saved', saved); button.setAttribute('aria-pressed', String(saved));
     button.setAttribute('aria-label', `${saved ? 'Remove' : 'Save'} ${game?.title || 'game'}${saved ? ' from' : ' to'} favourites`);
   });
+  syncPlayerFavourite();
 }
 function toggleFavourite(id) {
   if (favourites.has(id)) { favourites.delete(id); toast('Removed from your favourites'); } else { favourites.add(id); toast('Saved. Your next session is sorted.'); }
@@ -34,8 +37,9 @@ function art(game, className = '') {
   return game.art ? `<img class="${className}" src="${escape(game.art)}" alt="" loading="lazy" width="460" height="215">` : `<div class="art-fallback ${className}" style="--cover:${escape(game.color || '#37452b')}"><span class="fallback-icon" aria-hidden="true">${escape(game.symbol || '+')}</span><span class="fallback-title">${escape(game.title)}</span></div>`;
 }
 function card(game) {
-  const title = escape(game.title), id = escape(game.id), href = escape(game.url);
-  return `<article class="game-card"><a class="game-art" href="${href}" target="_blank" rel="noopener noreferrer" aria-label="Play ${title} (opens in a new tab)">${art(game)}<span class="card-tag">${escape(game.tag)}</span><span class="play-hover"><span>Play now ↗</span></span></a><button class="heart" data-favourite="${id}" aria-pressed="false" aria-label="Save ${title} to favourites">${icons.heart}</button><div class="card-title-row"><a href="${href}" target="_blank" rel="noopener noreferrer">${title}<span class="sr-only"> (opens in a new tab)</span></a><button class="info-button" data-details="${id}" aria-label="Details for ${title}">ⓘ</button></div><p class="card-meta"><span>${escape(game.genre)}</span><span class="dot"></span><span>${escape(game.platform || 'Desktop')}</span>${game.ownFiles ? '<span class="dot"></span><span class="file-tag">Own files</span>' : ''}</p></article>`;
+  const title = escape(game.title), id = escape(game.id), href = `#play/${id}`;
+  const playable = gameMode(game.id).mode === 'iframe';
+  return `<article class="game-card"><a class="game-art" href="${href}" data-play="${id}" aria-label="${playable ? `Play ${title} in the gameflex player` : `Open ${title} — not playable in the gameflex player`}">${art(game)}<span class="card-tag">${escape(game.tag)}</span><span class="play-hover"><span>${playable ? 'Play in gameflex' : 'Not playable here'}</span></span></a><button class="heart" data-favourite="${id}" aria-pressed="false" aria-label="Save ${title} to favourites">${icons.heart}</button><div class="card-title-row"><a href="${href}" data-play="${id}">${title}</a><button class="info-button" data-details="${id}" aria-label="Details for ${title}">ⓘ</button></div><p class="card-meta"><span>${escape(game.genre)}</span><span class="dot"></span><span>${escape(game.platform || 'Desktop')}</span>${game.ownFiles ? '<span class="dot"></span><span class="file-tag">Own files</span>' : ''}</p></article>`;
 }
 function shelf(section, items) {
   return `<section class="shelf" aria-labelledby="heading-${section.id}"><div class="shelf-heading"><div><h3 id="heading-${section.id}">${escape(section.title)} <small>${items.length.toString().padStart(2,'0')}</small></h3>${section.subtitle ? `<p class="shelf-subtitle">${escape(section.subtitle)}</p>` : ''}</div><div class="shelf-controls"><button class="shelf-arrow" data-scroll="${section.id}" data-direction="-1" aria-label="Scroll ${escape(section.title)} left by one game">‹</button><button class="shelf-arrow" data-scroll="${section.id}" data-direction="1" aria-label="Scroll ${escape(section.title)} right by one game">›</button></div></div><div class="game-row" id="row-${section.id}" tabindex="0" role="region" aria-labelledby="heading-${section.id}">${items.map(card).join('')}</div></section>`;
@@ -79,7 +83,15 @@ function stepShelf(row, direction) {
 function details(id) {
   const game = games.find(g => g.id === id); if (!game) return;
   const host = new URL(game.url).hostname;
-  $('#dialog-content').innerHTML = `${art(game,'dialog-cover')}<div class="dialog-body"><span class="eyebrow lime-text">${escape(game.tag)}</span><h2 id="dialog-title">${escape(game.title)}</h2><div class="dialog-meta"><span>${escape(game.genre)}</span><span>${escape(game.platform || 'Desktop')}</span></div><p>${escape(game.description)}</p><div class="requirements"><strong>BEFORE YOU JUMP IN</strong><p>${escape(game.requirements || 'Opens on an independent website. Use a desktop keyboard and mouse for the best experience.')}</p></div><div class="dialog-actions"><a class="button lime" href="${escape(game.url)}" target="_blank" rel="noopener noreferrer">Play now <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a><button class="button ghost heart-inline" data-favourite="${escape(game.id)}" aria-pressed="false">${icons.heart} Favourite</button></div><p class="dialog-note">${escape(host)} · Launch page checked ${escape(game.checkedAt)}.<br>Gameplay and device compatibility may vary.</p></div>`;
+  const mode = gameMode(game.id);
+  const playable = mode.mode === 'iframe';
+  const action = playable
+    ? `<a class="button lime" href="#play/${escape(game.id)}" data-play="${escape(game.id)}">Play in gameflex</a>`
+    : `<a class="button ghost" href="#play/${escape(game.id)}" data-play="${escape(game.id)}">Why it can’t play here</a>`;
+  const note = playable
+    ? `${host} · Page checked ${game.checkedAt}.<br>Play frames this page inside the gameflex player. Compatibility isn’t guaranteed.`
+    : `${host} · Page checked ${game.checkedAt}.<br>${mode.reason}`;
+  $('#dialog-content').innerHTML = `${art(game,'dialog-cover')}<div class="dialog-body"><span class="eyebrow lime-text">${escape(game.tag)}</span><h2 id="dialog-title">${escape(game.title)}</h2><div class="dialog-meta"><span>${escape(game.genre)}</span><span>${escape(game.platform || 'Desktop')}</span></div><p>${escape(game.description)}</p><div class="requirements"><strong>BEFORE YOU JUMP IN</strong><p>${escape(game.requirements || 'Runs in a desktop browser with keyboard and mouse.')}</p></div><div class="dialog-actions">${action}<button class="button ghost heart-inline" data-favourite="${escape(game.id)}" aria-pressed="false">${icons.heart} Favourite</button></div><p class="dialog-note">${escape(note)}</p></div>`;
   syncHearts(); $('#details').showModal();
 }
 function reset() { category = 'all'; search = ''; $('#search').value = ''; view = 'discover'; syncNav(); render(); }
@@ -88,6 +100,8 @@ function syncNav() {
   document.querySelectorAll('[data-category]').forEach(button => { const active = button.dataset.category === category; button.classList.toggle('active',active); button.setAttribute('aria-pressed',String(active)); });
 }
 document.addEventListener('click', event => {
+  if (event.target.closest('#player')) return;
+  const play = event.target.closest('[data-play]'); if (play) { event.preventDefault(); return openPlayer(play.dataset.play); }
   const favourite = event.target.closest('[data-favourite]'); if (favourite) return toggleFavourite(favourite.dataset.favourite);
   const info = event.target.closest('[data-details]'); if (info) return details(info.dataset.details);
   const categoryButton = event.target.closest('[data-category]'); if (categoryButton) { category = categoryButton.dataset.category; syncNav(); return render(); }
@@ -99,10 +113,11 @@ document.addEventListener('click', event => {
 });
 $('#search').addEventListener('input', event => { search = event.target.value.trim(); render(); });
 $('#reset').addEventListener('click', reset);
-$('#surprise').addEventListener('click', () => { const filtered = filteredGames(); if (filtered.length) details(filtered[Math.floor(Math.random()*filtered.length)].id); });
-$('#hero-play').addEventListener('click', () => details(games.find(g=>g.spotlight)?.id || games[0]?.id));
+$('#surprise').addEventListener('click', () => { const filtered = filteredGames(); if (filtered.length) openPlayer(filtered[Math.floor(Math.random()*filtered.length)].id); });
+$('#hero-play').addEventListener('click', () => { const game = games.find(g => g.spotlight) || games[0]; if (game) openPlayer(game.id); });
 $('#about-button').addEventListener('click', () => $('#about').showModal());
 document.addEventListener('keydown', event => {
+  if (isPlayerOpen()) return;
   if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName) || document.querySelector('dialog[open]') || event.altKey || event.ctrlKey || event.metaKey) return;
   if (event.key === '/') { event.preventDefault(); $('#search').focus(); return; }
   if (!['ArrowLeft','ArrowRight'].includes(event.key)) return;
@@ -120,14 +135,23 @@ document.addEventListener('keydown', event => {
 });
 window.addEventListener('resize',updateArrows);
 window.addEventListener('storage',event => { if (event.key !== 'gameflex:favourites') return; try { const values = JSON.parse(event.newValue || '[]'); favourites = new Set(Array.isArray(values) ? values.filter(id => typeof id === 'string') : []); render(); } catch { /* Ignore corrupted storage from other tabs. */ } });
+let catalogueLoaded = false;
 try {
   const response = await fetch('games.json'); if (!response.ok) throw new Error('catalogue unavailable'); games = await response.json();
   const spotlight = games.find(g=>g.spotlight) || games[0];
   if (spotlight) { $('#spotlight-name').textContent = spotlight.title; $('#spotlight-genre').textContent = spotlight.genre; }
   else $('#hero-play').disabled = true;
   document.querySelectorAll('[data-category]').forEach(button => { if(button.dataset.category !== 'all') button.hidden = !games.some(g => g.category === button.dataset.category); });
-  render();
+  catalogueLoaded = true;
 } catch {
   $('#shelves').innerHTML = '<div class="empty-state"><h3>The arcade is taking a breather.</h3><p>We couldn’t load the collection. Refresh to try again.</p><button class="button lime" id="retry">Try again</button></div>';
   $('#retry').addEventListener('click',()=>location.reload()); $('#hero-play').disabled = true; $('#surprise').disabled = true;
 }
+await initPlayer({
+  games: () => games,
+  isFavourite: id => favourites.has(id),
+  toggleFavourite: id => toggleFavourite(id),
+  toast,
+  closeDialogs: () => document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close()),
+});
+if (catalogueLoaded) render();

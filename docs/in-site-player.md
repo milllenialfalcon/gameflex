@@ -16,7 +16,7 @@ Production requires an authenticated broker, per-player container or stronger is
 
 ## Version control and review
 
-`feat/in-site-player` is based on `feat/gameflex-catalogue`. Its draft PR targets that branch until catalogue PR #1 merges, then retargets main. Keep source changes in reviewable commits: player UI, remote prototype, integration/verification. Do not merge automatically.
+`feat/in-site-player` is based on `feat/gameflex-catalogue`. Draft PR #2 targets that branch until catalogue PR #1 merges, then retargets main. The remote service is reviewed on a separate dependent `feat/remote-browser-prototype` branch. Keep source changes in reviewable commits and do not merge automatically.
 
 Hermes `gameflex` owns UI files; Hermes `gameflexresearch` owns `services/remote-browser/` and its documentation. Shared-file edits remain sequential. The primary agent reviews and integrates, runs release checks, commits, updates Trello and publishes the owner-private review build.
 
