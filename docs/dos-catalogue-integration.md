@@ -2,7 +2,7 @@
 
 This branch is separate from the active `feat/in-site-player` implementation. It adds original-title DOS Zone listings, artwork and a manual hero carousel. It does not implement remote streaming or change the other chat's player files.
 
-DOS Zone sends a CSP `frame-ancestors` allowlist which excludes Gameflex. Every new DOS listing therefore has `availability: "sandbox-pending"`. Its card opens internal details and has no external play link or iframe fallback. The UI must keep that restriction when the player branch integrates this data.
+DOS Zone sends a CSP `frame-ancestors` allowlist which excludes Gameflex. Every new DOS listing therefore has `availability: "sandbox-pending"`. In the combined player build its card opens the internal blocked-player explanation, with no external play link or iframe fallback. The player checks this availability flag before its config, so listing approval cannot enable gameplay.
 
 The user's 2026-10-10 instruction explicitly approves adding this selected mainstream batch to the catalogue. `dos-zone-catalogue-approval.json` records that instruction and exact ID/URL scope. This is listing approval, not a claimed user playtest. Existing candidate review decisions are unchanged. The release check allows this exact disabled batch; making a new game playable still requires the separate assistant and user verification records.
 

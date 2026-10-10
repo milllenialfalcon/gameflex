@@ -1,8 +1,8 @@
 # gameflex
 
-A private, curated browser-game directory with 37 listings. Charcoal, electric lime, a capital-case pixel GAMEFLEX wordmark, and artwork-led shelves. Search, genre filters, local favourites and an 11-slide manual spotlight carousel. Shelf buttons and Left/Right keyboard controls advance one game at a time.
+A private, curated browser-game directory. Charcoal, electric lime, a capital-case pixel GAMEFLEX wordmark, and artwork-led shelves. Search the collection, filter by genre, save favourites locally, and launch games inside the Gameflex player. Shelf buttons and Left/Right keyboard controls advance one game at a time.
 
-This catalogue branch stays separate from the active player feature. The 21 DOS Zone additions are labelled sandbox pending and open internal details only, because the host blocks Gameflex framing. The original 16 destinations retain their existing behaviour until the separate player implementation is integrated. No new DOS outbound-play fallback is introduced.
+The combined build preserves the separately published 37-listing catalogue and 11-slide spotlight carousel. The 21 DOS Zone additions remain sandbox pending: they open an internal explanation, never a playable session or an external fallback. The original 16 entries retain their individual player decisions.
 
 ## Run
 
@@ -28,7 +28,8 @@ Browser QA uses an installed Microsoft Edge browser. Change the Playwright launc
 - `scripts/create-catalog.mjs`: original catalogue generator. For this batch use `scripts/add-dos-catalogue.mjs` to add/update the selected DOS records without replacing the original entries or their artwork.
 - `scripts/check-catalog.mjs`: IDs, HTTPS destinations, metadata, artwork and audit coverage. Exact user-approved disabled DOS listings may enter the catalogue; enabling new games still requires both verification records. See `docs/dos-catalogue-integration.md`.
 - `scripts/probe-links.mjs` and `inspect-launchers.mjs`: HTTP evidence helpers. Their output stays in ignored `artifacts/`; exclude any downloaded HTML that exposes visitor metadata from Git history.
-- `scripts/browser-qa.mjs`: search, filters, favourites persistence, dialogs, external links, keyboard shortcuts, and mobile overflow checks. External navigation is intercepted in QA; this tests the directory, not third-party games.
+- `scripts/browser-qa.mjs`: catalogue regression plus internal routing, sandbox restrictions, player lifecycle, keyboard access and mobile layout. Game destinations are replaced by deterministic fixtures; this proves the player interface, not third-party gameplay.
+- `docs/player-ui.md`: player implementation and runtime limits. `docs/iframe-audit.json` and `.md`: actual bounded iframe observations; these do not approve gameplay or change research decisions.
 
 Favourites use `localStorage` under `gameflex:favourites`. No analytics, cookies, server database, or sign-in. Storage failures gracefully fall back to the current visit. “Own files” means original data is required for some or all of the game (Diablo and WebXash include demo options).
 
@@ -41,7 +42,7 @@ Favourites use `localStorage` under `gameflex:favourites`. No analytics, cookies
 
 ## Hermes worker
 
-Profile `gameflex` uses provider `opencode-go`, model `deepseek-v4.1-flash`, and a named Hermes project whose primary directory is `D:\AI\Gameflex`.
+Profiles `gameflex`, `gameflexresearch` and `gameflexqa` use provider `opencode-go`, model `deepseek-v4.1-flash`, and the Gameflex project folder `D:\AI\Gameflex`. Implementation, research/backend and QA workers receive non-overlapping file assignments. Simple time-consuming work is delegated to Hermes; the primary agent reviews and integrates.
 
 ```powershell
 hermes -p gameflex --in D:\AI\Gameflex --provider opencode-go -m deepseek-v4.1-flash -t terminal,file -z 'Your bounded task here. Read AGENTS.md first.'

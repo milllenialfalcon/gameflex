@@ -16,8 +16,10 @@ Production requires an authenticated broker, per-player container or stronger is
 
 ## Version control and review
 
-`feat/in-site-player` is based on `feat/gameflex-catalogue`. Its draft PR targets that branch until catalogue PR #1 merges, then retargets main. Keep source changes in reviewable commits: player UI, remote prototype, integration/verification. Do not merge automatically.
+`feat/in-site-player` incorporates the separately published `feat/dos-zone-catalogue` changes so publication preserves the 37-listing catalogue, covers and carousel. Draft PR #2 targets that catalogue branch; the remote service is a separate dependent `feat/remote-browser-prototype` PR. Retarget each dependent PR when its base merges. Keep source changes reviewable and do not merge GitHub PRs automatically.
 
 Hermes `gameflex` owns UI files; Hermes `gameflexresearch` owns `services/remote-browser/` and its documentation. Shared-file edits remain sequential. The primary agent reviews and integrates, runs release checks, commits, updates Trello and publishes the owner-private review build.
 
 Acceptance: every tile/detail/hero launch is internal; no catalogue regression; iframe sandbox enforced; unknown IDs and loading failures recover internally; restart/exit destroys prior resources; desktop/mobile layouts and keyboard access pass. Streaming claims must be backed by actual runtime evidence. Research candidates remain outside the catalogue until separately verified by both reviewers.
+
+The 21 user-authorised DOS listings stay `sandbox-pending` even if a player config accidentally declares iframe support. Their cards and hero slides lead to the blocked player explanation. Listing approval does not approve gameplay.

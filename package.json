@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/serve.mjs",
-    "check": "node --check dist/app.js && node scripts/check-catalog.mjs",
+    "check": "node --check dist/app.js && node --check dist/player.mjs && node scripts/check-catalog.mjs",
     "test:browser": "node scripts/browser-qa.mjs",
     "research:import": "node scripts/research-db.mjs import research/discoveries.json",
     "research:list": "node scripts/research-db.mjs list",
