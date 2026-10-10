@@ -3,14 +3,16 @@
  * Loaded after style.css and spotlight.css, so it can restyle the shared .shelf / .game-row /
  * .game-card classes without touching the homepage, which never loads this file.
  *
- * Cards are landscape artwork with the game name in a plain line UNDER the image, clamped to two
- * lines — nothing overlays the artwork except the small status chip in its top-left corner and, on
- * Continue playing, the 3px progress rail along its bottom edge. The ranked Top games row swaps the
+ * Ordinary shelf cards are landscape artwork with NO caption line — the artwork carries the name,
+ * so the only things over the picture are the small status chip in its top-left corner and, on
+ * Continue playing, the 3px progress rail along its bottom edge. Continue playing is the one row
+ * that keeps a name line (opened by its lime play triangle). The ranked Top games row swaps the
  * landscape art for the artwork worker's real portrait (2:3) poster, moves the name line out of the
  * markup entirely, and tucks the oversized 1..10 numeral behind the poster's left edge. Continue
  * playing cards are plain #play/<id> links into the player: no hover or focus panel, no expanded
- * state. Every shelf heading opens with a stroke-only lime glyph (aria-hidden) that owns a 16px
- * gutter column and is centred across the title and subtitle block beside it.
+ * state. Every shelf heading opens with a stroke-only lime glyph (aria-hidden) parked in the page's
+ * LEFT GUTTER, outside the heading text block, so the title and subtitle share the first card's
+ * left edge; the mark is centred across the title + subtitle block.
  *
  * Desktop shows six whole cards per row at >=1200px; narrower widths step down to five, four,
  * three and two, so rows finish inside the viewport at every size. The Continue playing shelf is the
@@ -39,7 +41,8 @@
 /* The name is no longer painted over the artwork, so the gradient is only a soft vignette for
    depth behind the status chip instead of a text backdrop. */
 .sd-card .sd-art:after{background:linear-gradient(0deg,#0407038f 0%,transparent 52%)}
-/* Name line under the artwork: two clamped lines at a readable 14px — no overlay, no shadow and
+/* Name line under the artwork — Continue playing cards only (ordinary shelf cards carry no caption,
+   their artwork includes the name). Two clamped lines at a readable 14px: no overlay, no shadow and
    no gradient padding. pointer-events:none keeps the whole card one click/tap target. */
 .sd-card .sd-name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin:0;padding:0;font-size:14px;font-weight:700;line-height:1.34;letter-spacing:-.1px;color:#f1f3e8;text-shadow:none;overflow-wrap:anywhere;pointer-events:none}
 /* Top-left chip: sits on the artwork, never interactive. */
@@ -69,13 +72,17 @@
 @supports(vector-effect:non-scaling-stroke){.sd-rank text{stroke-width:2;vector-effect:non-scaling-stroke}}
 .sd-rank-ten text{letter-spacing:0}
 
-/* Shelf headings: the cyberpunk glyph owns a 16px gutter column and is centred across the WHOLE
-   title + subtitle block, not the title line alone; the title and its subtitle stack in the text
-   column beside it, so every subtitle lines up with its heading text whatever mark the row drew. */
-.sd-shelf-title{--sd-glyph:16px;--sd-glyph-gap:10px;display:grid;grid-template-columns:var(--sd-glyph) minmax(0,1fr);column-gap:var(--sd-glyph-gap);min-width:0}
-.sd-shelf .sd-glyph{grid-area:1/1/3/2;align-self:center}
-.sd-shelf .shelf-heading h3{grid-area:1/2/2/3;display:block;font-size:19px;letter-spacing:-.4px;margin:0}
-.sd-shelf .shelf-subtitle{grid-area:2/2/3/3;margin:6px 0 0;padding:0;max-width:62ch}
+/* Shelf headings: the cyberpunk glyph is taken OUT of the heading text block and parked in the
+   page's left gutter, so the title + subtitle keep the first card's left edge at every width.
+   --sd-gutter is clamped below the catalogue's own left padding (4.6% desktop, 5% mobile), so the
+   mark always sits inside that margin and can never cross the viewport edge or add a horizontal
+   scrollbar. The title block holds only the h3 and its subtitle; the glyph is absolutely positioned
+   across their full height, which centres it between the two lines. */
+.sd-shelf{--sd-gutter:clamp(16px,4.4vw,26px)}
+.sd-shelf-title{position:relative;min-width:0}
+.sd-shelf .sd-glyph{position:absolute;left:calc(var(--sd-gutter) * -1);top:50%;transform:translateY(-50%)}
+.sd-shelf .shelf-heading h3{display:block;font-size:19px;letter-spacing:-.4px;margin:0}
+.sd-shelf .shelf-subtitle{margin:6px 0 0;padding:0;max-width:62ch}
 .sd-title-text{min-width:0}
 /* Continue playing cards open with a small lime play triangle on the name line — on those cards
    only, never in the shelf heading and never on any other card. */
@@ -83,7 +90,7 @@
 .sd-play-mark svg{width:11px;height:11px;fill:currentColor;stroke:none}
 /* Every heading keeps the same treatment — warm-white title, muted count, muted subtitle. The
    Top games numerals carry the accent; the heading itself is not recoloured. */
-.sd-glyph{display:grid;place-items:center;flex:0 0 auto;width:var(--sd-glyph);height:var(--sd-glyph);color:var(--lime)}
+.sd-glyph{display:grid;place-items:center;flex:0 0 auto;width:16px;height:16px;color:var(--lime)}
 .sd-glyph svg{width:15px;height:15px;display:block;fill:none;stroke:currentColor}
 /* Top games: a low-opacity lime radial glow behind the whole ranked row — a glow, never a green
    panel and never a visible rectangle. It is a centred ellipse that fades to fully transparent at
@@ -101,6 +108,12 @@
 /* Each width subtracts one extra pixel so sub-pixel rounding can never turn a fitted row into a
    1px scroller. */
 .sd-row{--sd-gap:16px;gap:var(--sd-gap);grid-auto-columns:calc((100% - 81px)/6)}
+/* The shared .game-row gives every card 2px of padding (with a matching -2px margin) so a focus
+   outline is never clipped by the scroller, and turns on scroll-snap-type: x mandatory. On a
+   scrollable row Chromium snaps to scrollLeft 2, which would drag the first card 2px left of the
+   heading title; nudging the snap position by that same 2px keeps the snap on the title/card edge,
+   so the first card and the title stay flush at every width. */
+.sd-row{scroll-padding-left:2px}
 /* Continue playing (demo or real history) is the page's standout row: five wider cards fill the
    desktop viewport at >=1200px, so the launch history reads a size larger than the six-card rows.
    The shelf still holds up to 20 entries — the rest scroll into view. Steps down 5 → 4 → 3 → 2. */
@@ -154,6 +167,12 @@
   .sd-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 }
 @media(max-width:720px){
+  /* At phone widths the 16px glyph leaves only a 1px gap to the title's left edge — the title
+     itself is unchanged, so shrink the mark (and its svg) to 12px. The absolute left gutter
+     offset and the vertical centring are untouched: the glyph still sits fully inside the page
+     margin, still centred across the title + subtitle block. */
+  .sd-glyph{width:12px;height:12px}
+  .sd-glyph svg{width:12px;height:12px}
   .sd-panel{width:min(300px,94vw)}
   .sd-panel-img{max-height:22vh}
   .sd-panel-body{max-height:44vh;padding:10px 11px 12px}

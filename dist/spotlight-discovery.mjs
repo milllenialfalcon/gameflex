@@ -21,16 +21,26 @@
  *     catalogue game appears at least once here; leftovers are chunked into "More classics".
  *   - Filtered / search / favourites → one responsive grid of every matching game.
  *
- * Resting cards are landscape artwork with the title in a plain line under the image (never
- * overlaying it). Each Continue playing card's name line opens with the small lime play triangle;
- * no shelf heading and no other card carries that mark. The ranked Top games row swaps in a
- * portrait poster on the right of each card with the numerals 1..10 tucked behind the poster's left
- * edge — that row carries no visible name
- * line, because the rank and the poster are the whole card and the button's accessible label still
- * names the game. A game that cannot launch here carries one small status chip in the artwork's
- * top-left corner. Each shelf heading opens with an original stroke-only lime glyph (aria-hidden)
- * that sits in its own gutter beside the heading block, vertically centred across the title and
- * subtitle lines, and the shelf subtitle sits in the heading's text column.
+ * Ordinary shelf cards are landscape artwork with NO visible caption line: the artwork itself
+ * carries the game name, so the redundant title is gone and the card's accessible label is the only
+ * place the name still lives. The Continue playing row is the one exception — its cards keep their
+ * name line, which opens with the small lime play triangle that no other card carries, alongside
+ * their progress rail. The ranked Top games row swaps in a portrait poster on the right of each
+ * card with the numerals 1..10 tucked behind the poster's left edge — that row carries no visible
+ * name line either, because the rank and the poster are the whole card and the button's accessible
+ * label still names the game. A game that cannot launch here carries one small status chip in the
+ * artwork's top-left corner. Each shelf heading opens with an original stroke-only lime glyph
+ * (aria-hidden) parked in the page's LEFT GUTTER, OUTSIDE the heading text block and vertically
+ * centred across the title and subtitle lines, so the title and the subtitle share the first
+ * card's left edge instead of being pushed in by the mark.
+ *
+ * Landscape artwork — ordinary shelves, the result grid, the Continue playing row and the floating
+ * panel — prefers spotlight-thumbnails.json, the artwork worker's map of game id → {image, source}
+ * where `image` is a local assets/ path that already bakes the title into the picture. The file is
+ * fetched once, asynchronously, and treated as untrusted: a missing file, a non-object root, a
+ * missing entry and a non-local path all fall back to the catalogue's own art, and a late arrival
+ * repaints whatever browse view is on screen. Only the portrait Top games ignore the map — they
+ * keep the dedicated portrait posters (and the catalogue art when no poster was supplied).
  *
  * Continue playing (the fresh-browser preview or a real local history) is the one shelf whose cards
  * link straight into the player: each card is a plain #play/<id> anchor with the shared data-play
@@ -68,6 +78,9 @@ const MAX_ROW = 8;
 const TOP_LIMIT = 10;
 const RECENT_LIMIT = 20;
 const RECENT_KEY = 'gameflex:recent';
+// The artwork worker's landscape-thumbnail map (game id → {image, source}). Fetched once, and its
+// absence is not an error — the catalogue's own art stands.
+const THUMBS_URL = 'spotlight-thumbnails.json';
 // Fixed sample fractions for the preview shelf's progress rail: index-aligned with the preview
 // cards, deterministic, and never written anywhere. A real history entry never shows a fraction.
 const DEMO_PROGRESS = [35, 62, 18, 48, 76];
@@ -134,6 +147,16 @@ const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ESCAPES[c])
 /** CSS.escape where the browser has it; catalogue and row ids are already [A-Za-z0-9-], so the
  *  raw value is a safe selector fallback and never allows an injected selector. */
 const CSS_ESCAPE = value => (window.CSS?.escape ? CSS.escape(String(value)) : String(value));
+
+/** Only a plain local assets/ path is a usable artwork source: an absolute URL, a parent traversal
+ *  or a Windows path is refused, so an untrusted map can never point the page at another origin.
+ *  Shared by the portrait map and the thumbnail map. */
+const isLocalAsset = value => typeof value === 'string'
+  && value.startsWith('assets/')
+  && !value.includes('..') && !value.includes('\\') && !value.includes('://');
+
+/** A plain, non-array object: the only shape accepted as an artwork map root or entry. */
+const isMediaMap = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 
 /** Curated shelf plan: ordered predicates, each game claimed by the first row that matches.
  *  Subtitles describe the shelf's contents only — a configured iframe mode proves nothing about
@@ -222,7 +245,18 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
   const portraitOf = game => {
     let src = '';
     try { src = portraitSrc(game.id) || ''; } catch { src = ''; }
-    return typeof src === 'string' && src.startsWith('assets/') && !src.includes('..') && !src.includes('\\') && !src.includes('://') ? src : '';
+    return isLocalAsset(src) ? src : '';
+  };
+  // The artwork worker's landscape-thumbnail map. Kept null until the one asynchronous fetch
+  // resolves; until then (and forever, if the file is absent or malformed) the catalogue's own art
+  // is used. The map is untrusted, so each entry is validated the same way the portrait path is.
+  let thumbs = null;
+  let rendered = false;
+  const thumbFor = game => {
+    if (!isMediaMap(thumbs) || !Object.prototype.hasOwnProperty.call(thumbs, game.id)) return '';
+    const entry = thumbs[game.id];
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return '';
+    return isLocalAsset(entry.image) ? entry.image : '';
   };
 
   const readRecent = () => {
@@ -278,10 +312,21 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
   const browseRows = () => [continueRow(), topRow(), ...curatedRows(list, isPlayable)].filter(Boolean);
   const browseMarkup = () => browseRows().map(shelfMarkup).join('');
 
+  /** The markup for the last view app.js rendered: browse shelves, or the result grid. Reused by
+   *  render() and by refresh() when the artwork map arrives late. */
+  const currentMarkup = () => {
+    if (!lastArgs || !lastArgs.filtered.length) return '';
+    if (lastArgs.isBrowse) return browseMarkup();
+    const label = lastArgs.view === 'favourites' ? 'Saved games' : lastArgs.category && lastArgs.category !== 'all' ? 'Filtered games' : 'Search results';
+    return gridMarkup(lastArgs.filtered, label);
+  };
+
   // Artwork for one card. The ranked Top games use the artwork worker's real portrait poster when
-  // there is one; every other card (and any ranked game without a poster) uses the catalogue art.
+  // there is one; every other card (and any ranked game without a poster) uses the artwork worker's
+  // landscape thumbnail — which already carries the title — falling back to the catalogue art.
   const artMarkup = (game, className, portrait = false) => {
-    const src = (portrait ? portraitOf(game) : '') || (className === 'sd-img' ? game.art || game.heroArt : game.heroArt || game.art);
+    const fallback = className === 'sd-img' ? game.art || game.heroArt : game.heroArt || game.art;
+    const src = portrait ? portraitOf(game) || fallback : thumbFor(game) || fallback;
     if (src) return `<img class="${className}" src="${escape(src)}" alt="" loading="lazy" decoding="async">`;
     return `<span class="${className} sd-fallback" style="--cover:${escape(game.color || '#37452b')}">${escape(game.symbol || '+')}</span>`;
   };
@@ -301,7 +346,7 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
     `<span class="sd-rail" role="img" aria-label="${escape(label)}"><span class="sd-rail-fill" style="width:${percent}%"></span></span>`;
 
   function cardMarkup(game, options = {}) {
-    const { rank = 0, direct = false, progress = null, railLabel = '' } = options;
+    const { rank = 0, direct = false, progress = null, railLabel = '', caption = true } = options;
     const id = escape(game.id), title = escape(game.title);
     const status = isPlayable(game) ? '' : `<span class="sd-badge">${game.availability === 'sandbox-pending' ? 'Pending' : 'Unavailable'}</span>`;
     const rail = railLabel ? railMarkup(progress ?? 0, railLabel) : '';
@@ -317,15 +362,16 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
         + `</article>`;
     }
     const label = `${rank ? `Rank ${rank}, ` : ''}show details for ${title}, ${escape(game.genre)}`;
-    // The name sits below the artwork in plain text; the button carries the accessible label. The
-    // ranked row paints no name line at all — its rank and poster are the whole card, and the
-    // button label still names the game for assistive tech.
+    // An ordinary card paints NO caption: its artwork already carries the game name, so the
+    // accessible button label is the only remaining name. The ranked row never paints a name line
+    // either (its rank and poster are the whole card). Continue playing cards keep theirs — that is
+    // the `direct` branch above.
     return `<article class="game-card sd-card${rank ? ' sd-ranked' : ''}" data-game="${id}">`
       + rankMark
       + `<button class="game-art sd-art" type="button" data-sd-open="${id}" aria-haspopup="dialog" aria-expanded="false" aria-label="${label}">`
       + artMarkup(game, 'sd-img', Boolean(rank)) + status
       + `</button>`
-      + (rank ? '' : `<span class="sd-name">${title}</span>`)
+      + (rank || !caption ? '' : `<span class="sd-name">${title}</span>`)
       + `</article>`;
   }
 
@@ -339,6 +385,9 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
     const cards = row.games.map((game, index) => cardMarkup(game, {
       rank: row.ranked ? index + 1 : 0,
       direct: Boolean(row.direct),
+      // Ordinary shelf cards have no caption: the artwork carries the name. Continue playing cards
+      // ignore this (their `direct` branch keeps its own name line with the play mark).
+      caption: false,
       progress: row.rail === 'sample' ? DEMO_PROGRESS[index] ?? 0 : 0,
       railLabel: row.rail === 'sample' ? 'Sample progress' : row.rail === 'unavailable' ? 'Gameplay progress unavailable' : '',
     })).join('');
@@ -634,6 +683,33 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
   }
 
+  /** Re-renders the on-screen view after the artwork map arrives. Browse reuses the launch
+   *  repaint (focus + row scroll preserved); a grid is rebuilt in place. */
+  function refresh() {
+    const host = shelfHost();
+    if (!host || !lastArgs) return;
+    if (lastArgs.isBrowse) { repaint(); return; }
+    const html = currentMarkup();
+    if (!html) return;
+    host.innerHTML = html;
+    // app.js owns the arrow state; a resize notice refreshes it without touching anything else.
+    try { window.dispatchEvent(new Event('resize')); } catch { /* Arrows keep their last state. */ }
+  }
+
+  /** Fetches the artwork map exactly once. A missing, blocked or malformed file leaves the
+   *  catalogue's own art in place; a late arrival repaints the view already on screen. */
+  async function loadThumbs() {
+    try {
+      if (typeof fetch !== 'function') return;
+      const response = await fetch(THUMBS_URL);
+      if (!response.ok) return;
+      const data = await response.json();
+      if (isMediaMap(data)) thumbs = data;
+    } catch { thumbs = null; /* Unavailable or malformed: the catalogue art stands. */ }
+    finally { if (rendered && thumbs) refresh(); }
+  }
+  loadThumbs();
+
   return {
     /** Renders the catalogue region. isBrowse → curated shelves, otherwise one grid. */
     render(args = {}) {
@@ -641,12 +717,11 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
       const view = typeof args?.view === 'string' ? args.view : 'discover';
       const category = typeof args?.category === 'string' ? args.category : 'all';
       const filtered = Array.isArray(args?.filtered) ? args.filtered : [];
-      // Kept so a finished launch can refresh the shelves without app.js re-rendering them.
-      lastArgs = { isBrowse: Boolean(args?.isBrowse), view, category };
-      if (!filtered.length) return '';
-      if (lastArgs.isBrowse) return browseMarkup();
-      const label = view === 'favourites' ? 'Saved games' : category && category !== 'all' ? 'Filtered games' : 'Search results';
-      return gridMarkup(filtered, label);
+      // Kept so a finished launch — or a late artwork map — can refresh the current view without
+      // app.js re-rendering it.
+      lastArgs = { isBrowse: Boolean(args?.isBrowse), view, category, filtered };
+      rendered = true;
+      return currentMarkup();
     },
     close: () => closePanel(),
   };

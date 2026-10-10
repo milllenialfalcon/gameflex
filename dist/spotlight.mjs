@@ -168,7 +168,26 @@ export function initSpotlightHero({ hero, isBusy = () => false } = {}) {
   const refresh = () => { paint(); start(); };
 
   // Hovering the hero deliberately does not pause: the pointer no longer stops the beat.
-  root.addEventListener('focusin', () => { state.focus = true; refresh(); });
+  // Focus pauses the beat, but only when it arrives on its own — a keyboard Tab, the arrow-key
+  // handler, or a programmatic .focus(). A pointer press focuses the control it lands on, and
+  // because that control keeps focus long after the pointer is gone, counting pointer-borne
+  // focus as a pause would latch the slideshow frozen for good after a click on preview/next/
+  // pause. So a pointer press marks the focus it is about to land as pointer-borne (consumed by
+  // the matching focusin, or expired if the press landed on nothing focusable) and that focus
+  // never pauses; a press also releases any focus pause already held, so a click can never leave
+  // the beat stuck. Keyboard focus still pauses exactly as before.
+  let pointerFocus = false, pointerFocusTimer = 0;
+  root.addEventListener('pointerdown', () => {
+    pointerFocus = true;
+    clearTimeout(pointerFocusTimer);
+    pointerFocusTimer = setTimeout(() => { pointerFocus = false; }, 1200);
+    if (state.focus) { state.focus = false; refresh(); }
+  }, true);
+  root.addEventListener('focusin', () => {
+    state.focus = !pointerFocus;
+    if (pointerFocus) { pointerFocus = false; clearTimeout(pointerFocusTimer); }
+    refresh();
+  });
   root.addEventListener('focusout', event => {
     if (root.contains(event.relatedTarget)) return;
     state.focus = false; refresh();
@@ -184,6 +203,10 @@ export function initSpotlightHero({ hero, isBusy = () => false } = {}) {
 
   pause.addEventListener('click', () => {
     state.manual = !state.manual;
+    // Explicit Play is an unambiguous request to run: release any focus pause it might otherwise
+    // fight (a pointer press already cleared it above; this covers keyboard activation too), so a
+    // single press always resumes.
+    if (!state.manual) state.focus = false;
     pause.setAttribute('aria-pressed', String(state.manual));
     pause.setAttribute('aria-label', state.manual ? 'Play the spotlight slideshow' : 'Pause the spotlight slideshow');
     refresh();

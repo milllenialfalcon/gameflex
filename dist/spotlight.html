@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0d0b">
-  <meta name="description" content="Spotlight preview: the current game title takes the whole frame. Same gameflex catalogue and in-site player, full-bleed hero.">
+  <meta name="description" content="Curated browser games and ports that launch inside the gameflex player, right on this page. Save favourites in your browser. No account, no launcher.">
   <title>GameFlex - The Browser is your Console.</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/pixel.ttf" as="font" type="font/ttf" crossorigin>
@@ -20,18 +20,11 @@
     <a class="wordmark" href="#" aria-label="GAMEFLEX home">GAMEFLEX<span class="logo-pixel" aria-hidden="true"></span></a>
     <nav aria-label="Main navigation">
       <button class="nav-link active" data-view="discover" aria-current="page">Discover</button>
-      <button class="nav-link" data-view="favourites">My favourites <span id="favourite-count">0</span></button>
     </nav>
     <div class="header-right">
       <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Find your next game" aria-label="Search games" autocomplete="off"><kbd>/</kbd></label>
+      <button class="header-icon favourite-button" id="favourite-button" type="button" data-view="favourites" aria-label="My favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg><span class="favourite-count" id="favourite-count">0</span></button>
       <div class="header-tools">
-        <div class="menu-anchor">
-          <button class="header-icon" id="menu-button" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Browse gameflex pages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-          <nav class="popover" id="site-menu" aria-label="Gameflex pages" hidden>
-            <a href="index.html">Original home<span>Homepage spotlight</span></a>
-            <a href="spotlight.html" aria-current="page">Spotlight preview<span>Full-bleed hero</span></a>
-          </nav>
-        </div>
         <div class="menu-anchor">
           <button class="header-icon" id="account-button" type="button" aria-expanded="false" aria-controls="account-popover" aria-label="Account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.7"/><path d="M4.6 20a7.4 7.4 0 0 1 14.8 0"/></svg></button>
           <div class="popover account-popover" id="account-popover" role="dialog" aria-modal="false" aria-labelledby="account-title" hidden>
@@ -39,6 +32,12 @@
             <p>Your favourites are saved in this browser.</p>
             <button class="button lime" id="account-close" type="button">Got it</button>
           </div>
+        </div>
+        <div class="menu-anchor">
+          <button class="header-icon" id="menu-button" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Browse gameflex pages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          <nav class="popover" id="site-menu" aria-label="Gameflex pages" hidden>
+            <p class="popover-note">More pages are on the way.</p>
+          </nav>
         </div>
       </div>
     </div>
