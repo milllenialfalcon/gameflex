@@ -9,10 +9,11 @@
  *   - Continue playing → up to 20 locally remembered launches, newest first, shown only once this
  *     browser has one. Recorded when an in-site launch really creates its frame (below), never from
  *     opening the ready player or from browsing. On a fresh browser, before there is any real
- *     history, the same slot shows a fixed, visibly-labelled preview of a few launchable catalogue
- *     games (kind `demo`, chip "Preview"). The preview is computed on the fly and never stored —
- *     nothing is written to `gameflex:recent` for it — and it is dropped the moment this browser
- *     has any real history, so genuine launches always supersede it.
+ *     history, the same slot shows a fixed, unlabelled preview of five launchable catalogue games
+ *     (kind `demo`). The preview is computed on the fly and never stored — nothing is written to
+ *     `gameflex:recent` for it — and it is dropped the moment this browser has any real history, so
+ *     genuine launches always supersede it. This shelf's row is sized so five wider cards fill the
+ *     desktop viewport (see spotlight-discovery.css), which sets it apart from the six-card rows.
  *   - Top games → ten unique editorial picks with a large outlined 1..10 rank beside the artwork
  *     and, when the artwork worker supplied one, a real portrait (2:3) poster. Curated, not a
  *     play-count or popularity claim.
@@ -21,9 +22,11 @@
  *   - Filtered / search / favourites → one responsive grid of every matching game.
  *
  * Resting cards are landscape artwork with the title in a plain line under the image (never
- * overlaying it). The ranked Top games row swaps in the portrait poster and keeps the title under
- * it too. A game that cannot launch here carries one small status chip in the artwork's top-left
- * corner. Each shelf heading opens with a small decorative lime mark (aria-hidden).
+ * overlaying it). The ranked Top games row swaps in a portrait poster on the right of each card
+ * with an oversized dark numeral tucked behind it on the left, and keeps the title under it too.
+ * A game that cannot launch here carries one small status chip in the artwork's top-left corner.
+ * Each shelf heading opens with an original stroke-only lime glyph (aria-hidden), and the shelf
+ * subtitle aligns with the heading text rather than the glyph.
  *
  * Launch history (local only; no backend and no cross-origin save state):
  *   - Stored under `gameflex:recent`, at most 20 ids, newest first, deduplicated.
@@ -55,13 +58,39 @@ const CLOSE_DELAY = 140;
 const BRIEF_LENGTH = 150;
 const ID_PATTERN = /^[a-z0-9-]{1,40}$/i;
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
-// One small decorative mark for every shelf heading: a four-point lime sparkle. Decorative only,
-// so it is aria-hidden and contributes no text to the heading.
-const SHELF_GLYPH = '<svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M6 0l1.7 4.3L12 6l-4.3 1.7L6 12 4.3 7.7 0 6l4.3-1.7z"/></svg>';
+// The shelf heading marks: thirteen original cyberpunk outline glyphs (broken hexes, brackets,
+// circuit crosshairs, triangular tech marks). Every one is stroke-only on a 24-viewBox — fill
+// none, stroke currentColor at 1.7px — and decorative, so it is aria-hidden and adds no text to
+// the heading. Each carries a data-sd-glyph name so QA can see the shuffle without reading paths.
+const glyph = (name, d) => `<svg viewBox="0 0 24 24" data-sd-glyph="${name}" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const GLYPHS = [
+  glyph('hex-break', '<path d="M13.4 3.2 19.6 6.8V12"/><path d="M19.6 15.9v1l-7.6 4.4-7.6-4.4V6.8l7.6-4.4 4.2 2.4"/><circle cx="12" cy="12" r="1.2"/>'),
+  glyph('bracket-pair', '<path d="M9.5 4.5h-4v15h4"/><path d="M14.5 4.5h4v15h-4"/><path d="M10 12h4"/>'),
+  glyph('circuit-crosshair', '<path d="M12 2.8v4.4M12 16.8v4.4M2.8 12h4.4M16.8 12h4.4"/><circle cx="12" cy="12" r="4.6"/><rect x="10" y="10" width="4" height="4" rx=".6"/>'),
+  glyph('triangle-tech', '<path d="M12 3.4 20.6 18.4H3.4Z"/><path d="M12 9.2 15.9 16H8.1Z"/><circle cx="12" cy="12.6" r="1"/>'),
+  glyph('chevron-stack', '<path d="M6 6.5 12 2.5l6 4"/><path d="M6 12 12 8l6 4"/><path d="M6 17.5 12 13.5l6 4"/>'),
+  glyph('cube-wireframe', '<path d="M12 2.6 20.4 7.3v9.4L12 21.4 3.6 16.7V7.3Z"/><path d="M3.6 7.3 12 12l8.4-4.7"/><path d="M12 12v9.4"/>'),
+  glyph('diamond-grid', '<path d="M12 2.6 21.4 12 12 21.4 2.6 12Z"/><path d="M12 7l5 5-5 5-5-5Z"/><circle cx="12" cy="12" r=".9"/>'),
+  glyph('octagon-slash', '<path d="M9.1 3.4h5.8l5.7 5.7v5.8l-5.7 5.7H9.1l-5.7-5.7V9.1Z"/><path d="M8.6 15.4 15.4 8.6"/>'),
+  glyph('circuit-trace', '<path d="M4.5 6.5h5l3 3v8"/><path d="M19.5 6.5h-4.2"/><path d="M19.5 17.5h-6.8"/><circle cx="4.5" cy="6.5" r="1.3"/><circle cx="19.5" cy="6.5" r="1.3"/><circle cx="19.5" cy="17.5" r="1.3"/>'),
+  glyph('reticle-squares', '<rect x="3.6" y="3.6" width="16.8" height="16.8" rx="2"/><rect x="8.6" y="8.6" width="6.8" height="6.8" rx="1"/><path d="M12 .8v2.8M12 20.4v2.8M.8 12h2.8M20.4 12h2.8"/>'),
+  glyph('arrow-frame', '<path d="M4 6h16v12H4Z"/><path d="M8 12h9"/><path d="m14.5 9.5 2.5 2.5-2.5 2.5"/>'),
+  glyph('hex-slash', '<path d="M12 2.6 20.4 7.4v9.2L12 21.4 3.6 16.6V7.4Z"/><path d="M7.2 8.4 16.8 15.6"/>'),
+  glyph('node-plus', '<path d="M12 4v16M4 12h16"/><circle cx="12" cy="12" r="3.4"/>'),
+];
+// Fisher–Yates, run once per init so a page load always hands the marks out in a fresh order while
+// a single visit keeps them fixed.
+const shuffle = list => {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+  return list;
+};
 // The fresh-browser preview shelf: a few launchable catalogue games, in a fixed editorial order.
 // Nothing here is persisted and no play count, percentage or "last played" time is invented.
 const DEMO_ORDER = ['halo', 'bo1', 'quake3', 'diablo', 'vicecity', 'skate'];
-const DEMO_LIMIT = 6;
+const DEMO_LIMIT = 5;
 
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ESCAPES[c]);
@@ -174,19 +203,31 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
   let repaintPending = false;
   let panel = null, activeCard = null, openTimer = 0, closeTimer = 0, frame = 0, suppressFocus = false, touchFocus = false;
 
+  // Heading marks are shuffled once, per init, and handed to rows in first-seen order through a Map
+  // keyed by row.id. A row therefore keeps the same mark across filters, favourites, renders and
+  // repaints, and with thirteen marks against the eleven rows of a default browse no two visible
+  // shelves share one. Extra rows (More classics chunks) wrap back around the shuffled list.
+  const glyphOrder = shuffle(GLYPHS.slice());
+  const glyphByRow = new Map();
+  const glyphFor = rowId => {
+    if (!glyphByRow.has(rowId)) glyphByRow.set(rowId, glyphOrder[glyphByRow.size % glyphOrder.length]);
+    return glyphByRow.get(rowId);
+  };
+
   const recentRow = () => {
     const items = recent.map(id => byId.get(id)).filter(Boolean).slice(0, RECENT_LIMIT);
     if (!items.length) return null;
     return { kind: 'recent', id: 'continue', title: 'Continue playing', subtitle: 'Reopen your recent launches.', games: items };
   };
-  // Fresh browser, no real history yet: a fixed preview of launchable games, marked with a short
-  // "Preview" chip. Computed here and never written to storage, so it cannot masquerade as history.
+  // Fresh browser, no real history yet: a fixed preview of launchable games. Computed here and
+  // never written to storage, so it cannot masquerade as history — and it carries no badge, just
+  // the plain shelf copy below.
   const demoRow = () => {
     const launchable = list.filter(isPlayable);
     const ordered = DEMO_ORDER.map(id => launchable.find(game => game.id === id)).filter(Boolean);
     const items = [...ordered, ...launchable.filter(game => !ordered.includes(game))].slice(0, DEMO_LIMIT);
     if (!items.length) return null;
-    return { kind: 'demo', id: 'continue-preview', title: 'Continue playing', subtitle: 'Preview picks — start any game to begin your own history.', games: items, preview: true };
+    return { kind: 'demo', id: 'continue-preview', title: 'Continue playing', subtitle: 'Start a game to begin your history.', games: items };
   };
   // Real launches always win: the preview only appears while this browser has no history at all.
   const continueRow = () => recentRow() || demoRow();
@@ -209,7 +250,7 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
   const cardMarkup = (game, rank = 0) => {
     const id = escape(game.id), title = escape(game.title);
     const status = isPlayable(game) ? '' : `<span class="sd-badge">${game.availability === 'sandbox-pending' ? 'Pending' : 'Unavailable'}</span>`;
-    const rankMark = rank ? `<span class="sd-rank" aria-hidden="true">${rank}</span>` : '';
+    const rankMark = rank ? `<span class="sd-rank${rank === 10 ? ' sd-rank-ten' : ''}" aria-hidden="true">${rank}</span>` : '';
     const label = `${rank ? `Rank ${rank}, ` : ''}show details for ${title}, ${escape(game.genre)}`;
     // The name sits below the artwork in plain text; the button carries the accessible label.
     return `<article class="game-card sd-card${rank ? ' sd-ranked' : ''}" data-game="${id}">`
@@ -224,11 +265,12 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
   function shelfMarkup(row) {
     const heading = `sd-h-${row.id}`, label = escape(row.title);
     const count = String(row.games.length).padStart(2, '0');
-    // The chip is short on purpose: it identifies the preview shelf without inventing any history.
-    const preview = row.preview ? '<span class="sd-preview-tag">Preview</span>' : '';
+    // The mark and the title text sit in two fixed grid columns (see .sd-shelf .shelf-heading h3),
+    // so the shelf subtitle lines up with the text, not with the glyph. The text is wrapped in
+    // .sd-title-text so the QA hooks can read it directly.
     return `<section class="shelf sd-shelf" data-sd-shelf="${row.kind}" aria-labelledby="${heading}">`
       + `<div class="shelf-heading"><div class="sd-shelf-title"><h3 id="${heading}">`
-      + `<span class="sd-glyph" aria-hidden="true">${SHELF_GLYPH}</span>${label} <small>${count}</small>${preview}</h3>`
+      + `<span class="sd-glyph" aria-hidden="true">${glyphFor(row.id)}</span><span class="sd-title-text">${label} <small>${count}</small></span></h3>`
       + (row.subtitle ? `<p class="shelf-subtitle">${escape(row.subtitle)}</p>` : '')
       + `</div><div class="shelf-controls"><button class="shelf-arrow" type="button" data-scroll="${row.id}" data-direction="-1" aria-label="Scroll ${label} left by one game">‹</button>`
       + `<button class="shelf-arrow" type="button" data-scroll="${row.id}" data-direction="1" aria-label="Scroll ${label} right by one game">›</button></div></div>`
