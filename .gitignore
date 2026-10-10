@@ -5,3 +5,5 @@ artifacts/
 .env*
 worker-logs/
 test-results/
+research/*.sqlite
+research/*.sqlite-*

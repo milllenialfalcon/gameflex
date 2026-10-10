@@ -1,0 +1,1719 @@
+[
+  {
+    "id": "2048",
+    "title": "2048",
+    "playUrl": "https://play2048.co",
+    "sourceUrls": [
+      "https://play2048.co",
+      "https://play2048.co/classic"
+    ],
+    "genre": "Puzzle",
+    "description": "Gabriele Cirulli's original slide-and-merge number puzzle.",
+    "browserEvidence": "Jina render lists the game's own mode menu ('Standard 2048 with powerups', 'Classic The original 2048, no undo', 'Tutorial') and a feedback form that echoes renderer/worker state - i.e. the app booted in the render.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any browser; arrow keys or swipe. Free, no install.",
+    "multiplayer": false,
+    "mobile": true,
+    "issues": [
+      "Interactive controls and save behaviour have not been tested."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "a-dark-room",
+    "title": "A Dark Room",
+    "playUrl": "https://adarkroom.doublespeakgames.com",
+    "sourceUrls": [
+      "https://adarkroom.doublespeakgames.com",
+      "https://www.doublespeakgames.com"
+    ],
+    "genre": "Incremental",
+    "description": "Minimal text survival and village-building game that turns into an exploration RPG.",
+    "browserEvidence": "Jina render captured actual running game state from the live build: 'saved. A Dark Room light fire wood 5 the fire is dead. the room is freezing.' plus a multi-language switcher - i.e. a session state, not a splash page.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any browser; mouse or touch. Free browser version published by the developers.",
+    "multiplayer": false,
+    "mobile": true,
+    "issues": [
+      "Long-form progression game - good for a shelf, not a quick-play tile."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "angband-live",
+    "title": "Angband Live",
+    "playUrl": "https://angband.live",
+    "sourceUrls": [
+      "https://angband.live",
+      "https://github.com/angband/angband"
+    ],
+    "genre": "RPG",
+    "description": "Browser client for Angband, the 1990 roguelike, on public servers with shared highscores.",
+    "browserEvidence": "Jina render shows Angband Live's own explanation ('Angband is a dungeon crawling roleplaying game of the roguelike type. It was created in 1990 at the University of Warwick...') and links to upstream Angband releases - a hosted client, described by the host.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any browser; keyboard-driven, ASCII roguelike. Free, optional account for score tracking.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "Host claims only; no keyboard session was started.",
+      "Small-text ASCII UI may be hard to read on phones."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "civilization-1991",
+    "title": "Civilization (1991)",
+    "playUrl": "https://dos.zone/civilization",
+    "sourceUrls": [
+      "https://dos.zone/civilization",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Strategy",
+    "description": "Sid Meier's original turn-based civilisation builder, emulated in the browser.",
+    "browserEvidence": "Jina-rendered page title 'Civilization | DOS games in browser' (7.5 KB rendered) with the js-dos launch prompt visible. Rendered launch UI, not gameplay.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser; keyboard and mouse. Long sessions depend on host performance.",
+    "multiplayer": null,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; edition and provenance need review.",
+      "Save persistence and long sessions have not been tested.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "commander-keen-4",
+    "title": "Commander Keen IV: Secret of the Oracle",
+    "playUrl": "https://dos.zone/commander-keen4",
+    "sourceUrls": [
+      "https://dos.zone/commander-keen4",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Platformer",
+    "description": "id Software's pogo-stick platformer, emulated in the browser.",
+    "browserEvidence": "Jina-rendered page title 'Commander Keen in Goodbye, Galaxy!: Episode IV - Secret of the Oracle | DOS games in browser' (8 KB rendered) with the js-dos launch prompt present. Rendered launch UI only.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; shareware vs registered episode content not confirmed.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "cookie-clicker",
+    "title": "Cookie Clicker",
+    "playUrl": "https://orteil.dashnet.org/cookieclicker",
+    "sourceUrls": [
+      "https://orteil.dashnet.org/cookieclicker"
+    ],
+    "genre": "Incremental",
+    "description": "The original idle clicker: bake cookies, buy buildings, watch the numbers explode.",
+    "browserEvidence": "Jina render shows the game's own cookie-consent gate ('Unsurprisingly, this website uses cookies for ads and traffic analysis') and the Cookie Clicker title on Orteil's own dashnet domain - the official build.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any browser; mouse. Free; ads and traffic analysis on the official host.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "Ad-supported host; game canvas text itself did not render, only the shell."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "death-rally",
+    "title": "Death Rally (1996)",
+    "playUrl": "https://dos.zone/death-rally-1996",
+    "sourceUrls": [
+      "https://dos.zone/death-rally-1996",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Racing",
+    "description": "Top-down combat racing where you spend prize money on weapons between events.",
+    "browserEvidence": "Jina-rendered page title 'Death Rally | DOS games in browser' with the js-dos launch prompt rendered. Rendered launch UI, not gameplay.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard; emulated DOS release.",
+    "multiplayer": null,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; save behaviour across sessions untested.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "descent",
+    "title": "Descent (1995)",
+    "playUrl": "https://dos.zone/descent",
+    "sourceUrls": [
+      "https://dos.zone/descent",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Shooter",
+    "description": "Six-degrees-of-freedom tunnel shooter, emulated in the browser, with the original's multiplayer wording on the page.",
+    "browserEvidence": "Jina-rendered DOS Zone game page renders 'Multiplayer', 'free' and 'Install' strings plus a 'Multiplayer Play Online' hub link. Rendered launch UI, no session observed.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Multiplayer hub presence is a page claim; not exercised.",
+      "Third-party emulation host.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "doom-shareware",
+    "title": "Doom (DOS browser candidate)",
+    "playUrl": "https://dos.zone/doom-dec-1993",
+    "sourceUrls": [
+      "https://dos.zone/doom-dec-1993",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Shooter",
+    "description": "The original Doom, hosted through an in-browser DOS emulator.",
+    "browserEvidence": "Jina-rendered page shows the js-dos launch UI (an 'Install' prompt) and a 'Multiplayer Play Online' link, and the page states its games are 'free and without ads on dos.zone'. This is rendered launch UI, not a playthrough.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard and mouse; exact edition and episode content need verification.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; the page advertises a netplay hub but multiplayer was not exercised.",
+      "Runs inside js-dos, so performance depends on the host machine.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render of https://r.jina.ai/<url>) plus direct HTTPS probe (HTTP 200); URL located via dos.zone public sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "doom-ii",
+    "title": "Doom II (1994)",
+    "playUrl": "https://dos.zone/doom-ii-oct-10-1994",
+    "sourceUrls": [
+      "https://dos.zone/doom-ii-oct-10-1994",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Shooter",
+    "description": "Doom II with the super shotgun, emulated in the browser by js-dos.",
+    "browserEvidence": "Jina-rendered page title is 'DOOM II | DOS games in browser' and the render contains the js-dos 'Install' prompt and a 'Multiplayer Play Online' link to the site's netplay hub. Rendered launch UI only.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Separate DOS title from the shareware entry above, but hosted by the same third-party emulator site; multiplayer hub unverified.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "duke-nukem-3d",
+    "title": "Duke Nukem 3D (1996)",
+    "playUrl": "https://dos.zone/duke-nukem-3d-1996",
+    "sourceUrls": [
+      "https://dos.zone/duke-nukem-3d-1996",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Shooter",
+    "description": "Build-engine Duke, hosted through an in-browser DOS emulator.",
+    "browserEvidence": "Jina-rendered page title 'Duke Nukem 3D | DOS games in browser' with the js-dos 'Install' launch prompt visible in the rendered body. Rendered launch UI only.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": null,
+    "mobile": null,
+    "issues": [
+      "Which episode set is served (shareware vs full) was not confirmed from the rendered text.",
+      "Third-party emulation host.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dungeon-crawl-stone-soup-webtiles",
+    "title": "Dungeon Crawl Stone Soup (webtiles)",
+    "playUrl": "https://crawl.develz.org/play.htm",
+    "sourceUrls": [
+      "https://crawl.develz.org/play.htm",
+      "https://crawl.develz.org"
+    ],
+    "genre": "RPG",
+    "description": "The classic open-source dungeon crawler, played in the browser against official public servers.",
+    "browserEvidence": "Jina render of the official play page shows the server picker with real hosts and ports: 'Select a server manually: Arizona, USA: crawl.akrasiac.org ... Ohio, USA: cbro.berotato.org ... New York, USA: crawl.dcss.io ... Paris, France: crawl.xtahua.com' - the official browser-client entry point.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any browser; public servers, keyboard-driven. Optional account to link games to a name. Single-player game on shared servers; spectating is available.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "Single-player roguelike over webtiles - 'multiplayer' is set false deliberately; spectating is the only social feature.",
+      "Choosing a server adds an extra step that should be explained in catalogue copy."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "ev-io",
+    "title": "ev.io",
+    "playUrl": "https://ev.io",
+    "sourceUrls": [
+      "https://ev.io"
+    ],
+    "genre": "Shooter",
+    "description": "Halo-flavoured arena FPS with movement-focused gunplay, playable in the browser.",
+    "browserEvidence": "Jina render shows live client text: 'Building map...', 'Connecting ...', 'Loading ...', 'Drought Brazil Deathmatch 8 players' and a rotating gameplay tip - the WebGL client booted and reported a lobby/match.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with mouse and keyboard; free WebGL game with optional account.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Lobby text rendered but no match was joined, so end-to-end play is unconfirmed."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "fallout-1997",
+    "title": "Fallout: A Post Nuclear Role Playing Game (1997)",
+    "playUrl": "https://dos.zone/fallout",
+    "sourceUrls": [
+      "https://dos.zone/fallout",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "RPG",
+    "description": "The original wasteland RPG with SPECIAL stats and turn-based combat, emulated in the browser.",
+    "browserEvidence": "Jina-rendered page title 'Fallout: A Post Nuclear Role Playing Game | DOS games in browser' (7.7 KB rendered) with the js-dos launch prompt visible. Rendered launch UI, not gameplay.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard and mouse; loading time, performance and saves need testing.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; edition and included media are unconfirmed.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "generals-io",
+    "title": "Generals.io",
+    "playUrl": "https://generals.io",
+    "sourceUrls": [
+      "https://generals.io",
+      "https://generals.io/games"
+    ],
+    "genre": "Strategy",
+    "description": "Real-time territory-grabbing strategy with short multiplayer games and custom maps.",
+    "browserEvidence": "Jina render shows the live client's current version (v31.4.3), its changelog of gameplay and graphics changes, and the leaderboard/Supporter UI - a running client, not marketing filler.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any desktop browser; free 1v1 and team games plus custom lobbies.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "No game was created or joined in the render."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "haxball",
+    "title": "HaxBall",
+    "playUrl": "https://www.haxball.com/play",
+    "sourceUrls": [
+      "https://www.haxball.com"
+    ],
+    "genre": "Multiplayer sport",
+    "description": "Physics-based online football with tiny teams and room-based play, running in the browser.",
+    "browserEvidence": "Jina render of haxball.com shows the site's own copy ('HaxBall is a physics-based multiplayer soccer game where teamwork is key') and a 'Play now!' link pointing at /play. The direct curl probe returned HTTP 403 (bot filter), so link reachability was confirmed through the render rather than a plain fetch.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard; nickname prompt before joining a room. Free, no install.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Direct curl was blocked (403) - plain HTTP probing is not a reliable check for this host.",
+      "The room list itself was not rendered, so a live room was not observed."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render); direct probe returned 403 and is recorded as such",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "hordes-io",
+    "title": "Hordes.io",
+    "playUrl": "https://hordes.io",
+    "sourceUrls": [
+      "https://hordes.io",
+      "https://hordes.io/play"
+    ],
+    "genre": "RPG",
+    "description": "Open-world multiplayer RPG with faction warfare, built on WebGL for the browser.",
+    "browserEvidence": "Jina render returned the game's own technical-help page ('Having issues running Hordes.io? ... your computer might be having issues running WebGL2'), which documents the launch/requirements path rather than gameplay.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with WebGL2; free account for character progression.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "The fetch resolved to the help page, so the game canvas itself was not rendered; WebGL2 is explicitly required."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "jazz-jackrabbit",
+    "title": "Jazz Jackrabbit (1994)",
+    "playUrl": "https://dos.zone/jazz-jackrabbit",
+    "sourceUrls": [
+      "https://dos.zone/jazz-jackrabbit",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Platformer",
+    "description": "Epic MegaGames' fast green rabbit platformer, emulated in the browser.",
+    "browserEvidence": "Jina-rendered page title 'Jazz Jackrabbit | DOS games in browser' (7.9 KB rendered) including the site header, language switcher and the js-dos launch UI. Rendered launch UI, not gameplay.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard.",
+    "multiplayer": null,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; served edition and controls need verification.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "jstris",
+    "title": "Jstris",
+    "playUrl": "https://jstris.jezevec10.com",
+    "sourceUrls": [
+      "https://jstris.jezevec10.com"
+    ],
+    "genre": "Puzzle",
+    "description": "Lightweight browser Tetris with solo practice, versus and multiplayer rooms.",
+    "browserEvidence": "Jina render returned 10.7 KB of the client's own page text including free-play framing and multiplayer wording - the app shell rendered, not just a splash image.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any modern browser with keyboard; free, no install, optional account for stats.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Multiplayer room join not exercised."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "krunker",
+    "title": "Krunker",
+    "playUrl": "https://krunker.io",
+    "sourceUrls": [
+      "https://krunker.io"
+    ],
+    "genre": "Shooter",
+    "description": "Fast, low-poly multiplayer FPS that runs entirely in the browser.",
+    "browserEvidence": "Jina render returned the WebGL client's own overlay: 'It looks like Krunker ran in to a problem... disabling all of your browser extensions' plus the version string v1.5.3 and 'Welcome to' copy - i.e. client JavaScript executed in the headless render.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with mouse and keyboard; WebGL. Account optional for progression.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "The headless render showed an extension/compatibility warning overlay rather than a lobby; needs a manual check in a normal desktop browser."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "lemmings-1991",
+    "title": "Lemmings (1991)",
+    "playUrl": "https://dos.zone/lemmings-1991",
+    "sourceUrls": [
+      "https://dos.zone/lemmings-1991",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Puzzle",
+    "description": "DMA Design's save-the-lemmings skill puzzler, emulated in the browser.",
+    "browserEvidence": "Jina-rendered page title 'Lemmings | DOS games in browser' (7.4 KB rendered) with the js-dos launch prompt present. Rendered launch UI only.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with mouse.",
+    "multiplayer": null,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; two-player mode not verified.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "melvor-idle",
+    "title": "Melvor Idle",
+    "playUrl": "https://melvoridle.com",
+    "sourceUrls": [
+      "https://melvoridle.com",
+      "https://store.steampowered.com/app/1267910/Melvor_Idle"
+    ],
+    "genre": "RPG",
+    "description": "RuneScape-inspired idle RPG with skills, combat and offline progression; browser client discovered.",
+    "browserEvidence": "Jina render shows the browser client booting: 'Loading...', the Melvor Idle v1.3.1 title, PlayFab sign-in text and Google sign-in buttons. The render also carried a live 'PlayFab is currently experiencing connection issues' notice, i.e. the client talked to its backend.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Modern browser; free/demo limits, paid content and account requirements need review.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "Client-side PlayFab connection error was reported during the fetch - intermittent login problems are possible."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "micropolis-web",
+    "title": "Micropolis (SimCity Classic, WebAssembly)",
+    "playUrl": "https://micropolisweb.com",
+    "sourceUrls": [
+      "https://micropolisweb.com",
+      "https://github.com/SimHacker/MicropolisCore"
+    ],
+    "genre": "Simulation",
+    "description": "Don Hopkins' WebAssembly port of the open-sourced SimCity Classic city simulator.",
+    "browserEvidence": "Jina render shows the project's own statement on the live site: 'This is Micropolis in WebAssembly! Based on the original SimCity Classic from Maxis, designed by Will Wright, ported by Don Hopkins. This is just an unfinished evolving scrappy fiddle.' with Patreon/GitHub links - a project claim rendered on its demo site; the canvas produced no further text.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with WebGL/WebAssembly; mouse. Early-stage project.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "The maintainer describes it as an unfinished 'scrappy fiddle' - expect rough edges.",
+      "SimCity Classic assets/licence came from the released Micropolis open-sourcing; attribution worth including in catalogue copy."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "minecraft-classic",
+    "title": "Minecraft Classic",
+    "playUrl": "https://classic.minecraft.net",
+    "sourceUrls": [
+      "https://classic.minecraft.net",
+      "https://www.minecraft.net"
+    ],
+    "genre": "Sandbox",
+    "description": "Mojang's official browser build of the original Creative-mode Minecraft Classic.",
+    "browserEvidence": "Jina returned an empty cached snapshot titled Minecraft Classic. The direct HTTPS probe returned 200, but no launch UI or playable state was captured.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser (official page is desktop-oriented); nickname entry, free, no account.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "No rendered launch UI was captured; a manual browser check is required."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render returned an empty cached snapshot) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "moomoo-io",
+    "title": "MooMoo.io",
+    "playUrl": "https://moomoo.io",
+    "sourceUrls": [
+      "https://moomoo.io"
+    ],
+    "genre": "Shooter",
+    "description": "Multiplayer survival and base-building arena with tribes, gathering and PvP.",
+    "browserEvidence": "The headless fetch was refused: 'Attention Required! | Cloudflare ... Target URL returned error 403: Forbidden'. Direct curl returned HTTP 200 for the host but the rendered route is bot-blocked, so no launch UI or gameplay evidence was obtained.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser; free, nickname entry. Likely needs a normal browser session rather than automation.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Blocked by Cloudflare for automated fetches (403 from Jina, CAPTCHA page) - unverified, listed for later manual review.",
+      "This is the weakest record in the batch: treat the play URL as unconfirmed."
+    ],
+    "researchMethod": "Agent Reach 'web' channel attempted (Jina Reader returned a Cloudflare 403 page) + direct HTTPS probe (HTTP 200 but no render)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "nationstates",
+    "title": "NationStates",
+    "playUrl": "https://www.nationstates.net",
+    "sourceUrls": [
+      "https://www.nationstates.net"
+    ],
+    "genre": "Strategy",
+    "description": "Create and govern a nation by answering daily issues, with a long-running multi-nation world.",
+    "browserEvidence": "Jina render shows the live site header ('NationStates | create your own country'), a '[NEW NATION]' control and a screen-reader theme switch - the game world rendered. Direct curl was refused with 403.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any browser; free account. Play is asynchronous (a few minutes a day).",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Direct curl blocked (403).",
+      "Async play model - not a session game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render); direct probe 403 recorded",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "nonograms-online",
+    "title": "Nonograms (puzzle-nonograms.com)",
+    "playUrl": "https://www.puzzle-nonograms.com",
+    "sourceUrls": [
+      "https://www.puzzle-nonograms.com"
+    ],
+    "genre": "Puzzle",
+    "description": "Free grid-deduction picture puzzles, from small daily grids to large ones.",
+    "browserEvidence": "Jina render shows the site's own header ('Nonograms - online puzzle game'), a language switcher for many locales and 9.3 KB of rendered puzzle-site text - an active, maintained puzzle service.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any browser with mouse or touch; free, no account.",
+    "multiplayer": false,
+    "mobile": true,
+    "issues": [
+      "Ads, controls and account requirements need checking in a normal browser."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "opendominion",
+    "title": "OpenDominion",
+    "playUrl": "https://opendominion.net",
+    "sourceUrls": [
+      "https://opendominion.net",
+      "https://github.com/OpenDominion/OpenDominion"
+    ],
+    "genre": "Strategy",
+    "description": "Open-source text-based fantasy strategy with persistent multiplayer rounds.",
+    "browserEvidence": "Jina render shows 'Based on the Kamikaze Games Classic DominioN', a 'Play Now' link into registration and a live round ranking table with real dominions and scores - evidence of an active round.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any browser; account required, rounds run over days-weeks, low resource use.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Round-based, not session-based - it fits a 'strategy' shelf but not a quick-play shelf."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "pokerogue",
+    "title": "PokéRogue",
+    "playUrl": "https://pokerogue.net",
+    "sourceUrls": [
+      "https://pokerogue.net",
+      "https://github.com/pagefaultgames/pokerogue"
+    ],
+    "genre": "RPG",
+    "description": "Roguelite Pokémon-style battler with endless floors, evolutions and item builds, in the browser.",
+    "browserEvidence": "Jina render returned only sparse canvas-mapped text (key hints such as 'A B F R C Menu'), consistent with a WebGL/canvas game whose UI is not in the DOM. Playability rest on the client shell loading, not on readable text.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser; free, no install, account for cloud saves. Keyboard by default.",
+    "multiplayer": null,
+    "mobile": null,
+    "issues": [
+      "Almost no readable text rendered - gameplay could not be confirmed from the fetch.",
+      "Fan project using Nintendo IP - rights/provenance note for review."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render, sparse) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "polytrack",
+    "title": "PolyTrack",
+    "playUrl": "https://poki.com/en/g/polytrack",
+    "sourceUrls": [
+      "https://poki.com/en/g/polytrack",
+      "https://kodub.itch.io/polytrack"
+    ],
+    "genre": "Racing",
+    "description": "Low-poly TrackMania-style time-trial racing with loops, jumps and a built-in track editor.",
+    "browserEvidence": "Poki's page renders 'PolyTrack - Play Online for Free!', a 'Play PolyTrack for free at Poki' call to action and gameplay description text; the itch.io page for the same game offers only downloads, so Poki is the browser route. Poki hosts licensed browser builds with a fullscreen player frame.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with WebGL and keyboard; this research found a hosted Poki page, but did not establish availability of other browser builds.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "Hosted on Poki (a commercial arcade portal) rather than the developer's own domain; ad-supported.",
+      "No race was driven in the render."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) of both the Poki page and the itch.io page + direct HTTPS probes (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "portal-the-flash-version",
+    "title": "Portal: The Flash Version",
+    "playUrl": "https://portal.wecreatestuff.com/play.html",
+    "sourceUrls": [
+      "https://portal.wecreatestuff.com",
+      "https://portal.wecreatestuff.com/play.html"
+    ],
+    "genre": "Puzzle",
+    "description": "A 2D fan-made Portal with 40-plus portal-based test chambers, revived from Flash for the browser.",
+    "browserEvidence": "The site's own page describes 'Portal: The Flash Version ... brings it all up in 2d' with over 40 levels and links to mirror play pages (Newgrounds, Armor Games); a dedicated play.html is served. The Jina render of play.html returned the title and byline but no game text, and the original release was Flash-based.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser; keyboard and mouse. Site references Flash Player 8+ for the original build - confirm the modern build loads before publishing.",
+    "multiplayer": false,
+    "mobile": false,
+    "issues": [
+      "play.html rendered no game text through the headless fetch, so whether the modern (non-Flash) build actually runs could not be confirmed.",
+      "Fan project using Valve's IP - rights/provenance note for review."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) of the landing page and play.html + direct HTTPS probes (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "prince-of-persia-1990",
+    "title": "Prince of Persia (1990)",
+    "playUrl": "https://dos.zone/prince-of-persia-1990",
+    "sourceUrls": [
+      "https://dos.zone/prince-of-persia-1990",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Platformer",
+    "description": "Jordan Mechner's rotoscoped dungeon platformer, emulated in the browser.",
+    "browserEvidence": "Jina-rendered page title 'Prince of Persia | DOS games in browser' (7.5 KB rendered) with the js-dos launch prompt visible. Rendered launch UI, not gameplay.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard; controls and performance need testing.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; controls and performance have not been tested.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "rpg-mo",
+    "title": "RPG MO",
+    "playUrl": "https://rpg.mo.ee",
+    "sourceUrls": [
+      "https://rpg.mo.ee"
+    ],
+    "genre": "RPG",
+    "description": "Browser MMORPG with skills, quests and trading, playable without a download.",
+    "browserEvidence": "Jina returned world HUD and chat text including Dorpat (14, 14), World 1 and Health 10/10. It is unclear whether this is demo, cached or live session state; no account or gameplay interaction was performed.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any modern browser; free account, keyboard and mouse. Also offered as desktop/mobile builds.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "A rendered world view was captured, but it is the site's own demo/preview state - the account flow was not exercised."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "shell-shockers",
+    "title": "Shell Shockers",
+    "playUrl": "https://shellshock.io",
+    "sourceUrls": [
+      "https://shellshock.io"
+    ],
+    "genre": "Shooter",
+    "description": "Free multiplayer FPS where every player is an armed egg, built for the browser.",
+    "browserEvidence": "Jina render captured the game client's own boot UI: the Blue Wizard Digital logo, a 'Loading screen egg shouting' loading-tip image and an anonymous Firebase session (isAnonymous: true). That is a started client, not static marketing copy; no match was played.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with mouse and keyboard; free, no install. A WebGL-capable browser is required.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Loading UI only was observed; matchmaking was not exercised."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "simon-tatham-puzzles",
+    "title": "Simon Tatham's Portable Puzzle Collection (browser builds)",
+    "playUrl": "https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js",
+    "sourceUrls": [
+      "https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js",
+      "https://www.chiark.greenend.org.uk/~sgtatham/puzzles"
+    ],
+    "genre": "Puzzle",
+    "description": "Forty-plus classic logic puzzles (Net, Black Box, Tents, Solo) compiled to JavaScript by their original author.",
+    "browserEvidence": "Jina render shows the official JS directory served from Simon Tatham's own chiark host, listing per-puzzle .html pages, and the collection's own README-style documentation renders on the parent page.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any browser; each puzzle is a single page with keyboard and mouse input. Free and open source.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "The playUrl is the puzzle directory, not one game - the primary agent should pick individual puzzle pages or use a landing route if a single game is required."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "skribbl-io",
+    "title": "skribbl.io",
+    "playUrl": "https://skribbl.io",
+    "sourceUrls": [
+      "https://skribbl.io"
+    ],
+    "genre": "Multiplayer party",
+    "description": "Free online pictionary: one player draws a word, everyone else races to guess it.",
+    "browserEvidence": "Jina render shows the site's own description of round structure and scoring ('every round a player has to draw their chosen word and others have to guess it to gain points'). Landing page copy, not in-game state.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any modern browser; free public or private rooms, nickname entry only.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Only the landing page rendered; no room was joined."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "slow-roads",
+    "title": "Slow Roads",
+    "playUrl": "https://slowroads.io",
+    "sourceUrls": [
+      "https://slowroads.io",
+      "https://store.steampowered.com/app/3431300/Slow_Roads"
+    ],
+    "genre": "Racing",
+    "description": "Endless procedurally generated scenic driving with no goals, weather and music.",
+    "browserEvidence": "Jina render gives the game's own copy ('Simply chase the horizon through endless, procedurally-generated landscapes, with no ads, distractions, or goals') and a link to its Steam page, describing the browser version as the entry point.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with WebGL and keyboard (and preferably a gamepad). Free browser version.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "Site copy rather than an observed driving session; a WebGL-capable browser is required."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "splix-io",
+    "title": "Splix.io",
+    "playUrl": "https://splix.io",
+    "sourceUrls": [
+      "https://splix.io",
+      "https://github.com/jespertheend/splix/releases/tag/v0.19.0"
+    ],
+    "genre": "Multiplayer arcade",
+    "description": "Territory-grabbing multiplayer arcade game where you claim tiles and cut off rivals.",
+    "browserEvidence": "Jina render shows the live client's changelog ('Recent updates! Spectator mode... press the m key') with credits linking to the project's v0.19.0 GitHub release - release notes rendered from the running site.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard (WASD/arrow movement); free, no install.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "No match was joined; only the client's landing/changelog view rendered."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "stunts",
+    "title": "Stunts (1990)",
+    "playUrl": "https://dos.zone/stunts",
+    "sourceUrls": [
+      "https://dos.zone/stunts",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Racing",
+    "description": "Distinctive polygon stunt driving with a track editor, emulated in the browser.",
+    "browserEvidence": "Jina-rendered page shows the js-dos 'Install' prompt, a 'Multiplayer Play Online' link and the site's 'free and without ads on dos.zone' text. Rendered launch UI only.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard; emulated DOS release.",
+    "multiplayer": null,
+    "mobile": null,
+    "issues": [
+      "Track-editor and car-set handling inside the emulator were not tested.",
+      "Third-party emulation host.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "territorial-io",
+    "title": "Territorial.io",
+    "playUrl": "https://territorial.io",
+    "sourceUrls": [
+      "https://territorial.io"
+    ],
+    "genre": "Strategy",
+    "description": "Fast multiplayer map-conquest game with battle-royale and zombie modes.",
+    "browserEvidence": "Jina render shows the client's own menu and leaderboard text ('Multiplayer', 'Custom Scenario', 'My Account', 'Game Menu', 'Top Clan', 'Best Battle Royale Player'). Jina also warned the page may require a CAPTCHA.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any modern browser; free multiplayer, no install.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "CAPTCHA/interstitial warning from Jina - automated verification is unreliable here."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "tetr-io",
+    "title": "TETR.IO",
+    "playUrl": "https://tetr.io",
+    "sourceUrls": [
+      "https://tetr.io"
+    ],
+    "genre": "Puzzle",
+    "description": "Modern competitive Tetris with ranked online play and a desktop-class client in the browser.",
+    "browserEvidence": "Jina render of the client shows menu, 'play online' and repeated 'MULTIPLAYER'/'multiplayer' wording plus install/packaged-app prompts and varied loading text - the heavy client rendered 36 KB of text.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser (WebGL/WebAudio); free account needed for ranked multiplayer, offline solo play works without one.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Client renders fine but no game was started; account/multiplayer flow unverified."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "the-password-game",
+    "title": "The Password Game",
+    "playUrl": "https://neal.fun/password-game",
+    "sourceUrls": [
+      "https://neal.fun/password-game"
+    ],
+    "genre": "Puzzle",
+    "description": "A password field that keeps adding absurd new rules until it is almost impossible to satisfy.",
+    "browserEvidence": "Jina render shows the game's first interactive state: the title card, 'Please choose a password', the '0' character counter and 'Your passwords must match' - i.e. the interactive page rendered. Direct curl was refused with 403, so the render is the evidence here.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Any modern browser; keyboard only, no account or install. Some rules need things like a chess move or a YouTube link, so a second tab helps.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "Direct HTTP probe returned 403; normal browser access needs confirmation."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render); direct probe 403 recorded",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "settlers-2",
+    "title": "The Settlers II (1996)",
+    "playUrl": "https://dos.zone/settlers2",
+    "sourceUrls": [
+      "https://dos.zone/settlers2",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Strategy",
+    "description": "Blue Byte's road-building economy RTS, emulated in the browser.",
+    "browserEvidence": "Jina-rendered page title 'Settlers 2 | DOS games in browser' (7.8 KB rendered) with the js-dos launch prompt present. Rendered launch UI only.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser; mouse-driven interface.",
+    "multiplayer": null,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; emulated build language/version unconfirmed.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "universal-paperclips",
+    "title": "Universal Paperclips",
+    "playUrl": "https://www.decisionproblem.com/paperclips/index2.html",
+    "sourceUrls": [
+      "https://www.decisionproblem.com/paperclips/index2.html"
+    ],
+    "genre": "Incremental",
+    "description": "Frank Lantz's incremental game about an AI that turns the universe into paperclips.",
+    "browserEvidence": "Jina render shows the game's own browser notice: 'The web version of this game was not designed to work on phones. Grab the mobile...' - the authors' page for the browser release, on the original decisionproblem.com host.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser; mouse. Free, no account needed.",
+    "multiplayer": false,
+    "mobile": false,
+    "issues": [
+      "Site explicitly warns the browser version is not designed for phones."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "vampire-survivors-web",
+    "title": "Vampire Survivors (browser build)",
+    "playUrl": "https://poncle.itch.io/vampire-survivors",
+    "sourceUrls": [
+      "https://poncle.itch.io/vampire-survivors",
+      "https://poncle.itch.io"
+    ],
+    "genre": "Action RPG",
+    "description": "The official free browser build of the bullet-heaven roguelite, published by the developers themselves.",
+    "browserEvidence": "Jina render of poncle's itch.io page shows itch's own web-player control ('Run game') alongside the game's text about keyboard, controller and touchscreen support - i.e. an itch-hosted browser build, published by the developers.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser; keyboard, gamepad or touch. Free to play in the browser; the full game is sold separately on Steam.",
+    "multiplayer": false,
+    "mobile": true,
+    "issues": [
+      "'Run game' is itch's player affordance; the WebGL build itself was not executed in this check.",
+      "Other itch.io pages may also upload this game - deduplicate by canonical itch URL (poncle)."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "wacky-wheels",
+    "title": "Wacky Wheels (1994)",
+    "playUrl": "https://dos.zone/wackywheels",
+    "sourceUrls": [
+      "https://dos.zone/wackywheels",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Racing",
+    "description": "Kart-style racing with animal drivers and power-ups, emulated in the browser.",
+    "browserEvidence": "Jina-rendered page title 'Wacky Wheels | DOS games in browser' (8 KB of rendered text) with the js-dos launch prompt present. Rendered launch UI only.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard; two-player split screen needs shared keyboard.",
+    "multiplayer": null,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; local two-player mode not verified.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "warcraft-orcs-and-humans",
+    "title": "Warcraft: Orcs & Humans (1994)",
+    "playUrl": "https://dos.zone/warcraft-orcs-humans",
+    "sourceUrls": [
+      "https://dos.zone/warcraft-orcs-humans",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Strategy",
+    "description": "Blizzard's first real-time strategy game, emulated in the browser.",
+    "browserEvidence": "Jina-rendered page title 'WarCraft: Orcs & Humans | DOS games in browser' with the js-dos 'Install' launch prompt in the rendered body. Rendered launch UI, no gameplay observed.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard and mouse.",
+    "multiplayer": null,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; multiplayer support in this hosted build is unconfirmed.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "wolfenstein-3d",
+    "title": "Wolfenstein 3D (1992)",
+    "playUrl": "https://dos.zone/wolfenstein-3d-may-05-1992",
+    "sourceUrls": [
+      "https://dos.zone/wolfenstein-3d-may-05-1992",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Shooter",
+    "description": "id Software’s corridor shooter, hosted through an in-browser DOS emulator.",
+    "browserEvidence": "Jina-rendered page title 'Wolfenstein 3D | DOS games in browser' with the js-dos 'Install' launch prompt rendered in the body. Rendered launch UI, not gameplay.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": null,
+    "mobile": null,
+    "issues": [
+      "Commercial 1992 title hosted by a third party; the page's own licence wording was not examined line by line.",
+      "The 1992 DOS release has no multiplayer.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "x-com-ufo-defense",
+    "title": "X-COM: UFO Defense (1994)",
+    "playUrl": "https://dos.zone/x-com-ufo-defense-1994",
+    "sourceUrls": [
+      "https://dos.zone/x-com-ufo-defense-1994",
+      "https://dos.zone/sitemap.xml"
+    ],
+    "genre": "Strategy",
+    "description": "Turn-based squad tactics layered over a global alien-research campaign.",
+    "browserEvidence": "Jina-rendered page title 'X-COM: UFO Defense | DOS games in browser' with the js-dos launch prompt rendered. Rendered launch UI only.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser; mouse-driven interface.",
+    "multiplayer": false,
+    "mobile": null,
+    "issues": [
+      "Third-party emulation host; the emulated build's version/patch level was not confirmed.",
+      "Hosted edition and distribution provenance need review; a generic site-wide multiplayer link does not establish support for this game."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200); URL from dos.zone sitemap.xml",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "zombs-royale",
+    "title": "Zombs Royale",
+    "playUrl": "https://zombsroyale.io",
+    "sourceUrls": [
+      "https://zombsroyale.io"
+    ],
+    "genre": "Shooter",
+    "description": "Top-down 2D battle royale with 99 players, matches and loot, in the browser.",
+    "browserEvidence": "Jina render shows in-game instructions and tips: 'WASD or Arrow Keys to move', 'Left Mouse to fire', 'Press E to loot chests', credited to (c) Lol Analytics, LLC 2026 - the client rendered. Jina also warned the page may require a CAPTCHA.",
+    "researchedAt": "2026-10-10",
+    "ownFiles": false,
+    "requirements": "Desktop browser with mouse and keyboard; free, no install. Account optional.",
+    "multiplayer": true,
+    "mobile": null,
+    "issues": [
+      "Jina flagged a possible CAPTCHA/interstitial; direct curl returned HTTP 200."
+    ],
+    "researchMethod": "Agent Reach 'web' channel (Jina Reader render) + direct HTTPS probe (HTTP 200)",
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  }
+]

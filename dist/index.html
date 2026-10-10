@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101210">
+  <meta name="description" content="Your favourite classics, one tab away. Discover browser games, save your favourites, and get straight to playing.">
+  <title>gameflex — one more game.</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/pixel.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="assets/body.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" type="module"></script>
+</head>
+<body>
+  <a class="skip-link" href="#catalogue">Skip to games</a>
+  <header class="site-header">
+    <a class="wordmark" href="#" aria-label="GAMEFLEX home">GAMEFLEX<span class="logo-pixel" aria-hidden="true"></span></a>
+    <nav aria-label="Main navigation">
+      <button class="nav-link active" data-view="discover" aria-current="page">Discover</button>
+      <button class="nav-link" data-view="favourites">My favourites <span id="favourite-count">0</span></button>
+    </nav>
+    <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Find your next game" aria-label="Search games" autocomplete="off"><kbd>/</kbd></label>
+  </header>
+  <main>
+    <section class="hero" id="hero" aria-labelledby="hero-heading">
+      <div class="hero-image" aria-hidden="true"></div><div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-content">
+        <div class="eyebrow"><span class="live-dot"></span> THE BROWSER IS YOUR CONSOLE</div>
+        <h1 id="hero-heading">Old favourites.<br><span>New tab.</span></h1>
+        <p>The games you grew up on. A few you missed.<br>No installs. Just pick one and jump in.</p>
+        <div class="hero-actions"><button class="button lime" id="hero-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>Let's play <span aria-hidden="true">↗</span></button><a class="button ghost" href="#catalogue">Explore the collection <span aria-hidden="true">↓</span></a></div>
+        <span class="hero-note">Some ports need your original game files.</span>
+      </div>
+      <div class="featured-caption"><span class="eyebrow">IN THE SPOTLIGHT</span><strong id="spotlight-name">Halo: Combat Evolved</strong><span id="spotlight-genre">An old-school classic, back in your browser.</span></div>
+      <div class="hero-index" aria-hidden="true"><span>01</span> / 01 <i></i></div>
+    </section>
+    <section class="catalogue" id="catalogue" aria-labelledby="catalogue-heading">
+      <div class="catalogue-intro"><div><span class="eyebrow muted">LESS SCROLLING. MORE PLAYING.</span><h2 id="catalogue-heading">Find your kind of fun<span class="lime-text">.</span></h2></div><span id="collection-count" class="collection-count"></span></div>
+      <div class="browse-tools"><div class="filters" role="group" aria-label="Filter by genre"><button class="filter active" data-category="all" aria-pressed="true">All games</button><button class="filter" data-category="shooters" aria-pressed="false">Shooters</button><button class="filter" data-category="zombies" aria-pressed="false">Zombies</button><button class="filter" data-category="sports" aria-pressed="false">Skate & sports</button><button class="filter" data-category="adventure" aria-pressed="false">Adventure</button><button class="filter" data-category="strategy" aria-pressed="false">Strategy</button></div><button id="surprise" class="surprise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c5 0 7-12 12-12h3m-4-4 4 4-4 4"/></svg>Pick for me</button></div>
+      <div id="results" aria-live="polite" class="sr-only"></div><div id="shelves"></div>
+      <div id="empty-state" class="empty-state" hidden><span class="pixel-decoration" aria-hidden="true">+ +</span><h3 id="empty-heading">Nothing here. Yet.</h3><p id="empty-copy"></p><button class="button lime" id="reset">Explore all games</button></div>
+      <aside class="small-print"><span class="pixel-decoration" aria-hidden="true">i</span><div><strong>One tab. A whole lot of nostalgia.</strong><p>Games open on independent websites. We check the launch pages; availability and performance can change. Look for the “Own files” label before you play.</p></div><button id="about-button">How it works <span aria-hidden="true">↗</span></button></aside>
+    </section>
+  </main>
+  <footer><a class="wordmark footer-logo" href="#">GAMEFLEX<span class="logo-pixel" aria-hidden="true"></span></a><span>Made for the “one more game” crowd.</span><span class="footer-right">Curated classics. Zero launchers.<span class="tiny-cross" aria-hidden="true">✚</span></span></footer>
+  <dialog id="details" aria-labelledby="dialog-title"><button class="dialog-close icon-button" aria-label="Close game details">×</button><div id="dialog-content"></div></dialog>
+  <dialog id="about" aria-labelledby="about-title"><button class="dialog-close icon-button" aria-label="Close about gameflex">×</button><div class="about-content"><span class="eyebrow lime-text">PLAYER NOTES</span><h2 id="about-title">Pick. Click. Play.</h2><p>gameflex is a hand-picked directory of browser games and ports. Play opens the game’s website in a new tab.</p><p>Some engines ask you to supply files from a game you own. These entries carry an <strong>Own files</strong> label. You never need a launcher from gameflex.</p><p>“Checked” means we inspected the destination and its browser launch interface. It does not mean every game mode or device has been tested.</p><p>Your favourites stay in this browser. No account needed. gameflex is an independent curation project; game names and artwork belong to their respective owners.</p></div></dialog>
+  <div id="toast" role="status" class="toast"></div>
+</body>
+</html>

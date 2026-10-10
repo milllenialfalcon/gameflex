@@ -1,0 +1,245 @@
+[
+  {
+    "id": "halo",
+    "title": "Halo: Combat Evolved",
+    "url": "https://mitchellhynes.com/halo/",
+    "genre": "Sci-fi shooter",
+    "category": "shooters",
+    "tag": "COMBAT EVOLVED",
+    "art": "assets/halo.jpg",
+    "featured": true,
+    "spotlight": true,
+    "ownFiles": true,
+    "description": "Step back onto the ring. The original Halo, reworked to run in your browser.",
+    "requirements": "Requires your own Halo Xbox XISO image. Select it at the host’s setup prompt. Desktop keyboard and mouse recommended.",
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "bo1",
+    "title": "Black Ops Zombies",
+    "url": "https://vel.gg/bo1z",
+    "genre": "Survival shooter",
+    "category": "zombies",
+    "tag": "SURVIVE THE HORDE",
+    "art": "assets/bo1.jpg",
+    "featured": true,
+    "description": "Kino der Toten, Five, Moon, and more. Pick a map and see how long you can hold the line.",
+    "requirements": "Desktop keyboard and mouse. Choose a map on the destination page; game assets load after selection.",
+    "tags": [
+      "Call of Duty",
+      "BO1",
+      "Kino der Toten",
+      "Moon",
+      "Five"
+    ],
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "quake3",
+    "title": "Quake III Arena",
+    "url": "https://q3.pieter.com/",
+    "genre": "Arena shooter",
+    "category": "shooters",
+    "tag": "ARENA LEGEND",
+    "art": "assets/quake3.jpg",
+    "featured": true,
+    "platform": "Desktop · Mobile",
+    "description": "Rocket jumps, railguns, and arena chaos. Jump into the multiplayer browser port.",
+    "requirements": "Destination advertises mobile and gamepad support. Desktop keyboard and mouse recommended.",
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "surf",
+    "title": "CS Surf",
+    "url": "https://surfd.net/",
+    "genre": "Movement & skill",
+    "category": "sports",
+    "tag": "FIND YOUR FLOW",
+    "art": "assets/surf.png",
+    "featured": true,
+    "description": "Forget the firefight. Ride ramps, keep your speed, and chase a cleaner line.",
+    "requirements": "Desktop keyboard and mouse. Click Play to capture the mouse. Escape opens the menu.",
+    "tags": [
+      "Counter-Strike",
+      "surfing"
+    ],
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "quake",
+    "title": "Quake",
+    "url": "https://q1.pieter.com/",
+    "genre": "Arena shooter",
+    "category": "shooters",
+    "tag": "THE ORIGINAL",
+    "art": "assets/quake.jpg",
+    "description": "The brown corridors. The rocket launcher. Real QuakeWorld multiplayer in your browser.",
+    "requirements": "Enter a player name and click Play. Desktop keyboard and mouse recommended.",
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "quake2",
+    "title": "Quake II",
+    "url": "https://q2.pieter.com/",
+    "genre": "Arena shooter",
+    "category": "shooters",
+    "tag": "LOCK & LOAD",
+    "art": "assets/quake2.jpg",
+    "description": "Heavy weapons and industrial arenas. The Quake II multiplayer browser port.",
+    "requirements": "Choose a player name and click Play. Desktop keyboard and mouse recommended.",
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "rtcw",
+    "title": "Return to Castle Wolfenstein",
+    "url": "https://rtcw.pieter.com/",
+    "genre": "Multiplayer shooter",
+    "category": "shooters",
+    "tag": "BACK TO THE BEACH",
+    "art": "assets/rtcw.jpg",
+    "description": "Storm the beach in the multiplayer browser port of Return to Castle Wolfenstein.",
+    "requirements": "Desktop Chrome recommended by the host. First load fetches about 380 MB of game data, then caches it.",
+    "tags": [
+      "RTCW"
+    ],
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "urbanterror",
+    "title": "Urban Terror",
+    "url": "https://ut.pieter.com/",
+    "genre": "Tactical shooter",
+    "category": "shooters",
+    "tag": "TACTICAL CLASSIC",
+    "symbol": "UT",
+    "color": "#35413e",
+    "description": "Fast movement meets tactical multiplayer. The ioUrbanTerror engine compiled for the browser.",
+    "requirements": "Desktop Chrome recommended. Initial game data downloads inside the browser. The supplied link serves Urban Terror, not Unreal Tournament.",
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "webxash",
+    "title": "Half-Life / Counter-Strike 1.6",
+    "url": "https://x8bitrain.github.io/webXash/",
+    "genre": "Classic shooter",
+    "category": "shooters",
+    "tag": "THE LAN PARTY LIVES",
+    "art": "assets/cs.jpg",
+    "ownFiles": true,
+    "description": "A browser Xash3D launcher for Half-Life and Counter-Strike, with demo and local game-file options.",
+    "requirements": "Free demo options are available. Full games and mods require files from your own copy. Desktop keyboard and mouse.",
+    "tags": [
+      "CS 1.6",
+      "WebXash"
+    ],
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "halomobile",
+    "title": "Halo CE Mobile",
+    "url": "https://hcemobile.com/",
+    "genre": "Sci-fi shooter",
+    "category": "shooters",
+    "tag": "THE RING, ON THE GO",
+    "art": "assets/halo.jpg",
+    "platform": "Mobile · Desktop",
+    "ownFiles": true,
+    "description": "An unofficial mobile browser adaptation of Halo: Combat Evolved, built around touch controls.",
+    "requirements": "Choose “Continue in the browser” to skip the optional home-screen installation. Add your own Halo game files when prompted.",
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "pes6",
+    "title": "PES 6",
+    "url": "https://pes6.optijuegos.net/",
+    "genre": "Football",
+    "category": "sports",
+    "tag": "KICK IT OLD SCHOOL",
+    "symbol": "06",
+    "color": "#234f39",
+    "platform": "Desktop · Mobile",
+    "description": "The PSP edition of Pro Evolution Soccer 6, recompiled for the browser. Pick your commentary and kick off.",
+    "requirements": "The host supports keyboard, touch controls, and gamepads. First load fetches game data in the browser.",
+    "tags": [
+      "soccer",
+      "football",
+      "Pro Evolution Soccer"
+    ],
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "skate",
+    "title": "Skate 3 — Fan Game",
+    "url": "https://skate.aaddpp.lol/",
+    "genre": "Skateboarding",
+    "category": "sports",
+    "tag": "YOUR NEXT LINE",
+    "symbol": "skate.",
+    "color": "#694e36",
+    "ownFiles": true,
+    "description": "A fan browser project that streams game data from your own converted copy of Skate 3.",
+    "requirements": "Requires data from your own converted Skate 3 copy. Follow the host’s setup instructions. First load can be slow.",
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "vicecity",
+    "title": "GTA: Vice City",
+    "url": "https://joncodeofficial.github.io/gta-vice-city-wasm/",
+    "genre": "Open-world action",
+    "category": "adventure",
+    "tag": "WELCOME TO VICE CITY",
+    "art": "assets/vicecity.png",
+    "ownFiles": true,
+    "description": "Neon streets and 1980s Miami. A WebAssembly port with local game-file imports and browser saves.",
+    "requirements": "Requires your own prepared game.tar.gz archive. Import it once; the host stores game files locally in your browser.",
+    "tags": [
+      "Grand Theft Auto"
+    ],
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "simpsons",
+    "title": "The Simpsons: Hit & Run",
+    "url": "https://shar-wasm.cjoseph.workers.dev/?skipmovie",
+    "genre": "Action & driving",
+    "category": "adventure",
+    "tag": "SPRINGFIELD CALLING",
+    "symbol": "D’OH!",
+    "color": "#6c5421",
+    "description": "Drive straight into Springfield in this native WebAssembly port of Hit & Run.",
+    "requirements": "Loads game data inside the browser. A desktop browser is recommended; initial loading can take time.",
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "diablo",
+    "title": "Diablo",
+    "url": "https://johnimril.github.io/diablo_web/",
+    "genre": "Action RPG",
+    "category": "adventure",
+    "tag": "INTO THE DUNGEON",
+    "art": "assets/diablo.png",
+    "featured": true,
+    "ownFiles": true,
+    "description": "The original dungeon crawl. Try the shareware demo, or bring your own files for the full game.",
+    "requirements": "Free shareware demo available. The full game requires DIABDAT.MPQ from a copy you own. Desktop recommended.",
+    "checkedAt": "2026-10-10"
+  },
+  {
+    "id": "wasmarcade",
+    "title": "WASM Arcade",
+    "url": "https://wasmarcade.com/pc-games",
+    "genre": "Game collection",
+    "category": "adventure",
+    "tag": "MORE TO EXPLORE",
+    "symbol": "WASM",
+    "color": "#334453",
+    "description": "A browser-game collection featuring GTA III, Vice City, Hit & Run, and Minecraft. Browse the host’s PC games.",
+    "requirements": "This link opens a collection, rather than a single game. The host recommends a desktop browser and keyboard/mouse or gamepad.",
+    "tags": [
+      "GTA",
+      "Minecraft",
+      "collection"
+    ],
+    "checkedAt": "2026-10-10"
+  }
+]
