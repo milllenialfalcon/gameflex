@@ -2,7 +2,7 @@
 
 A private, curated browser-game directory. Charcoal, electric lime, a capital-case pixel GAMEFLEX wordmark, and artwork-led shelves. Search the collection, filter by genre, save favourites locally, and launch games inside the Gameflex player. Shelf buttons and Left/Right keyboard controls advance one game at a time.
 
-The combined build preserves the separately published 37-listing catalogue and 11-slide spotlight carousel. The 21 DOS Zone additions remain sandbox pending: they open an internal explanation, never a playable session or an external fallback. The original 16 entries retain their individual player decisions.
+The catalogue has 54 listings and an 11-slide spotlight carousel. All 38 DOS Zone entries remain sandbox pending: they open an internal explanation, never a playable session or an external fallback. The original 16 entries retain their individual player decisions. The menu beside search links the original homepage and `spotlight.html`, a separate hero comparison with quiet progress controls and seven-second autoplay. The account button is a placeholder.
 
 ## Run
 
@@ -54,7 +54,7 @@ The profile stores its provider credential outside the repository. Do not commit
 
 Publisher artwork comes from Steam's public store CDN; destination artwork comes from the linked ports' public preview assets. These are contextual catalogue illustrations, not screenshots certifying the browser port's fidelity. See `docs/artwork.json`. Game names and artwork remain owned by their respective rights holders. Silkscreen and Space Grotesk are self-hosted; their OFL licence files are in `dist/assets/`.
 
-DOS Zone artwork receipts: `docs/dos-zone-artwork.json`. Missing-cover receipts: `docs/catalogue-artwork.json`, `docs/additional-artwork.json`, `docs/pes6-artwork.json`. All 37 entries have local artwork. Original-title cover illustrations identify the fan ports; they do not claim to show those builds in action.
+DOS Zone artwork receipts: `docs/dos-zone-artwork.json` and `research/dos-expansion-artwork.json`. Refreshed hero and landscape-cover receipts: `docs/hero-artwork-refresh.json` and `docs/hero-artwork-integration.json`. All 54 entries have local artwork. Illustrations identify titles; they do not certify the browser builds. Three proposed hero replacements were rejected; their existing media remains. Lemmings uses a native-resolution classic screenshot, not HD artwork.
 
 Additional checks: `npm run test:catalogue-gate` and `npm run test:catalogue`. Set `GAMEFLEX_PREVIEW` to the active local URL and `PORT` to choose an isolated preview port.
 

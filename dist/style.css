@@ -89,3 +89,27 @@ html.player-open>body>header,html.player-open>body>main,html.player-open>body>fo
 .hero-dots::-webkit-scrollbar{display:none}
 .hero-slider .hero-index{grid-column:1 / -1;justify-content:flex-end;margin:0}
 @media(max-width:720px){.hero-content h1{font-size:44px;letter-spacing:-1.7px}.hero-slider .hero-index{justify-content:flex-start}}
+
+/* --- Header tools, shared by both pages: a pages menu immediately right of search plus a
+   placeholder account popover. The homepage hero above is untouched by this block. --- */
+.header-right{display:flex;align-items:center;gap:10px;margin-left:auto;min-width:0}
+.header-right .search-box{margin-left:0;width:290px;flex:0 1 290px}
+.header-tools{display:flex;align-items:center;gap:6px}
+.menu-anchor{position:relative;display:flex}
+.header-icon{width:40px;height:40px;display:grid;place-items:center;background:#161b14;border:1px solid #373d32;border-radius:5px;color:#cfd8c4}
+.header-icon:hover{border-color:var(--lime);color:var(--lime)}
+.header-icon[aria-expanded="true"]{border-color:var(--lime);color:var(--lime);background:#1d2417}
+.popover{position:absolute;top:calc(100% + 10px);right:0;z-index:20;min-width:250px;padding:10px;background:#151a13f7;border:1px solid var(--border);border-radius:7px;box-shadow:0 22px 60px #0000007a;backdrop-filter:blur(9px)}
+.site-header .popover{display:block;gap:0;height:auto;align-items:stretch}
+.popover[hidden]{display:none}
+.popover a{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:4px;font-size:14px}
+.popover a span{font-size:12px;color:#a9b39c}
+.popover a:hover,.popover a:focus-visible{background:#232a1c}
+.popover a[aria-current="page"]{color:var(--lime);box-shadow:inset 3px 0 0 var(--lime)}
+.account-popover{min-width:0;width:min(300px,78vw)}
+.account-popover strong{display:block;font-size:15px}
+.account-popover p{margin:8px 0 14px;font-size:13px;line-height:1.7;color:#b2bca7}
+.account-popover .button{width:100%;min-height:42px;font-size:14px}
+@media(max-width:1050px){.header-right{gap:8px}.header-right .search-box{width:220px;flex-basis:220px}}
+@media(max-width:720px){.header-right{width:100%;gap:8px}.header-right .search-box{flex:1 1 auto;width:auto;min-width:0;margin-top:0}.header-icon{width:44px;height:44px}.popover{min-width:236px}}
+@media(min-width:721px) and (max-width:850px){.site-header{height:auto;min-height:118px;flex-wrap:wrap;gap:16px;padding-top:20px;padding-bottom:14px}.site-header>nav{height:auto}.header-right{width:100%}.header-right .search-box{flex:1 1 auto;width:auto;max-width:none}.nav-link.active:after{bottom:-6px}}

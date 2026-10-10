@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en" class="page-spotlight">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101210">
+  <meta name="description" content="Spotlight preview: the current game title takes the whole frame. Same gameflex catalogue and in-site player, full-bleed hero.">
+  <title>gameflex — spotlight.</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/pixel.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="assets/body.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="spotlight.css">
+  <script src="app.js" type="module"></script>
+</head>
+<body>
+  <a class="skip-link" href="#catalogue">Skip to games</a>
+  <header class="site-header">
+    <a class="wordmark" href="#" aria-label="GAMEFLEX home">GAMEFLEX<span class="logo-pixel" aria-hidden="true"></span></a>
+    <nav aria-label="Main navigation">
+      <button class="nav-link active" data-view="discover" aria-current="page">Discover</button>
+      <button class="nav-link" data-view="favourites">My favourites <span id="favourite-count">0</span></button>
+    </nav>
+    <div class="header-right">
+      <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Find your next game" aria-label="Search games" autocomplete="off"><kbd>/</kbd></label>
+      <div class="header-tools">
+        <div class="menu-anchor">
+          <button class="header-icon" id="menu-button" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Browse gameflex pages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          <nav class="popover" id="site-menu" aria-label="Gameflex pages" hidden>
+            <a href="index.html">Original home<span>Homepage spotlight</span></a>
+            <a href="spotlight.html" aria-current="page">Spotlight preview<span>Full-bleed hero</span></a>
+          </nav>
+        </div>
+        <div class="menu-anchor">
+          <button class="header-icon" id="account-button" type="button" aria-expanded="false" aria-controls="account-popover" aria-label="Account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.7"/><path d="M4.6 20a7.4 7.4 0 0 1 14.8 0"/></svg></button>
+          <div class="popover account-popover" id="account-popover" role="dialog" aria-modal="false" aria-labelledby="account-title" hidden>
+            <strong id="account-title">Accounts are coming soon</strong>
+            <p>Your favourites are saved in this browser.</p>
+            <button class="button lime" id="account-close" type="button">Got it</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="hero hero-spotlight" id="hero" aria-labelledby="spotlight-name">
+      <div class="hero-image" id="hero-image" aria-hidden="true"></div><div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-slider" id="hero-slider" role="group" aria-roledescription="carousel" aria-label="Spotlight games">
+        <div class="hero-slide">
+          <div class="eyebrow"><span class="live-dot" aria-hidden="true"></span> <span id="spotlight-tag">IN THE SPOTLIGHT</span></div>
+          <h1 id="spotlight-name">Halo: Combat Evolved</h1>
+          <p class="hero-slide-meta" id="spotlight-genre"></p>
+          <p class="hero-slide-copy" id="spotlight-description"></p>
+          <p class="hero-slide-req" id="spotlight-requirements"></p>
+          <div class="hero-actions"><button class="button lime" id="hero-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>Let's play</button><a class="button ghost" href="#catalogue">See the collection <span aria-hidden="true">↓</span></a></div>
+        </div>
+        <div class="hero-slider-controls">
+          <div class="hero-dots" id="hero-dots" role="group" aria-label="Spotlight slides"></div>
+          <div class="hero-buttons">
+            <button class="hero-arrow" id="hero-prev" type="button" aria-label="Previous spotlight game">‹</button>
+            <button class="hero-arrow" id="hero-next" type="button" aria-label="Next spotlight game">›</button>
+            <button class="hero-arrow hero-pause" id="hero-pause" type="button" aria-pressed="false" aria-label="Pause the spotlight slideshow"><svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 5v14M14.5 5v14"/></svg><svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg></button>
+          </div>
+        </div>
+        <p class="hero-status" id="hero-status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+    <section class="catalogue" id="catalogue" aria-labelledby="catalogue-heading">
+      <div class="catalogue-intro"><div><span class="eyebrow muted">LESS SCROLLING. MORE PLAYING.</span><h2 id="catalogue-heading">Find your kind of fun<span class="lime-text">.</span></h2></div><span id="collection-count" class="collection-count"></span></div>
+      <div class="browse-tools"><div class="filters" role="group" aria-label="Filter by genre"><button class="filter active" data-category="all" aria-pressed="true">All games</button><button class="filter" data-category="shooters" aria-pressed="false">Shooters</button><button class="filter" data-category="zombies" aria-pressed="false">Zombies</button><button class="filter" data-category="sports" aria-pressed="false">Sports</button><button class="filter" data-category="adventure" aria-pressed="false">Adventure</button><button class="filter" data-category="strategy" aria-pressed="false">Strategy</button><button class="filter" data-category="racing" aria-pressed="false">Racing</button><button class="filter" data-category="platformers" aria-pressed="false">Platformers</button><button class="filter" data-category="puzzle" aria-pressed="false">Puzzle</button><button class="filter" data-category="fighting" aria-pressed="false">Fighting</button><button class="filter" data-category="rpg" aria-pressed="false">RPG</button><button class="filter" data-category="simulation" aria-pressed="false">Simulation</button></div><button id="surprise" class="surprise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c5 0 7-12 12-12h3m-4-4 4 4-4 4"/></svg>Pick for me</button></div>
+      <div id="results" aria-live="polite" class="sr-only"></div><div id="shelves"></div>
+      <div id="empty-state" class="empty-state" hidden><span class="pixel-decoration" aria-hidden="true">+ +</span><h3 id="empty-heading">Nothing here. Yet.</h3><p id="empty-copy"></p><button class="button lime" id="reset">Explore all games</button></div>
+      <aside class="small-print"><span class="pixel-decoration" aria-hidden="true">i</span><div><strong>Stay here. Keep playing.</strong><p>Choose a game to open the player. Some ports need your original game files; others may not run here yet. Check the notes before you start.</p></div><button id="about-button">How it works</button></aside>
+    </section>
+  </main>
+  <footer><a class="wordmark footer-logo" href="#">GAMEFLEX<span class="logo-pixel" aria-hidden="true"></span></a><span>Made for the “one more game” crowd.</span><span class="footer-right">Curated classics. Zero launchers.<span class="tiny-cross" aria-hidden="true">✚</span></span></footer>
+  <section class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="player-title" hidden>
+    <div class="player-shell">
+      <div class="player-bar">
+        <button class="player-back" id="player-close" type="button" aria-label="Leave the player and go back to the games"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>Back</button>
+        <div class="player-heading">
+          <span class="eyebrow" id="player-tag"></span>
+          <h2 id="player-title" tabindex="-1">Player</h2>
+          <p class="player-meta" id="player-meta"></p>
+        </div>
+        <div class="player-actions">
+          <button class="button lime" id="player-start" type="button" hidden>Start game</button>
+          <button class="button ghost" id="player-remote" type="button" hidden>Remote session</button>
+          <button class="button ghost" id="player-fullscreen" type="button" aria-pressed="false" hidden>Fullscreen</button>
+          <button class="button ghost heart-inline" id="player-favourite" type="button" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg><span>Favourite</span></button>
+        </div>
+      </div>
+      <div class="player-stage" id="player-stage" data-state="idle"></div>
+      <p class="sr-only" id="player-status" role="status" aria-live="polite"></p>
+      <div class="player-foot">
+        <div class="requirements" id="player-requirements" hidden><strong>BEFORE YOU JUMP IN</strong><p id="player-requirements-copy"></p></div>
+        <p class="player-note" id="player-note">If the game stays blank, try Restart game. Some ports may not run here yet.</p>
+      </div>
+    </div>
+  </section>
+  <dialog id="details" aria-labelledby="dialog-title"><button class="dialog-close icon-button" aria-label="Close game details">×</button><div id="dialog-content"></div></dialog>
+  <dialog id="about" aria-labelledby="about-title"><button class="dialog-close icon-button" aria-label="Close about gameflex">×</button><div class="about-content"><span class="eyebrow lime-text">PLAYER NOTES</span><h2 id="about-title">Pick. Click. Play.</h2><p>gameflex is a hand-picked directory of browser games and ports. Play loads the host’s own page inside the gameflex player, on this page, with no launcher and no detour.</p><p>Some engines ask you to supply files from a game you own. These entries carry an <strong>Own files</strong> label.</p><p>Playing inside a frame is not guaranteed. Some hosts block framing, and a few say so in their terms. Those entries stay unplayable here rather than opening somewhere else, and the player tells you why.</p><p>“Checked” means we inspected the destination and its browser launch page. It does not mean gameplay, every game mode, or every device has been tested.</p><p>Your favourites stay in this browser. No account needed. gameflex is an independent curation project; game names and artwork belong to their respective owners.</p></div></dialog>
+  <div id="toast" role="status" class="toast"></div>
+</body>
+</html>

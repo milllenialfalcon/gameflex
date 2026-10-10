@@ -119,8 +119,8 @@ await page.screenshot({ path: 'artifacts/qa/desktop.png', fullPage: true });
 const count = await page.locator('.game-card').count();
 const launchHrefs = await page.locator('.game-card a[data-play]').evaluateAll(els => els.map(a => a.getAttribute('href')));
 const uniqueGames = new Set(launchHrefs).size;
-assert.equal(LISTINGS, 37, 'the combined catalogue stays 16 reviewed plus 21 DOS listings');
-assert.equal(DOS_LISTINGS.length, 21, 'the catalogue keeps its 21 DOS listings');
+assert.equal(LISTINGS - DOS_LISTINGS.length, 16, 'the catalogue preserves the 16 original listings');
+assert(DOS_LISTINGS.length >= 21, 'the catalogue preserves the existing DOS listings');
 assert.equal(PENDING_LISTINGS.length, DOS_LISTINGS.length, 'every DOS listing is still marked sandbox-pending');
 assert.equal(uniqueGames, LISTINGS, `catalogue lists all ${LISTINGS} reviewed games`);
 assert.equal(countFor(g => !g.provider), 16, 'the catalogue keeps its 16 reviewed games');
@@ -135,7 +135,7 @@ const bodyCopy = await page.evaluate(() => document.body.innerText.toLowerCase()
 for (const banned of ['new tab', 'opens in a new tab', 'one tab away']) {
   assert(!bodyCopy.includes(banned), `catalogue copy must not advertise "${banned}"`);
 }
-pass(`desktop catalogue renders all ${LISTINGS} games (16 reviewed + 21 DOS), pixel wordmark, readable supporting text, in-site copy only`);
+pass(`desktop catalogue renders all ${LISTINGS} games (16 original + ${DOS_LISTINGS.length} DOS), pixel wordmark, readable supporting text, in-site copy only`);
 
 async function checkShelfStep() {
   const row = page.locator('#row-shooters');

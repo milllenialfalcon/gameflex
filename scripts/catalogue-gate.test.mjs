@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp,mkdir,readFile,writeFile,copyFile} from 'node:fs/promises';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+await mkdir('artifacts',{recursive:true});
 const fixture=await mkdtemp(path.resolve('artifacts/catalogue-gate-'));
 for(const dir of ['dist/assets','docs','research','scripts'])await mkdir(path.join(fixture,dir),{recursive:true});
 for(const file of ['scripts/check-catalog.mjs','dist/games.json','docs/link-audit.json','docs/dos-zone-catalogue-approval.json','research/candidates.json','research/catalogue-baseline.json'])await copyFile(file,path.join(fixture,file));

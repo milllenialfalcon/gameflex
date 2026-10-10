@@ -1,0 +1,964 @@
+[
+  {
+    "id": "dos-warcraft-ii",
+    "title": "WarCraft II: Tides of Darkness",
+    "playUrl": "https://dos.zone/warcraft-ii-tides-of-darkness/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Strategy",
+    "hostCategoryChips": [
+      "strategy",
+      "rts"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "WarCraft II: Tides of Darkness is a famous and most played DOS game that now is available to play in browser. With virtual mobile controls you also can play in WarCraft II. On DOS.Zone the game available to play for free without registration.",
+    "artUrl": "https://dos.zone/images/containers/assets/backgrounds/warcraft2_bg.jpg/612aad8d8fcd3ae169f3681bf2874fa1.webp",
+    "jsDosBundle": "//cdn.dos.zone/custom/dos/war2.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "38463",
+      "bundleProbe": "HEAD https://cdn.dos.zone/custom/dos/war2.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //cdn.dos.zone/custom/dos/war2.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": null,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Third-party emulation host; no session was started.",
+      "Campaign and multiplayer options in the hosted build were not verified.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-age-of-empires",
+    "title": "Age of Empires",
+    "playUrl": "https://dos.zone/age-of-empires-1997/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Strategy",
+    "hostCategoryChips": [
+      "rts",
+      "strategy"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "Play legendary Age of Empires in browser for free and without ads.",
+    "artUrl": "https://dos.zone/images/containers/assets/backgrounds/xyczbg.aoe.jpg/aa847e07b4663f9744c6a3f00be11458.webp",
+    "jsDosBundle": "//cdn.dos.zone/custom/dos/aoe-nic.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "37528",
+      "bundleProbe": "HEAD https://cdn.dos.zone/custom/dos/aoe-nic.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //cdn.dos.zone/custom/dos/aoe-nic.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": null,
+    "requirements": "Desktop browser with keyboard and mouse; emulated Windows 95/DOS release hosted under js-dos.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "The page labels this build \"Windows 95 / Games for Windows\" rather than MS-DOS, so the emulated platform differs from most catalogue entries.",
+      "Third-party emulation host; no session was started.",
+      "Which version (base game vs expansion content) is bundled was not confirmed.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-master-of-orion-ii",
+    "title": "Master of Orion II: Battle at Antares",
+    "playUrl": "https://dos.zone/master-of-orion-ii-battle-at-antares-1996/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Strategy",
+    "hostCategoryChips": [
+      "simulator",
+      "strategy"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "Master of Orion II Battle at Antares is a famous and most played DOS game that now is available to play in browser. With virtual mobile controls you also can play in MOO2 on mobile. On DOS.Zone Master of Orion II is available to play for free without registration. Full CD-version Master of Orion 2: Battle at Antares with music and videos.",
+    "artUrl": "https://dos.zone/images/containers/assets/backgrounds/qrvkmj.78_49d24ed9c4656.jpg/4846b2aaa1d2b65cdad913fdebc04661.webp",
+    "jsDosBundle": "//br.cdn.dos.zone/published/br.qrvkmj.MOO2fullcd.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "39185",
+      "bundleProbe": "HEAD https://br.cdn.dos.zone/published/br.qrvkmj.MOO2fullcd.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //br.cdn.dos.zone/published/br.qrvkmj.MOO2fullcd.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": null,
+    "requirements": "Desktop browser with mouse; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Host states the bundle is the \"Full CD-version ... with music and videos\", i.e. a larger download than average.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-command-and-conquer",
+    "title": "Command & Conquer",
+    "playUrl": "https://dos.zone/command-conquer-sep-26-1995/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Strategy",
+    "hostCategoryChips": [
+      "strategy"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "Command &amp; Conquer is a famous and most played DOS game that now is available to play in browser. With virtual mobile controls you also can play in Command &amp; Conquer on mobile. On DOS.Zone Command &amp; Conquer available to play for free without registration.",
+    "artUrl": "https://dos.zone/images/http/original/2X/a/ae3116154ac2b9725465dc1fe59fa39507886432.png/7bf1bed5bf22f0a6ecc8c7fb43d74591.webp",
+    "jsDosBundle": "//cdn.dos.zone/custom/dos/cc_gdi_novid.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "36171",
+      "bundleProbe": "HEAD https://cdn.dos.zone/custom/dos/cc_gdi_novid.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //cdn.dos.zone/custom/dos/cc_gdi_novid.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": true,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "The bundle name (cc_gdi_novid.jsdos) suggests a GDI-side build without FMV; edition coverage was not verified.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-sim-city-2000",
+    "title": "Sim City 2000",
+    "playUrl": "https://dos.zone/sim-city-2000-1993/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Simulation",
+    "hostCategoryChips": [
+      "sim-city-2000-1993"
+    ],
+    "year": "2000",
+    "yearNote": "Release year as stated in the host page og:description.",
+    "description": "Sim City 2000 is a famous and most played DOS game that now is available to play in browser. With virtual mobile controls you also can play in Sim City 2000 on mobile. On DOS.Zone Sim City 2000 available to play for free without registration.",
+    "artUrl": "https://dos.zone/images/http/original/2X/4/41f12cbd023b7732e669b6ade8e811bb5e7c28b1.jpeg/fd95b58bdd71ef68018754e1fa47703f.webp",
+    "jsDosBundle": "//cdn.dos.zone/original/2X/b/b1ed3b93829bdff0c9062c5642767825dd52baf1.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "35868",
+      "bundleProbe": "HEAD https://cdn.dos.zone/original/2X/b/b1ed3b93829bdff0c9062c5642767825dd52baf1.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //cdn.dos.zone/original/2X/b/b1ed3b93829bdff0c9062c5642767825dd52baf1.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": true,
+    "requirements": "Desktop browser with mouse; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Page genre chip is the series link (\"Sim City 2000\") rather than a genre label; genre inferred from the game itself.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-prince-of-persia-2",
+    "title": "Prince of Persia 2: The Shadow & The Flame",
+    "playUrl": "https://dos.zone/prince-of-persia-2-the-shadow-the-flame-1993/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Platformer",
+    "hostCategoryChips": [
+      "action",
+      "platformer"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "Prince of Persia 2: The Shadow &amp; The Flame is a famous and most played DOS game that now is available to play in browser. With virtual mobile controls you also can play in Prince of Persia 2: The Shadow &amp; The Flame on mobile. On DOS.Zone Prince of Persia 2: The Shadow &amp; The Flame available to play for free without registration.",
+    "artUrl": "https://dos.zone/images/http/original/2X/4/438e81dcc2c9daa4f6e1707e72b91bd814fb2c72.png/089e1f3261a8867e0f8d7c247f0d70ac.webp",
+    "jsDosBundle": "//cdn.dos.zone/original/2X/9/9ce632235395211854a728cf49372bc12b66f628.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "36941",
+      "bundleProbe": "HEAD https://cdn.dos.zone/original/2X/9/9ce632235395211854a728cf49372bc12b66f628.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //cdn.dos.zone/original/2X/9/9ce632235395211854a728cf49372bc12b66f628.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": true,
+    "requirements": "Desktop browser with keyboard; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Sequel to the Prince of Persia entry already in the published catalogue; distinct title, not a fork or bundle.",
+      "Third-party emulation host; controls and performance not tested.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-tomb-raider",
+    "title": "Tomb Raider",
+    "playUrl": "https://dos.zone/tomb-raider/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Action-adventure",
+    "hostCategoryChips": [
+      "tomb-raider"
+    ],
+    "year": "1996",
+    "yearNote": "Release year as stated in the host page og:description.",
+    "description": "Tomb Raider, released in 1996, is a groundbreaking action-adventure game that introduced players to the iconic character Lara Croft. As an archaeologist and adventurer, Lara travels to ancient tombs and breathtaking locations around the world, solving intr...",
+    "artUrl": "https://dos.zone/images/containers/assets/backgrounds/lhazhk.8_12f0b6d8a9.png/d44c441b8ff939af74625c8375f4c8c1.webp",
+    "jsDosBundle": "//br.cdn.dos.zone/published/br.lhazhk.TombRaider.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "37512",
+      "bundleProbe": "HEAD https://br.cdn.dos.zone/published/br.lhazhk.TombRaider.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //br.cdn.dos.zone/published/br.lhazhk.TombRaider.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": null,
+    "requirements": "Desktop browser with keyboard; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Page advertises a separate \"/tomb-raider-3dfx\" build; this record is the standard bundle.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-resident-evil",
+    "title": "Resident Evil",
+    "playUrl": "https://dos.zone/resident-evil/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Survival horror",
+    "hostCategoryChips": [
+      "3d-action",
+      "tps",
+      "action"
+    ],
+    "year": "1997",
+    "yearNote": "Release year as stated in the host page og:description.",
+    "description": "Resident Evil (1997) is the iconic survival horror game that defined the genre. Players explore the eerie Spencer Mansion as members of S.T.A.R.S., solving puzzles, managing scarce resources, and battling grotesque creatures.",
+    "artUrl": "https://dos.zone/images/containers/assets/backgrounds/njvdnz.1590418316113745245.jpg/30cbcbf882e2c9fa9e0d727146e8a9a1.webp",
+    "jsDosBundle": "//br.cdn.dos.zone/published/br.njvdnz.RE1upd.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "36490",
+      "bundleProbe": "HEAD https://br.cdn.dos.zone/published/br.njvdnz.RE1upd.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //br.cdn.dos.zone/published/br.njvdnz.RE1upd.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": null,
+    "requirements": "Desktop browser with keyboard; page lists this build under Windows 95 / Games for Windows.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "The hosted build is a Windows 95-era build emulated under js-dos rather than the original 1996 PlayStation/DOS lineage; provenance needs review.",
+      "Capcom-owned title distributed by a third-party emulation host - rights status needs review.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-dungeon-keeper",
+    "title": "Dungeon Keeper",
+    "playUrl": "https://dos.zone/dungeon-keeper/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Strategy",
+    "hostCategoryChips": [
+      "strategy",
+      "rts",
+      "management"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "a god simulator computer game developed by Bullfrog Productions",
+    "artUrl": "https://dos.zone/images/containers/assets/backgrounds/zxxqxh.%D0%A1%D0%BA%D1%80%D0%B8%D0%BD%D1%88%D0%BE%D1%82%2015-03-2025%20163731.jpg/78647edbde10fe877870c599607cddaf.webp",
+    "jsDosBundle": "//br.cdn.dos.zone/published/br.zxxqxh.dungeon-keeper-hranitel-podzemelya_1.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "35867",
+      "bundleProbe": "HEAD https://br.cdn.dos.zone/published/br.zxxqxh.dungeon-keeper-hranitel-podzemelya_1.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //br.cdn.dos.zone/published/br.zxxqxh.dungeon-keeper-hranitel-podzemelya_1.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": null,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Bundle slug is transliterated Russian (\"hranitel-podzemelya\"), so the served edition/language should be checked.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-secret-of-monkey-island",
+    "title": "The Secret of Monkey Island",
+    "playUrl": "https://dos.zone/the-secret-of-monkey-island/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Adventure",
+    "hostCategoryChips": [
+      "adventure"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "The Secret of Monkey Island  is a famous and most played DOS game that now is available to play in browser. With virtual mobile controls you also can play in The Secret of Monkey Island on mobile. On The Secret of Monkey Island is available to play for free without registration.",
+    "artUrl": "https://dos.zone/images/http/custom/screenshots/monkey-island-1.jpeg/c52792d0a366041ba93364b4f634d305.webp",
+    "jsDosBundle": "//cdn.dos.zone/custom/dos/monkey-island-1.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "37819",
+      "bundleProbe": "HEAD https://cdn.dos.zone/custom/dos/monkey-island-1.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //cdn.dos.zone/custom/dos/monkey-island-1.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": true,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "LucasArts title distributed by a third-party emulation host - rights status needs review.",
+      "Which release (EGA vs VGA, floppy vs CD talkie) is bundled was not confirmed.",
+      "The page description string is malformed (\"On The Secret of Monkey Island is available...\"), i.e. host copy is templated.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-beneath-a-steel-sky",
+    "title": "Beneath a Steel Sky",
+    "playUrl": "https://dos.zone/beneath-a-steel-sky-1994/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Adventure",
+    "hostCategoryChips": [
+      "adventure",
+      "quest"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "Beneath a Steel Sky is a famous and most played DOS game that now is available to play in browser. With virtual mobile controls you also can play in Beneath a Steel Sky on mobile. On DOS.Zone Beneath a Steel Sky available to play for free without registration.",
+    "artUrl": "https://dos.zone/images/http/original/2X/1/17a6a4cefe9263feb3c0049c98f4ae45082a9933.png/60313c7fa88f998977e0852a5f661711.webp",
+    "jsDosBundle": "//cdn.dos.zone/original/2X/9/9392bef006fcb485bd851fe3859bbeec659bbcf0.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "36303",
+      "bundleProbe": "HEAD https://cdn.dos.zone/original/2X/9/9392bef006fcb485bd851fe3859bbeec659bbcf0.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //cdn.dos.zone/original/2X/9/9392bef006fcb485bd851fe3859bbeec659bbcf0.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": true,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "The game was re-released as freeware by Revolution Software, which makes this one of the cleaner provenance cases in the batch - still to be confirmed during review.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-blood",
+    "title": "BLOOD",
+    "playUrl": "https://dos.zone/blood-may-31-1997/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Shooter",
+    "hostCategoryChips": [
+      "3d-action",
+      "fps",
+      "action"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "BLOOD is a famous and most played DOS game that now is available to play in browser. With virtual mobile controls you also can play in Blood on mobile. On DOS.Zone Blood available to play for free without registration.",
+    "artUrl": "https://dos.zone/images/containers/assets/backgrounds/blood.jpeg/223cce2f5e24f4c0fd647ccd6f400008.webp",
+    "jsDosBundle": "//cdn.dos.zone/custom/dos/blood-lowres.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "36815",
+      "bundleProbe": "HEAD https://cdn.dos.zone/custom/dos/blood-lowres.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //cdn.dos.zone/custom/dos/blood-lowres.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": null,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Bundle name (blood-lowres.jsdos) suggests a reduced-resolution asset set; contents were not verified.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-heretic",
+    "title": "Heretic: Shadow of the Serpent Riders",
+    "playUrl": "https://dos.zone/heretic-1994/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Shooter",
+    "hostCategoryChips": [
+      "action",
+      "fps"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "Heretic: Shadow of the Serpent Riders is a dark fantasy first-person shooter where you play as an exiled elf battling evil forces with magical weapons.",
+    "artUrl": "https://dos.zone/images/containers/assets/backgrounds/sychaq.62506260.jpg/4f33fa5e7c7d201c4d6da6393dfb114f.webp",
+    "jsDosBundle": "//br.cdn.dos.zone/published/br.sychaq.HereticUPD.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "35923",
+      "bundleProbe": "HEAD https://br.cdn.dos.zone/published/br.sychaq.HereticUPD.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //br.cdn.dos.zone/published/br.sychaq.HereticUPD.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": null,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "The page title is the retail release name \"Heretic: Shadow of the Serpent Riders\", i.e. the full three-episode build rather than the shareware episode.",
+      "Commercial 1994 id Software/Raven title hosted by a third party - rights status needs review.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-road-rash",
+    "title": "Road Rash",
+    "playUrl": "https://dos.zone/road-rash/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Racing",
+    "hostCategoryChips": [
+      "beat-em-up",
+      "fighting",
+      "racing"
+    ],
+    "year": "1996",
+    "yearNote": "Release year as stated in the host page og:description.",
+    "description": "Road Rash (1996) is a high-octane racing-combat hybrid where speed meets brutality. Race through traffic-packed highways on motorcycles, wielding chains, bats, and kicks to knock rivals off their bikes.",
+    "artUrl": "https://dos.zone/images/containers/assets/backgrounds/sdylsu.34f4a1b2ddcae82b52960b2b28745936.webp/5c6328c71e673aaf8c62393f6ab4fe54.webp",
+    "jsDosBundle": "//br.cdn.dos.zone/published/br.sdylsu.RoadRash.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "36391",
+      "bundleProbe": "HEAD https://br.cdn.dos.zone/published/br.sdylsu.RoadRash.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //br.cdn.dos.zone/published/br.sdylsu.RoadRash.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": null,
+    "requirements": "Desktop browser with keyboard; page lists this build under Windows 95 / Games for Windows.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Page describes the 1996 Windows-era release, not the 1991 Mega Drive original; edition needs review.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-dark-forces",
+    "title": "Star Wars: Dark Forces",
+    "playUrl": "https://dos.zone/dark-forces/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Shooter",
+    "hostCategoryChips": [
+      "3d-action",
+      "fps",
+      "shmup"
+    ],
+    "year": "1995",
+    "yearNote": "Release year as stated in the host page og:description.",
+    "description": "Star Wars: Dark Forces, released in 1995, is a first-person shooter that immerses players in the iconic Star Wars universe. Taking on the role of Kyle Katarn, a former Imperial agent, players embark on a mission to uncover the dark secrets behind the Empir...",
+    "artUrl": "https://dos.zone/images/containers/assets/backgrounds/otzrkb.5nfrjuvomksn8oiobomx8g.jpeg/2c304b7d2e0e51fc397859c6bebb65a1.webp",
+    "jsDosBundle": "//br.cdn.dos.zone/published/br.otzrkb.DARKFORC.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "36955",
+      "bundleProbe": "HEAD https://br.cdn.dos.zone/published/br.otzrkb.DARKFORC.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //br.cdn.dos.zone/published/br.otzrkb.DARKFORC.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": null,
+    "requirements": "Desktop browser with keyboard and mouse; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Star Wars / LucasArts title distributed by a third-party emulation host - rights status needs review.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-battle-chess",
+    "title": "Battle Chess",
+    "playUrl": "https://dos.zone/battle-chess-jan-1989/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Strategy",
+    "hostCategoryChips": [
+      "board",
+      "strategy",
+      "chess"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "Battle Chess is a famous and most played DOS game that now is available to play in browser. With virtual mobile controls you also can play in Battle Chess on mobile. On DOS.Zone Battle Chess available to play for free without registration.",
+    "artUrl": "https://dos.zone/images/http/original/2X/9/9f4bbdb9bc6117e40d34bdeaf63ffed699ba08fd.gif/f5a2ec96ee7ce0864b8240fb9d8d38a3.webp",
+    "jsDosBundle": "//cdn.dos.zone/custom/dos/battle-chess.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "36187",
+      "bundleProbe": "HEAD https://cdn.dos.zone/custom/dos/battle-chess.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //cdn.dos.zone/custom/dos/battle-chess.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": true,
+    "requirements": "Desktop browser with mouse; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Host copy calls it \"a famous and most played DOS game ... free without registration\" - host claim, not a rights statement.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-rayman",
+    "title": "Rayman",
+    "playUrl": "https://dos.zone/rayman/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Platformer",
+    "hostCategoryChips": [
+      "platformer",
+      "arcade",
+      "action"
+    ],
+    "year": "1995",
+    "yearNote": "Release year as stated in the host page og:description.",
+    "description": "Rayman (1995) is a colorful platformer where players control Rayman to rescue his friends, defeat enemies, and explore vibrant worlds.",
+    "artUrl": "https://dos.zone/images/containers/assets/backgrounds/fqmpti.rayman_04.gif/837015277fe2e32b0fd1117671c947b7.webp",
+    "jsDosBundle": "//br.cdn.dos.zone/published/br.fqmpti.Rayman.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "35840",
+      "bundleProbe": "HEAD https://br.cdn.dos.zone/published/br.fqmpti.Rayman.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //br.cdn.dos.zone/published/br.fqmpti.Rayman.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": null,
+    "requirements": "Desktop browser with keyboard; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Ubisoft title distributed by a third-party emulation host - rights status needs review.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  },
+  {
+    "id": "dos-the-lost-vikings",
+    "title": "The Lost Vikings",
+    "playUrl": "https://dos.zone/the-lost-vikings-1993/",
+    "sourceUrl": "https://dos.zone/top-games/",
+    "category": "Puzzle",
+    "hostCategoryChips": [
+      "platformer",
+      "action",
+      "puzzle"
+    ],
+    "year": null,
+    "yearNote": "Host page does not state a release year in its description or markup; year must be verified elsewhere.",
+    "description": "The Lost Vikings is a famous and most played DOS game that now is available to play in browser. With virtual mobile controls you also can play in The Lost Vikings on mobile. On DOS.Zone The Lost Vikings available to play for free without registration.",
+    "artUrl": "https://dos.zone/images/http/original/2X/e/edb2606fad8a53c7e26d6affa25db7fe282329cd.png/7d46ffb9461fc6433f96594de2aeb4fa.webp",
+    "jsDosBundle": "//cdn.dos.zone/original/2X/1/1b063b2520052ebb504184667ac95e72423331de.jsdos",
+    "httpEvidence": {
+      "status": "200",
+      "contentSecurityPolicy": "frame-ancestors https://dos.zone https://cdn.dos.zone http://br.cdn.dos.zone https://sec.dos.zone https://test.js-dos.com https://discord.com https://*.discord.com",
+      "contentSecurityPolicyNote": "CSP sends frame-ancestors limited to dos.zone, cdn.dos.zone, br.cdn.dos.zone, sec.dos.zone, test.js-dos.com and discord.com. Gameflex is not listed, so framing the page from another origin is refused by the host.",
+      "xFrameOptions": null,
+      "xFrameOptionsNote": "No X-Frame-Options header is sent for any of the 18 candidate pages; the CSP frame-ancestors list above is the effective frame control and it excludes third-party origins.",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "37845",
+      "bundleProbe": "HEAD https://cdn.dos.zone/original/2X/1/1b063b2520052ebb504184667ac95e72423331de.jsdos -> HTTP 200 (headers only; bundle was not downloaded or executed).",
+      "checkedAt": "2026-10-10"
+    },
+    "launchMarkupEvidence": "Page HTML carries the js-dos launch UI markup (\"Install\" prompt, Fullscreen control, js-dos/latest/js-dos.css reference and the .jsdos bundle URL //cdn.dos.zone/original/2X/1/1b063b2520052ebb504184667ac95e72423331de.jsdos). installPrompt=true, jsDosCss=true. Rendered launch UI only - no emulator session was started and no gameplay was observed.",
+    "mobileClaimOnHostPage": true,
+    "requirements": "Desktop browser with keyboard; emulated DOS release.",
+    "multiplayer": null,
+    "ownFiles": false,
+    "researchedAt": "2026-10-10",
+    "researchMethod": "Public HTTPS fetch of https://dos.zone/top-games/ (HTTP 200, 1,666,503 bytes) to build the source list; public HTTPS fetch of each candidate page with curl (no credentials, no login) recording status line, headers and raw HTML; bundle URL, genre chips and art extracted from the saved HTML.",
+    "issues": [
+      "Blizzard title whose DOS conversion is a distinct release from the Amiga/SNES originals; edition needs review.",
+      "Third-party emulation host; no session was started.",
+      "CSP frame-ancestors allows https://dos.zone and its own CDN but no third-party origin - embedding this page in the Gameflex player (another origin) is blocked by the host today, so an in-page js-dos embed or licensed bundle would be required.",
+      "Only a launch UI was verified: no emulator session, no save behaviour and no performance measurement were performed."
+    ],
+    "assistantReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "userReview": {
+      "status": "pending",
+      "reviewedAt": null,
+      "notes": "",
+      "evidence": ""
+    },
+    "reviewEvents": []
+  }
+]
