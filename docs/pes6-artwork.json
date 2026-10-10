@@ -1,0 +1,49 @@
+{
+  "id": "pes6",
+  "title": "Pro Evolution Soccer 6",
+  "catalogueLabel": "PES 6",
+  "status": "verified-exact-title-art",
+  "art": "assets/pes6-original.jpg",
+  "sourceKind": "wikipedia-article-infobox-cover",
+  "sourcePage": "https://en.wikipedia.org/wiki/Pro_Evolution_Soccer_6",
+  "sourceFilePage": "https://en.wikipedia.org/wiki/File:PES6.jpg",
+  "sourceUrl": "https://upload.wikimedia.org/wikipedia/en/0/0f/PES6.jpg",
+  "sourceNote": "Exact original cover for Pro Evolution Soccer 6. Identified by the article's infobox: | image = PES6.jpg, caption = \"European PlayStation 2 cover art featuring Inter Milan's Adriano and Chelsea's John Terry\". This is the 2006 title's own box art, not PES 5, PES 2008 or any later PES entry.",
+  "supersedes": {
+    "path": "assets/pes6-cover.png",
+    "reason": "Previous asset was a 898x162 wide banner logo of the host destination (reading OPTIPROJECTS), not game cover art. Primary agent visually reviewed it and confirmed it is the host logo and irrelevant as a game thumbnail. That file is owned by another worker and was left untouched by this task."
+  },
+  "httpStatus": 200,
+  "finalUrl": "https://upload.wikimedia.org/wikipedia/en/0/0f/PES6.jpg",
+  "contentType": "image/jpeg",
+  "detectedType": "jpeg",
+  "signature": "ffd8ffe0 (JFIF)",
+  "bytes": 21493,
+  "width": 265,
+  "height": 375,
+  "aspect": 0.707,
+  "sha256": "810dde97daf318bffc8bb3debc0c2cb77660abdc21f0a21a431a86c06ba6a89b",
+  "lastModified": "2017-12-23T07:00:28Z",
+  "etag": "0b00f0f2a33a6c6feb2ba6f268504259",
+  "fileSignatureAndSizeMatch": "The Wikimedia imageinfo API reported size=21493 and 265x375 for File:PES6.jpg; the downloaded bytes match both exactly, so the file is byte-identical to the source original.",
+  "provenance": {
+    "identifiedVia": "Wikipedia article Pro Evolution Soccer 6 (action=query&prop=images -> File:PES6.jpg), then imageinfo for the exact URL.",
+    "originalCredit": "GameFAQs.com (per Wikimedia ImageInfo extmetadata 'Credit' field).",
+    "resolvedConfidence": "high",
+    "path": "primary-agent selected exact title art to fulfil the user's request for relevant missing thumbnails; not an explicitly user-specified source"
+  },
+  "licensing": {
+    "declaredOnWikipedia": "Fair use",
+    "usageTerms": "Fair use of copyrighted material in the context of Pro Evolution Soccer 6 (Wikipedia:Non-free use rationale guideline).",
+    "assessment": "This is a non-free copyrighted video game cover. Its fair-use basis on Wikipedia is scoped to the encyclopaedia article context. No open licence, publisher permission or hosting/distribution permission is asserted or inferred here. Redistribution of this image inside the Gameflex catalogue is not covered by any permission this task obtained.",
+    "permissionInvented": false
+  },
+  "verificationLimits": [
+    "Verified: HTTP 200, content-type image/jpeg, JPEG magic bytes ffd8ffe0, byte size and pixel dimensions identical to the Wikimedia original, and the article caption naming this as the European PS2 cover.",
+    "Not verified: that the file on disk visually depicts PES 6 cover art (no automated visual check run; the article infobox and caption are the evidence). Primary agent to confirm visually before publication.",
+    "Not verified: any licence granting Gameflex the right to redistribute the cover.",
+    "Wikimedia query strings (utm_*) used during identification were stripped; the downloaded bytes come from the canonical upload.wikimedia.org URL above."
+  ],
+  "doNotModify": "Assigned-write file for the pes6 artwork task only. dist/games.json and all other worker files were not touched.",
+  "checkedAt": "2026-10-10T08:23:00Z"
+}

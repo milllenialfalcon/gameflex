@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-10-10T08:23:48.129Z",
+  "method": "Genuine destination artwork where game-specific; exact original-title covers for contextual identification where destination art is absent. Downloads checked by signature, dimensions and hash; primary agent visually inspected all new assets.",
+  "entries": [
+    {
+      "id": "urbanterror",
+      "title": "Urban Terror",
+      "status": "verified-unchanged",
+      "art": "assets/urbanterror-cover.jpg",
+      "sourceUrl": "https://ut.pieter.com/assets/og.jpg?v=1",
+      "sourceKind": "destination-og-image",
+      "sourcePage": "https://ut.pieter.com/",
+      "sourceNote": "Destination og:image (og:image:alt = \"Urban Terror ut4_casa - play free in your browser at ut.pieter.com\"). In-game ut4_casa screenshot published by the host.",
+      "httpStatus": 200,
+      "finalUrl": "https://ut.pieter.com/assets/og.jpg?v=1",
+      "contentType": "image/jpeg",
+      "detectedType": "jpeg",
+      "bytes": 127700,
+      "width": 1200,
+      "height": 630,
+      "aspect": 1.9,
+      "sha256": "dbfd810cc11d536a39b7d06904056bf3c6561effa6a3cdf2598f5cb4b4e26e3e",
+      "caveats": []
+    },
+    {
+      "id": "wasmarcade",
+      "title": "WASM Arcade",
+      "status": "verified-unchanged",
+      "art": "assets/wasmarcade-cover.png",
+      "sourceUrl": "https://wasmarcade.com/og/site-v2.png",
+      "sourceKind": "destination-og-image",
+      "sourcePage": "https://wasmarcade.com/pc-games",
+      "sourceNote": "Destination og:image / twitter:image for the collection page this entry links to.",
+      "httpStatus": 200,
+      "finalUrl": "https://wasmarcade.com/og/site-v2.png",
+      "contentType": "image/png",
+      "detectedType": "png",
+      "bytes": 11786,
+      "width": 1200,
+      "height": 630,
+      "aspect": 1.9,
+      "sha256": "9ff19f0adc92971dd5de2f6a43b6f32ad1f57bb44299a662dec706a58f259b1e",
+      "caveats": []
+    }
+  ],
+  "additionalArtwork": "docs/additional-artwork.json",
+  "pes6Artwork": "docs/pes6-artwork.json",
+  "rejectedArtwork": [
+    {
+      "id": "pes6",
+      "title": "PES 6",
+      "status": "rejected",
+      "art": "assets/pes6-cover.png",
+      "sourceUrl": "https://pes6.optijuegos.net/assets/logo.png",
+      "sourceKind": "destination-og-image",
+      "sourcePage": "https://pes6.optijuegos.net/",
+      "sourceNote": "Destination og:image (og:image:alt = \"PES 6 Web Online Port\"), the wordmark served by the host itself. No gameplay screenshot is published on the destination, so this is the strongest genuine source available.",
+      "httpStatus": 200,
+      "finalUrl": "https://pes6.optijuegos.net/assets/logo.png",
+      "contentType": "image/png",
+      "detectedType": "png",
+      "bytes": 3859,
+      "width": 898,
+      "height": 162,
+      "aspect": 5.54,
+      "sha256": "d2bb5aac589e2fba2b9f292cc28d5c299aa2dbefdebf879c16e1ab85339157d5",
+      "caveats": [
+        "Wordmark, not a screenshot: 898x162 (aspect 5.54) against a 1.88 card window, so the card centre-crops it to roughly the middle third of the wordmark.",
+        "Low resolution for a 460x245 card. Replace if the host ever publishes a screenshot."
+      ],
+      "reason": "Primary visual inspection found OPTIPROJECTS host logo, not PES 6 artwork. Replaced by original-title cover; unused logo removed."
+    }
+  ],
+  "verificationLimits": "Artwork sourcing is not game verification or a claim of redistribution/monetisation permission."
+}
