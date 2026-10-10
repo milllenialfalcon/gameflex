@@ -2,7 +2,7 @@
 
 Curated browser-game catalogue. Netflix-style artwork shelves, search, category filters, local favourites, responsive keyboard-accessible UI. Every play link opens the external destination in a new tab.
 
-Approved design: charcoal with electric lime; lowercase pixel/8-bit wordmark; cinematic game artwork; modern and fun. Private Sites publication. Verified destinations only, with required personal game files clearly labelled.
+Approved design: charcoal with electric lime; capital-case GAMEFLEX pixel/8-bit wordmark (updated user preference); cinematic game artwork; modern and fun. Private Sites publication. Verified destinations only, with required personal game files clearly labelled. Supporting text is at least 12px, with most controls and descriptions 14–16px. Shelf arrows advance a single game per activation.
 
 Repository: https://github.com/milllenialfalcon/gameflex
 Trello: https://trello.com/b/1kXnmQJJ/gameflex (Build workspace)
