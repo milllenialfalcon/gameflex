@@ -1,0 +1,732 @@
+{
+  "generatedAt": "2026-10-10T08:14:26.255Z",
+  "scope": "Per-game artwork for the dos.zone catalogue zone. Base-game listings only.",
+  "worktreeScopeNote": "This run wrote only dist/assets/dos-<id>.<ext>, docs/dos-zone-artwork.json and scripts/fetch-dos-artwork.mjs inside the catalogue-dos worktree. Unrelated changes to dist/app.js, dist/games.json, dist/index.html, dist/style.css, scripts/check-catalog.mjs and the untracked *-cover.* / catalogue-artwork files appeared in the same worktree from a different concurrent worker and are NOT part of this run.",
+  "rules": [
+    "Only dist/assets/dos-<id>.<ext> and docs/dos-zone-artwork.json were written by this script.",
+    "rollercoaster-tycoon-deluxe skipped: Deluxe edition bundles both expansion packs (not a base-game listing).",
+    "command-conquer-sep-26-1995 skipped: cc_gdi_novid.jsdos is a GDI-only, video-stripped incomplete build.",
+    "Generic dos.zone placeholders (seo_image.jpg, 3dfx.png, hubicon_2.png) are never accepted as artwork.",
+    "lemmings-1991: first imageUrl was the generic dos.zone SEO placeholder, so a genuine original cover was sourced from a reputable host instead.",
+    "Every accepted file passed HTTP 200 + non-empty body + MIME/signature agreement checks.",
+    "No generative/derivative art was produced; no unrelated-edition covers were used."
+  ],
+  "verificationLimits": [
+    "These assets are thumbnails only. Downloading an image does not verify gameplay, emulation, or any right to host, stream, frame or monetise the game.",
+    "Content-type/signature checks prove the bytes are a real image of the stated format; they do not prove the image depicts the specific game beyond the source page it was published on.",
+    "No assistant or user review is recorded here. Discovery is not approval."
+  ],
+  "entries": [
+    {
+      "id": "doom-dec-1993",
+      "title": "DOOM",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-doom-dec-1993.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/doom_1.jpg/fe8f7f08ddbeced41a847eca0dcd5bbf.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/doom_1.jpg/fe8f7f08ddbeced41a847eca0dcd5bbf.webp",
+      "bytes": 146270,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "ec47627a6fd7dfca15c2c822bcd4473f9416de43fd14fda6ce9721411bd432fd",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/doom_1.jpg/fe8f7f08ddbeced41a847eca0dcd5bbf.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/doom_1.jpg/fe8f7f08ddbeced41a847eca0dcd5bbf.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/doom_1.jpg/fe8f7f08ddbeced41a847eca0dcd5bbf.webp",
+          "status": 200,
+          "contentLengthHeader": "146270",
+          "bytes": 146270,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "ec47627a6fd7dfca15c2c822bcd4473f9416de43fd14fda6ce9721411bd432fd",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "doom-ii-oct-10-1994",
+      "title": "DOOM II",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-doom-ii-oct-10-1994.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/doom2.jpeg/e546567e4cca83c26e4af8b8b8970033.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/doom2.jpeg/e546567e4cca83c26e4af8b8b8970033.webp",
+      "bytes": 161346,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "b518a4c3ca2b7744235c830036cd8d747c8f24aaffa400154746b0b566444046",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/doom2.jpeg/e546567e4cca83c26e4af8b8b8970033.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/doom2.jpeg/e546567e4cca83c26e4af8b8b8970033.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/doom2.jpeg/e546567e4cca83c26e4af8b8b8970033.webp",
+          "status": 200,
+          "contentLengthHeader": "161346",
+          "bytes": 161346,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "b518a4c3ca2b7744235c830036cd8d747c8f24aaffa400154746b0b566444046",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "wolfenstein-3d-may-05-1992",
+      "title": "Wolfenstein 3D",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-wolfenstein-3d-may-05-1992.webp",
+      "sourceUrl": "https://dos.zone/images/http/original/2X/1/1900b5b2f48afe5106dc418de7729743ff8f7de8.png/20cafafbaa288a0d48e5995ed7575563.webp",
+      "finalUrl": "https://dos.zone/images/http/original/2X/1/1900b5b2f48afe5106dc418de7729743ff8f7de8.png/20cafafbaa288a0d48e5995ed7575563.webp",
+      "bytes": 46058,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "016e0ec9250e32260bfe6ec77e0302b5592ab24408542abb1e3ee547b22e8fee",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/http/original/2X/1/1900b5b2f48afe5106dc418de7729743ff8f7de8.png/20cafafbaa288a0d48e5995ed7575563.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/http/original/2X/1/1900b5b2f48afe5106dc418de7729743ff8f7de8.png/20cafafbaa288a0d48e5995ed7575563.webp",
+          "finalUrl": "https://dos.zone/images/http/original/2X/1/1900b5b2f48afe5106dc418de7729743ff8f7de8.png/20cafafbaa288a0d48e5995ed7575563.webp",
+          "status": 200,
+          "contentLengthHeader": "46058",
+          "bytes": 46058,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "016e0ec9250e32260bfe6ec77e0302b5592ab24408542abb1e3ee547b22e8fee",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "duke-nukem-3d-1996",
+      "title": "Duke Nukem 3D",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-duke-nukem-3d-1996.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/duke3d.jpeg/7f62c2a0b202567e14b2e561a6e9c379.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/duke3d.jpeg/7f62c2a0b202567e14b2e561a6e9c379.webp",
+      "bytes": 97396,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "7940df0247dbe6465cab07272cf1631d4525c26e4f543f359162d4f5ca05f380",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/duke3d.jpeg/7f62c2a0b202567e14b2e561a6e9c379.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/duke3d.jpeg/7f62c2a0b202567e14b2e561a6e9c379.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/duke3d.jpeg/7f62c2a0b202567e14b2e561a6e9c379.webp",
+          "status": 200,
+          "contentLengthHeader": "97396",
+          "bytes": 97396,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "7940df0247dbe6465cab07272cf1631d4525c26e4f543f359162d4f5ca05f380",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "prince-of-persia-1990",
+      "title": "Prince of Persia",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-prince-of-persia-1990.webp",
+      "sourceUrl": "https://dos.zone/images/http/original/2X/9/9c5f757776e4e9891e063c3e935889ec857dce92.jpeg/66435bae6f294c35ad3c7de8a48f90cf.webp",
+      "finalUrl": "https://dos.zone/images/http/original/2X/9/9c5f757776e4e9891e063c3e935889ec857dce92.jpeg/66435bae6f294c35ad3c7de8a48f90cf.webp",
+      "bytes": 176870,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "1745186fa146915edbab78056fad4027c6317f048e20f22cc32677e1516c773c",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/http/original/2X/9/9c5f757776e4e9891e063c3e935889ec857dce92.jpeg/66435bae6f294c35ad3c7de8a48f90cf.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/http/original/2X/9/9c5f757776e4e9891e063c3e935889ec857dce92.jpeg/66435bae6f294c35ad3c7de8a48f90cf.webp",
+          "finalUrl": "https://dos.zone/images/http/original/2X/9/9c5f757776e4e9891e063c3e935889ec857dce92.jpeg/66435bae6f294c35ad3c7de8a48f90cf.webp",
+          "status": 200,
+          "contentLengthHeader": "176870",
+          "bytes": 176870,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "1745186fa146915edbab78056fad4027c6317f048e20f22cc32677e1516c773c",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "civilization",
+      "title": "Civilization",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-civilization.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/jzcdse.maxresdefault%20%281%29.jpg/afe21ec39c289ccf99555634992d5dc5.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/jzcdse.maxresdefault%20%281%29.jpg/afe21ec39c289ccf99555634992d5dc5.webp",
+      "bytes": 130742,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "352ccaa620d94fd50dcb31cdcbc6e0167449c430151d736e44b7093be6094d3c",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/jzcdse.maxresdefault%20%281%29.jpg/afe21ec39c289ccf99555634992d5dc5.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/jzcdse.maxresdefault%20%281%29.jpg/afe21ec39c289ccf99555634992d5dc5.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/jzcdse.maxresdefault%20%281%29.jpg/afe21ec39c289ccf99555634992d5dc5.webp",
+          "status": 200,
+          "contentLengthHeader": "130742",
+          "bytes": 130742,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "352ccaa620d94fd50dcb31cdcbc6e0167449c430151d736e44b7093be6094d3c",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "warcraft-orcs-humans",
+      "title": "WarCraft: Orcs & Humans",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-warcraft-orcs-humans.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/warcraft.jpeg/44c89448a87fc6a886be0dc8982b0b34.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/warcraft.jpeg/44c89448a87fc6a886be0dc8982b0b34.webp",
+      "bytes": 110944,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "d538b9b22c2c60f17f7ff24c7dfa2098b7e7c43406f8f7b4a4de397ac1758d91",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/warcraft.jpeg/44c89448a87fc6a886be0dc8982b0b34.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/warcraft.jpeg/44c89448a87fc6a886be0dc8982b0b34.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/warcraft.jpeg/44c89448a87fc6a886be0dc8982b0b34.webp",
+          "status": 200,
+          "contentLengthHeader": "110944",
+          "bytes": 110944,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "d538b9b22c2c60f17f7ff24c7dfa2098b7e7c43406f8f7b4a4de397ac1758d91",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "settlers2",
+      "title": "Settlers 2",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-settlers2.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/weyfqq.2870x2158_E8Xf_J.jpg/7fd46eda7610d8b77617ae15592f56d2.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/weyfqq.2870x2158_E8Xf_J.jpg/7fd46eda7610d8b77617ae15592f56d2.webp",
+      "bytes": 240464,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "9f8d2899642210bf9125f8b01d6efeec6851be68a83c7c0890e6a8bd24b70bce",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/weyfqq.2870x2158_E8Xf_J.jpg/7fd46eda7610d8b77617ae15592f56d2.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/weyfqq.2870x2158_E8Xf_J.jpg/7fd46eda7610d8b77617ae15592f56d2.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/weyfqq.2870x2158_E8Xf_J.jpg/7fd46eda7610d8b77617ae15592f56d2.webp",
+          "status": 200,
+          "contentLengthHeader": "240464",
+          "bytes": 240464,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "9f8d2899642210bf9125f8b01d6efeec6851be68a83c7c0890e6a8bd24b70bce",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "command-conquer-sep-26-1995",
+      "title": "Command & Conquer",
+      "status": "skipped",
+      "reason": "excluded by instruction"
+    },
+    {
+      "id": "sim-city-1989",
+      "title": "Sim City",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-sim-city-1989.webp",
+      "sourceUrl": "https://dos.zone/images/http/original/2X/6/692603ba9ff06c30e6d1c4bf736b3edbdfa1be77.jpeg/106971474bf48d4e02bf2dd88f2e2147.webp",
+      "finalUrl": "https://dos.zone/images/http/original/2X/6/692603ba9ff06c30e6d1c4bf736b3edbdfa1be77.jpeg/106971474bf48d4e02bf2dd88f2e2147.webp",
+      "bytes": 66050,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "8baf92138e19c2b9398267e5b4144987338e22c2c0d62e1356fd45d1dcf125b3",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/http/original/2X/6/692603ba9ff06c30e6d1c4bf736b3edbdfa1be77.jpeg/106971474bf48d4e02bf2dd88f2e2147.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/http/original/2X/6/692603ba9ff06c30e6d1c4bf736b3edbdfa1be77.jpeg/106971474bf48d4e02bf2dd88f2e2147.webp",
+          "finalUrl": "https://dos.zone/images/http/original/2X/6/692603ba9ff06c30e6d1c4bf736b3edbdfa1be77.jpeg/106971474bf48d4e02bf2dd88f2e2147.webp",
+          "status": 200,
+          "contentLengthHeader": "66050",
+          "bytes": 66050,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "8baf92138e19c2b9398267e5b4144987338e22c2c0d62e1356fd45d1dcf125b3",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "lemmings-1991",
+      "title": "Lemmings",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-lemmings-1991.jpg",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/en/0/0c/Lemmings-BoxScan.jpg",
+      "finalUrl": "https://upload.wikimedia.org/wikipedia/en/0/0c/Lemmings-BoxScan.jpg",
+      "bytes": 30531,
+      "contentType": "image/jpeg",
+      "signature": "jpg",
+      "sha256": "037b408c06ed30663fea0f11e1bc22c66cc323ec2b21cee6b5315a4515aabcad",
+      "sourceNote": "Original 1991 DMA Design/Psygnosis box art scan; en.wikipedia file page File:Lemmings-BoxScan.jpg (non-free fair use, 293x339).",
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/seo_image.jpg/305f8ab86e22fdd50cb3762298d95219.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://upload.wikimedia.org/wikipedia/en/0/0c/Lemmings-BoxScan.jpg",
+          "finalUrl": "https://upload.wikimedia.org/wikipedia/en/0/0c/Lemmings-BoxScan.jpg",
+          "status": 200,
+          "contentLengthHeader": "30531",
+          "bytes": 30531,
+          "contentType": "image/jpeg",
+          "signature": "jpg",
+          "sha256": "037b408c06ed30663fea0f11e1bc22c66cc323ec2b21cee6b5315a4515aabcad",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": "Original 1991 DMA Design/Psygnosis box art scan; en.wikipedia file page File:Lemmings-BoxScan.jpg (non-free fair use, 293x339)."
+        }
+      ]
+    },
+    {
+      "id": "jazz-jackrabbit",
+      "title": "Jazz Jackrabbit",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-jazz-jackrabbit.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/kzhuta.Jazz_Jackrabbit.webp/76cd29146d14b47c975c815348669c43.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/kzhuta.Jazz_Jackrabbit.webp/76cd29146d14b47c975c815348669c43.webp",
+      "bytes": 38620,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "5b8a7f316c1ad1e2114eeb35c5b26a11b56f76e3e4c0ecac8dcc17e6c9320f0a",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/kzhuta.Jazz_Jackrabbit.webp/76cd29146d14b47c975c815348669c43.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/kzhuta.Jazz_Jackrabbit.webp/76cd29146d14b47c975c815348669c43.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/kzhuta.Jazz_Jackrabbit.webp/76cd29146d14b47c975c815348669c43.webp",
+          "status": 200,
+          "contentLengthHeader": "38620",
+          "bytes": 38620,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "5b8a7f316c1ad1e2114eeb35c5b26a11b56f76e3e4c0ecac8dcc17e6c9320f0a",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "commander-keen4",
+      "title": "Commander Keen in Goodbye, Galaxy!: Episode IV - Secret of the Oracle",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-commander-keen4.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/nctois.maxresdefault%20%287%29.jpg/7a11404d31545974eef3663c1e90e42f.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/nctois.maxresdefault%20%287%29.jpg/7a11404d31545974eef3663c1e90e42f.webp",
+      "bytes": 165162,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "81e61c97612a4bed71fbdb670e02b00b3fef47ff2b063a2cdff403b7df308b33",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/nctois.maxresdefault%20%287%29.jpg/7a11404d31545974eef3663c1e90e42f.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/nctois.maxresdefault%20%287%29.jpg/7a11404d31545974eef3663c1e90e42f.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/nctois.maxresdefault%20%287%29.jpg/7a11404d31545974eef3663c1e90e42f.webp",
+          "status": 200,
+          "contentLengthHeader": "165162",
+          "bytes": 165162,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "81e61c97612a4bed71fbdb670e02b00b3fef47ff2b063a2cdff403b7df308b33",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "descent",
+      "title": "Descent",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-descent.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/rjrdlj.descent-03.webp/db8244f8a5f05c500d7c8b12b8994904.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/rjrdlj.descent-03.webp/db8244f8a5f05c500d7c8b12b8994904.webp",
+      "bytes": 48710,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "09bf80db20c8bfb5b4b78b2e3e87b6c4270570c53d3e1a06af998b4a26da4981",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/rjrdlj.descent-03.webp/db8244f8a5f05c500d7c8b12b8994904.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/rjrdlj.descent-03.webp/db8244f8a5f05c500d7c8b12b8994904.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/rjrdlj.descent-03.webp/db8244f8a5f05c500d7c8b12b8994904.webp",
+          "status": 200,
+          "contentLengthHeader": "48710",
+          "bytes": 48710,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "09bf80db20c8bfb5b4b78b2e3e87b6c4270570c53d3e1a06af998b4a26da4981",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "fallout",
+      "title": "Fallout: A Post Nuclear Role Playing Game",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-fallout.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/wrusmz.capsule_616x353.jpg/de3a88ca3fe26543e4dc4177b24ec6fd.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/wrusmz.capsule_616x353.jpg/de3a88ca3fe26543e4dc4177b24ec6fd.webp",
+      "bytes": 112022,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "674f2af1068f6dcdd4621303a2725b79060607c4c6549090fb4151b13cd4b09c",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/wrusmz.capsule_616x353.jpg/de3a88ca3fe26543e4dc4177b24ec6fd.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/wrusmz.capsule_616x353.jpg/de3a88ca3fe26543e4dc4177b24ec6fd.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/wrusmz.capsule_616x353.jpg/de3a88ca3fe26543e4dc4177b24ec6fd.webp",
+          "status": 200,
+          "contentLengthHeader": "112022",
+          "bytes": 112022,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "674f2af1068f6dcdd4621303a2725b79060607c4c6549090fb4151b13cd4b09c",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "heroes-of-might-and-magic-ii",
+      "title": "Heroes Of Might And Magic II",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-heroes-of-might-and-magic-ii.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/homm2.jpeg/c172e13628a691e93197006a22a9fa11.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/homm2.jpeg/c172e13628a691e93197006a22a9fa11.webp",
+      "bytes": 71022,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "1bf51e58fd52b6b947e352565c99cb03dc00f8dc564c2bbf49b1ba7205cb5475",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/homm2.jpeg/c172e13628a691e93197006a22a9fa11.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/homm2.jpeg/c172e13628a691e93197006a22a9fa11.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/homm2.jpeg/c172e13628a691e93197006a22a9fa11.webp",
+          "status": 200,
+          "contentLengthHeader": "71022",
+          "bytes": 71022,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "1bf51e58fd52b6b947e352565c99cb03dc00f8dc564c2bbf49b1ba7205cb5475",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "worms-1995",
+      "title": "Worms",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-worms-1995.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/sjsozr.worms-die-serie_2347160.jpg/5def808f04d368965421758c63d9d905.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/sjsozr.worms-die-serie_2347160.jpg/5def808f04d368965421758c63d9d905.webp",
+      "bytes": 75292,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "6f6ec4c13572ea7779cfb962d784d59752652dd9c7ae51712a76d3d0a08171bf",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/sjsozr.worms-die-serie_2347160.jpg/5def808f04d368965421758c63d9d905.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/sjsozr.worms-die-serie_2347160.jpg/5def808f04d368965421758c63d9d905.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/sjsozr.worms-die-serie_2347160.jpg/5def808f04d368965421758c63d9d905.webp",
+          "status": 200,
+          "contentLengthHeader": "75292",
+          "bytes": 75292,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "6f6ec4c13572ea7779cfb962d784d59752652dd9c7ae51712a76d3d0a08171bf",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "the-need-for-speed-sep-1995",
+      "title": "The Need for Speed",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-the-need-for-speed-sep-1995.webp",
+      "sourceUrl": "https://dos.zone/images/http/original/2X/e/e5f62e0da3b896347644ea61bc775071ad01328f.png/ad5d20918505aac4f25908dacaec5c66.webp",
+      "finalUrl": "https://dos.zone/images/http/original/2X/e/e5f62e0da3b896347644ea61bc775071ad01328f.png/ad5d20918505aac4f25908dacaec5c66.webp",
+      "bytes": 129560,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "ea61c0a5c7d0f6d20c85a25946c95b6abd6513316b27c3a05bf610db77b37282",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/http/original/2X/e/e5f62e0da3b896347644ea61bc775071ad01328f.png/ad5d20918505aac4f25908dacaec5c66.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/http/original/2X/e/e5f62e0da3b896347644ea61bc775071ad01328f.png/ad5d20918505aac4f25908dacaec5c66.webp",
+          "finalUrl": "https://dos.zone/images/http/original/2X/e/e5f62e0da3b896347644ea61bc775071ad01328f.png/ad5d20918505aac4f25908dacaec5c66.webp",
+          "status": 200,
+          "contentLengthHeader": "129560",
+          "bytes": 129560,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "ea61c0a5c7d0f6d20c85a25946c95b6abd6513316b27c3a05bf610db77b37282",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "mortal-kombat-1993",
+      "title": "Mortal Kombat",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-mortal-kombat-1993.webp",
+      "sourceUrl": "https://dos.zone/images/http/original/2X/f/f4bd80dab1d49862de267821752418a438ee30ef.png/812d09ebf3b251434b720cbfd8b4d5b6.webp",
+      "finalUrl": "https://dos.zone/images/http/original/2X/f/f4bd80dab1d49862de267821752418a438ee30ef.png/812d09ebf3b251434b720cbfd8b4d5b6.webp",
+      "bytes": 106038,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "4d9d0e54087f358623f15cea909aa1b66d01d933fb107d6eedc35b91a1c62e49",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/http/original/2X/f/f4bd80dab1d49862de267821752418a438ee30ef.png/812d09ebf3b251434b720cbfd8b4d5b6.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/http/original/2X/f/f4bd80dab1d49862de267821752418a438ee30ef.png/812d09ebf3b251434b720cbfd8b4d5b6.webp",
+          "finalUrl": "https://dos.zone/images/http/original/2X/f/f4bd80dab1d49862de267821752418a438ee30ef.png/812d09ebf3b251434b720cbfd8b4d5b6.webp",
+          "status": 200,
+          "contentLengthHeader": "106038",
+          "bytes": 106038,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "4d9d0e54087f358623f15cea909aa1b66d01d933fb107d6eedc35b91a1c62e49",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "street-fighter-2",
+      "title": "Street Fighter 2",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-street-fighter-2.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/fxttmi.street-fighter-ii_2.webp/87242456717269a799a3a991aa52000e.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/fxttmi.street-fighter-ii_2.webp/87242456717269a799a3a991aa52000e.webp",
+      "bytes": 57842,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "3ef7eea2477a411d1086af7754ed4034ff01bb590f9b4f58911df91a1ed3ae5d",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/fxttmi.street-fighter-ii_2.webp/87242456717269a799a3a991aa52000e.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/fxttmi.street-fighter-ii_2.webp/87242456717269a799a3a991aa52000e.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/fxttmi.street-fighter-ii_2.webp/87242456717269a799a3a991aa52000e.webp",
+          "status": 200,
+          "contentLengthHeader": "57842",
+          "bytes": 57842,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "3ef7eea2477a411d1086af7754ed4034ff01bb590f9b4f58911df91a1ed3ae5d",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "dune-2-dos-1992",
+      "title": "Dune II: The Building of a Dynasty (DOS)",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-dune-2-dos-1992.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/xpvdnk.dune-ii-the-battle-for-arrakis-pc_1370612645.jpg/5b50e167c7122679d0c328134d3107ee.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/xpvdnk.dune-ii-the-battle-for-arrakis-pc_1370612645.jpg/5b50e167c7122679d0c328134d3107ee.webp",
+      "bytes": 120392,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "0a21e78afce7296e299f18ee5f2f077e7b259ac8e5ed268c7ea47cc5608140ef",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/xpvdnk.dune-ii-the-battle-for-arrakis-pc_1370612645.jpg/5b50e167c7122679d0c328134d3107ee.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/xpvdnk.dune-ii-the-battle-for-arrakis-pc_1370612645.jpg/5b50e167c7122679d0c328134d3107ee.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/xpvdnk.dune-ii-the-battle-for-arrakis-pc_1370612645.jpg/5b50e167c7122679d0c328134d3107ee.webp",
+          "status": 200,
+          "contentLengthHeader": "120392",
+          "bytes": 120392,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "0a21e78afce7296e299f18ee5f2f077e7b259ac8e5ed268c7ea47cc5608140ef",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "theme-hospital",
+      "title": "Theme Hospital",
+      "status": "downloaded",
+      "localAssetPath": "dist/assets/dos-theme-hospital.webp",
+      "sourceUrl": "https://dos.zone/images/containers/assets/backgrounds/syefrp.5g5eayf1.jpg/7b369f5a1a5e9f00063cae4a29c50095.webp",
+      "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/syefrp.5g5eayf1.jpg/7b369f5a1a5e9f00063cae4a29c50095.webp",
+      "bytes": 152980,
+      "contentType": "image/webp",
+      "signature": "webp",
+      "sha256": "eb26a4f4e6273d75099cc3258882c7d5db85d25e872b7c420b025a032afe3e5f",
+      "sourceNote": null,
+      "imageUrlsInSelection": [
+        "https://dos.zone/images/containers/assets/backgrounds/syefrp.5g5eayf1.jpg/7b369f5a1a5e9f00063cae4a29c50095.webp",
+        "https://cdn.dos.zone/3dfx.png",
+        "https://cdn.dos.zone/mp/hubicon_2.png"
+      ],
+      "attempts": [
+        {
+          "requestUrl": "https://dos.zone/images/containers/assets/backgrounds/syefrp.5g5eayf1.jpg/7b369f5a1a5e9f00063cae4a29c50095.webp",
+          "finalUrl": "https://dos.zone/images/containers/assets/backgrounds/syefrp.5g5eayf1.jpg/7b369f5a1a5e9f00063cae4a29c50095.webp",
+          "status": 200,
+          "contentLengthHeader": "152980",
+          "bytes": 152980,
+          "contentType": "image/webp",
+          "signature": "webp",
+          "sha256": "eb26a4f4e6273d75099cc3258882c7d5db85d25e872b7c420b025a032afe3e5f",
+          "accepted": true,
+          "rejectedBecause": null,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "rollercoaster-tycoon-deluxe",
+      "title": "RollerCoaster Tycoon Deluxe",
+      "status": "skipped",
+      "reason": "excluded by instruction"
+    }
+  ],
+  "counts": {
+    "considered": 23,
+    "downloaded": 21,
+    "skipped": 2,
+    "failed": 0
+  }
+}

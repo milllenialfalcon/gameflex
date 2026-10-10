@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-10",
+  "method": "Headless Microsoft Edge, normal top-level navigation, 30-second load window; screenshots inspected by primary agent.",
+  "entries": [
+    {"url":"https://dos.zone/doom-dec-1993/","observed":"DOOM title screen rendered inside a canvas, with the js-dos mouse-capture prompt.","screenshot":"artifacts/research/doom-launch.png","verificationLevel":"emulator-title-screen","gameplayTested":false},
+    {"url":"https://dos.zone/prince-of-persia-1990/","observed":"Prince of Persia title screen rendered inside a canvas.","screenshot":"artifacts/research/prince-launch.png","verificationLevel":"emulator-title-screen","gameplayTested":false}
+  ],
+  "limits": "No account created, no full playthrough, no save/input/audio/device verification. All other selected DOS titles have launch-page/bundle-markup evidence only. The host's CSP blocks Gameflex framing. No hosting, streaming or monetisation permission is asserted."
+}

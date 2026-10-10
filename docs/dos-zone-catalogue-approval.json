@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-10",
+  "scope": "catalogue-listing-only",
+  "instruction": "Meanwhile, use games from https://dos.zone/ only the mainstream titles and not mods/forks and add them to gameflex catalog. Also find and put relevant thumbnails that some games are missing. And add more games in the hero slider after dos zone games are done.",
+  "verificationLimit": "Direct user instruction approves this disabled catalogue batch. It is not a user gameplay verification. Existing candidate review decisions remain untouched. A playable release still requires assistant and explicit user verification.",
+  "entries": [
+    {
+      "id": "dos-doom-dec-1993",
+      "url": "https://dos.zone/doom-dec-1993/"
+    },
+    {
+      "id": "dos-doom-ii-oct-10-1994",
+      "url": "https://dos.zone/doom-ii-oct-10-1994/"
+    },
+    {
+      "id": "dos-wolfenstein-3d-may-05-1992",
+      "url": "https://dos.zone/wolfenstein-3d-may-05-1992/"
+    },
+    {
+      "id": "dos-duke-nukem-3d-1996",
+      "url": "https://dos.zone/duke-nukem-3d-1996/"
+    },
+    {
+      "id": "dos-prince-of-persia-1990",
+      "url": "https://dos.zone/prince-of-persia-1990/"
+    },
+    {
+      "id": "dos-civilization",
+      "url": "https://dos.zone/civilization/"
+    },
+    {
+      "id": "dos-warcraft-orcs-humans",
+      "url": "https://dos.zone/warcraft-orcs-humans/"
+    },
+    {
+      "id": "dos-settlers2",
+      "url": "https://dos.zone/settlers2/"
+    },
+    {
+      "id": "dos-sim-city-1989",
+      "url": "https://dos.zone/sim-city-1989/"
+    },
+    {
+      "id": "dos-lemmings-1991",
+      "url": "https://dos.zone/lemmings-1991/"
+    },
+    {
+      "id": "dos-jazz-jackrabbit",
+      "url": "https://dos.zone/jazz-jackrabbit/"
+    },
+    {
+      "id": "dos-commander-keen4",
+      "url": "https://dos.zone/commander-keen4/"
+    },
+    {
+      "id": "dos-descent",
+      "url": "https://dos.zone/descent/"
+    },
+    {
+      "id": "dos-fallout",
+      "url": "https://dos.zone/fallout/"
+    },
+    {
+      "id": "dos-heroes-of-might-and-magic-ii",
+      "url": "https://dos.zone/heroes-of-might-and-magic-ii/"
+    },
+    {
+      "id": "dos-worms-1995",
+      "url": "https://dos.zone/worms-1995/"
+    },
+    {
+      "id": "dos-the-need-for-speed-sep-1995",
+      "url": "https://dos.zone/the-need-for-speed-sep-1995/"
+    },
+    {
+      "id": "dos-mortal-kombat-1993",
+      "url": "https://dos.zone/mortal-kombat-1993/"
+    },
+    {
+      "id": "dos-street-fighter-2",
+      "url": "https://dos.zone/street-fighter-2/"
+    },
+    {
+      "id": "dos-dune-2-dos-1992",
+      "url": "https://dos.zone/dune-2-dos-1992/"
+    },
+    {
+      "id": "dos-theme-hospital",
+      "url": "https://dos.zone/theme-hospital/"
+    }
+  ],
+  "excluded": [
+    {
+      "id": "rollercoaster-tycoon-deluxe",
+      "reason": "Expansion compilation rather than a base release."
+    },
+    {
+      "id": "command-conquer-sep-26-1995",
+      "reason": "GDI-only build with videos removed; omitted under original-release preference."
+    },
+    {
+      "url": "https://dos.zone/grand-theft-auto-1997/",
+      "title": "Grand Theft Auto (1997)",
+      "reason": "HTTP 200 but the response is a ~22 KB stub with no <div class=\"jsdos\"> host block and no bundle reference. All five GTA/2/Vice City/London/3Dfx listings behave identically, i.e. no playable bundle is exposed. Excluded as an uncertain/non-playable entry."
+    },
+    {
+      "url": "https://dos.zone/dune-ii-the-building-of-a-dynasty-dec-1992/",
+      "title": "Dune II ... (Open Dune)",
+      "reason": "Page title labels the build '(Open Dune)' — a fan remake/open-source reimplementation — and the page has no js-dos host block. Excluded as a fan remake (the original DOS build is filed under dune-2-dos-1992)."
+    },
+    {
+      "url": "https://dos.zone/commander-keen-1-3-1992/",
+      "title": "Commander Keen 1-3",
+      "reason": "Compilation bundle of three episodes; excluded in favour of the single-episode base listing (commander-keen4)."
+    },
+    {
+      "url": "https://dos.zone/fallout-1991/",
+      "title": "Fallout (1991)",
+      "reason": "Date conflicts with the 1997 original and the listing duplicates the main Fallout page; excluded as an uncertain/duplicate entry."
+    }
+  ]
+}
