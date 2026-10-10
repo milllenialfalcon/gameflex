@@ -1,0 +1,20 @@
+{
+  "name": "@gameflex/remote-browser",
+  "version": "0.1.0-prototype",
+  "private": true,
+  "type": "module",
+  "description": "Gameflex remote browser streaming prototype: host session gateway + dockerised Chromium runner.",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node src/gateway.mjs",
+    "test": "node --test test/*.test.mjs",
+    "e2e": "node scripts/e2e-smoke.mjs",
+    "build:runner": "docker build -f runner/Dockerfile -t gameflex/browser-runner:0.1.0 .",
+    "sandbox:check": "docker run --rm --cap-drop ALL --security-opt seccomp=runner/seccomp/chromium-sandbox.json --shm-size 512m --pids-limit 256 --memory 1g --read-only --tmpfs /tmp:rw,size=256m,mode=1777 -e HOME=/tmp gameflex/browser-runner:0.1.0 node runner/sandbox-check.mjs",
+    "sandbox:selftest": "docker run --rm -e SANDBOX_CHECK_SELF_TEST=1 --cap-drop ALL --security-opt seccomp=runner/seccomp/chromium-sandbox.json --shm-size 512m --pids-limit 256 --memory 1g --read-only --tmpfs /tmp:rw,size=256m,mode=1777 -e HOME=/tmp gameflex/browser-runner:0.1.0 node runner/sandbox-check.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.62.1",
+    "ws": "8.18.3"
+  }
+}
