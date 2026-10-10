@@ -8,41 +8,40 @@
  */
 :root{--spot-autoplay:7s}
 
-/* Header: the spotlight page runs a compact 75px bar, ~20% shorter than the homepage's 94px
-   (style.css). The logo drops a step, the item gap scales with the viewport and search narrows a
-   little, so the row stays balanced instead of stretching. Scoped to .page-spotlight (the class is
-   on <html>) and to >=851px so the shared wrapping header at 721–850px and the mobile layout are
-   left exactly as they are. Interactive header controls keep a 44px touch target on mobile. */
+/* Header: the spotlight page runs a compact 82.5px bar, ~10% shorter than the homepage's 94px
+   (style.css) — 75px raised by 10%. The logo steps up with it (27px -> 29.7px), the gaps and the
+   search narrow fractionally, and controls keep 44px touch targets so the row stays balanced
+   instead of stretching. Scoped to .page-spotlight (the class is on <html>) and to >=851px so the
+   shared wrapping header at 721–850px and the mobile layout are left exactly as they are. */
 @media(min-width:851px){
-  .page-spotlight .site-header{height:75px;gap:clamp(20px,3.6vw,44px)}
-  .page-spotlight .site-header nav{gap:clamp(16px,2.2vw,26px)}
-  .page-spotlight .wordmark{font-size:27px}
-  .page-spotlight .nav-link{font-size:14px;padding:12px 0}
-  .page-spotlight .search-box{max-width:264px;width:23%;padding:9px 11px}
-  .page-spotlight{scroll-padding-top:84px}
+  .page-spotlight .site-header{height:82.5px;gap:clamp(22px,3.8vw,46px)}
+  .page-spotlight .site-header nav{gap:clamp(17px,2.3vw,28px)}
+  .page-spotlight .wordmark{font-size:29.7px}
+  .page-spotlight .nav-link{font-size:14px;padding:13px 0}
+  .page-spotlight .search-box{max-width:270px;width:24%;min-height:44px;padding:11px 12px}
+  .page-spotlight .header-icon{width:44px;height:44px}
+  .page-spotlight{scroll-padding-top:92px}
 }
-/* Nav: an explicit 2px lime underline, inside the button just under the text — never a pill, never
-   a rounded background, and never a bar parked at the header's bottom edge. It is centred on the
-   label and identical at desktop and mobile, so the header height is untouched. */
+/* Nav: an explicit 2px lime underline, inside the button just under the label and flush to its
+   right edge — never a pill, never a rounded background, and never a bar parked at the header's
+   bottom edge. It rests at 24px and grows to the full width of the text/button on hover or
+   keyboard focus. Identical at desktop and mobile, so the header height is untouched. */
 .page-spotlight .nav-link{position:relative}
 .page-spotlight .nav-link.active:after,
-.page-spotlight .nav-link:focus-visible:after{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:3px;width:24px;height:2px;background:var(--lime)}
+.page-spotlight .nav-link:focus-visible:after{content:'';position:absolute;right:0;left:auto;transform:none;bottom:3px;width:24px;height:2px;background:var(--lime);transition:width .22s ease}
+.page-spotlight .nav-link.active:hover:after,
+.page-spotlight .nav-link.active:focus-visible:after{width:100%}
 @media(max-width:720px){
   .page-spotlight .wordmark{font-size:27px}
+  .page-spotlight .site-header{padding-top:22px;padding-bottom:15px}
   .page-spotlight .nav-link{display:inline-flex;align-items:center;min-height:44px;padding:0}
-  .page-spotlight .nav-link.active:after,
-  .page-spotlight .nav-link:focus-visible:after{bottom:3px;width:24px;height:2px}
   .page-spotlight .header-icon{width:44px;height:44px}
-  .page-spotlight .site-header .wordmark .wordmark-logo{width:140px;height:28px}
 }
 
-/* The header and the footer carry the same curve wordmark asset the shared pages use, at the two
-   sizes the Spotlight bar expects: ~158x32 in the header, ~180x36 in the footer. The anchor keeps
-   class .wordmark and its accessible "GAMEFLEX home" name; the image is the wordmark, so it keeps
-   alt="GAMEFLEX". */
-.page-spotlight .wordmark .wordmark-logo{display:block}
-.page-spotlight .site-header .wordmark .wordmark-logo{width:158px;height:32px}
-.page-spotlight .footer-logo .wordmark-logo{width:180px;height:36px}
+/* The header and the footer use the straight Pixel text wordmark the shared pages use —
+   "GAMEFLEX" plus the lime <span class="logo-pixel">, no curve image. The anchor keeps class
+   .wordmark, its accessible "GAMEFLEX home" name, and the footer's smaller 27px size. */
+.page-spotlight .footer-logo{font-size:27px}
 
 /* Spotlight runs a darker page than the homepage: --bg drops to #0b0d0b on <html>, body inherits
    it, and the header, hero fade and footer pick up the same value so nothing seams. */
@@ -130,5 +129,6 @@ html.page-spotlight{--bg:#0b0d0b;background:var(--bg)}
   .hero-spotlight .hero-arrow{width:44px;height:44px;font-size:22px}
 }
 @media(prefers-reduced-motion:reduce){
+  .page-spotlight .nav-link:after{transition:none}
   .hero-spotlight .hero-dot.active::after{animation:none;transform:scaleX(1)}
 }

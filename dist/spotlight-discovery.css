@@ -4,12 +4,13 @@
  * .game-card classes without touching the homepage, which never loads this file.
  *
  * Cards are landscape artwork with the game name in a plain line UNDER the image, clamped to two
- * lines — nothing overlays the artwork except the small status chip in its top-left corner. The
- * ranked Top games row swaps the landscape art for the artwork worker's real portrait (2:3) poster,
- * placed on the right of the card, and keeps the name under it; the oversized dark numeral 1..10 is
- * tucked behind the poster on the left, sized from the poster height. Every shelf heading opens with
- * an original stroke-only lime glyph (aria-hidden), and the shelf subtitle lines up with the heading
- * text, not the glyph.
+ * lines — nothing overlays the artwork except the small status chip in its top-left corner and, on
+ * Continue playing, the 3px progress rail along its bottom edge. The ranked Top games row swaps the
+ * landscape art for the artwork worker's real portrait (2:3) poster, moves the name line out of the
+ * markup entirely, and tucks the oversized 1..10 numeral behind the poster's left edge. Continue
+ * playing cards are plain #play/<id> links into the player: no hover or focus panel, no expanded
+ * state. Every shelf heading opens with a stroke-only lime glyph (aria-hidden) that owns a 16px
+ * gutter column and is centred across the title and subtitle block beside it.
  *
  * Desktop shows six whole cards per row at >=1200px; narrower widths step down to five, four,
  * three and two, so rows finish inside the viewport at every size. The Continue playing shelf is the
@@ -18,9 +19,9 @@
  * stay hidden while arrows, swipes and single-card keyboard steps keep working.
  *
  * The floating detail card is fixed-positioned on <body>, so it sits above the page without
- * reflowing content or being clipped by a row's overflow. It is ~30% narrower than the original
- * overlay with a compact vertical rhythm; body copy stays at 12–13px and every action keeps a
- * 44px-tall target.
+ * reflowing content or being clipped by a row's overflow. It is centred on the source card's
+ * THUMBNAIL rectangle, clamped into the viewport, kept below the site header, and keeps the page's
+ * own background (#0b0d0b through --bg), a 300px width and 44px-tall action targets.
  *
  * This file is linked after style.css and .sd-row has the same specificity as the shared
  * .game-row, so the Spotlight rows win here and the homepage (which never loads this file) is
@@ -44,44 +45,57 @@
 /* Top-left chip: sits on the artwork, never interactive. */
 .sd-badge{position:absolute;left:8px;top:8px;z-index:3;padding:3px 6px;font-size:12px;line-height:1.3;letter-spacing:.4px;color:#dfe7d5;background:#0a100bdb;border:1px solid #ffffff21;border-radius:3px;pointer-events:none}
 
-/* Top games — the Netflix treatment, from the reference: the oversized dark numeral sits behind
-   the poster, not over its cover. Each card is a two-column grid — the numeral column on the left,
-   the 2:3 poster on the right — so every card has the same width and the same poster size. The
-   numeral is sized from the card with container units (cqw = 1% of the card width) rather than vw,
-   so it tracks the poster height instead of running away at wide viewports. line-height:1 keeps a
-   real box height (the numeral's box is taller than the poster it sits behind) and the small
-   negative bottom margin drops the digit's baseline onto the poster's bottom edge, so the ink runs
-   the full poster height. The fill is #0b0d0b — exactly the page background — with a 2px grey outline
-   (#717570) and no glow, and the numeral sits at z-index 0 under the poster (z-index 1), whose left
-   edge tucks over the digit's right side. The numerals themselves are grey-outlined, not lime: only
-   the shelf-heading glyphs carry the accent. */
-.sd-ranked{position:relative;display:grid;grid-template-columns:47% minmax(0,1fr);grid-template-areas:"rank art" "name name";align-items:end;container-type:inline-size}
+/* Top games — the Netflix treatment, from the reference: an oversized neon numeral 1..10 tucked
+   behind the poster's left edge. Each card is a two-column grid — the numeral's column on the left,
+   the 2:3 poster on the right — so every card keeps the same width and every poster the same size.
+   The numeral is SVG text drawn in the digit's own ink box (RANK_VIEWBOX in the module, read from the
+   shipped body font: cap height 700, round-digit overshoot to 714/-14, widest ink at 592), mapped
+   onto its box with preserveAspectRatio="none". Its box runs from the card's left edge to a little
+   way behind the poster's left edge, and the card grid stretches that box to the poster's exact
+   height — so the ink box's bottom row IS the poster's bottom edge and the numeral cannot paint a
+   pixel below the poster, with no negative margin and no line-height guesswork. Every digit is
+   right-anchored in the box, so the narrow 1 sits as close to the poster as a wide 0, and 10 is
+   squeezed into one digit's width by textLength rather than a transform. The fill is the page's own
+   background, the outline is lime (see .sd-rank text), the glow is a low-opacity haze, and the whole
+   numeral sits at z-index 0 under the poster (z-index 1). */
+.sd-ranked{position:relative;display:grid;grid-template-columns:47% minmax(0,1fr);grid-template-areas:"rank art";align-items:end;container-type:inline-size}
 .sd-ranked .sd-art{grid-area:art;position:relative;z-index:1;aspect-ratio:2/3}
-.sd-ranked .sd-name{grid-area:name;margin-top:8px}
 .sd-row[data-portrait] .sd-art{aspect-ratio:2/3}
-/* The clamp is only the fallback for engines without container units; cqw, when supported, wins. */
-.sd-rank{grid-area:rank;align-self:end;justify-self:start;z-index:0;line-height:.9;margin-bottom:-.15em;font-family:Space,Arial,sans-serif;font-weight:900;letter-spacing:-.05em;color:#20241f;pointer-events:none;user-select:none;font-size:clamp(58px,7vw,190px);font-size:100cqw}
-@supports(-webkit-text-stroke:1px #000){
-  /* Dark-filled numeral: the fill matches the page background and the grey stroke draws the shape. */
-  .sd-rank{color:#0b0d0b;-webkit-text-stroke:2px #717570}
-}
-/* Rank 10 is two digits: fs=100cqw sets the full pair to one digit's em and scaleX(.4) compresses
-   the pair horizontally to the region, so the ink still fills the poster height. */
-.sd-rank-ten{font-size:100cqw;letter-spacing:0;transform:scaleX(.4);transform-origin:left bottom}
-@supports not (font-size:1cqw){
-  .sd-rank-ten{font-size:clamp(52px,5.4vw,160px)}
-}
+.sd-rank{grid-area:rank;align-self:stretch;justify-self:end;position:relative;z-index:0;width:.61em;margin-right:-.15em;font-size:clamp(58px,7vw,190px);font-size:100cqw;pointer-events:none;user-select:none}
+.sd-rank svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:hidden;filter:drop-shadow(0 0 10px #c4fa5338)}
+/* Neon outline on a dark fill: the stroke width is in viewBox units where non-scaling-stroke is
+   missing (2.3px at the rendered size) and exactly 2px where it is supported. */
+.sd-rank text{font-family:Space,Arial,sans-serif;font-weight:900;fill:var(--bg);stroke:var(--lime);stroke-linejoin:round;stroke-width:11}
+@supports(vector-effect:non-scaling-stroke){.sd-rank text{stroke-width:2;vector-effect:non-scaling-stroke}}
+.sd-rank-ten text{letter-spacing:0}
 
-/* Shelf headings: the cyberpunk glyph and the title text sit in two fixed grid columns, so the
-   subtitle lines up with the text rather than with the glyph, whatever mark the row drew. */
-.sd-shelf-title{--sd-glyph:22px;--sd-glyph-gap:9px;min-width:0}
-.sd-shelf .shelf-heading h3{display:grid;grid-template-columns:var(--sd-glyph) minmax(0,1fr);column-gap:var(--sd-glyph-gap);align-items:center;font-size:19px;letter-spacing:-.4px}
+/* Shelf headings: the cyberpunk glyph owns a 16px gutter column and is centred across the WHOLE
+   title + subtitle block, not the title line alone; the title and its subtitle stack in the text
+   column beside it, so every subtitle lines up with its heading text whatever mark the row drew. */
+.sd-shelf-title{--sd-glyph:16px;--sd-glyph-gap:10px;display:grid;grid-template-columns:var(--sd-glyph) minmax(0,1fr);column-gap:var(--sd-glyph-gap);min-width:0}
+.sd-shelf .sd-glyph{grid-area:1/1/3/2;align-self:center}
+.sd-shelf .shelf-heading h3{grid-area:1/2/2/3;display:block;font-size:19px;letter-spacing:-.4px;margin:0}
+.sd-shelf .shelf-subtitle{grid-area:2/2/3/3;margin:6px 0 0;padding:0;max-width:62ch}
 .sd-title-text{min-width:0}
-.sd-shelf .shelf-subtitle{max-width:62ch;padding-left:calc(var(--sd-glyph) + var(--sd-glyph-gap))}
+/* Continue playing cards open with a small lime play triangle on the name line — on those cards
+   only, never in the shelf heading and never on any other card. */
+.sd-play-mark{display:inline-flex;align-items:center;margin-right:7px;color:var(--lime);vertical-align:-1px}
+.sd-play-mark svg{width:11px;height:11px;fill:currentColor;stroke:none}
 /* Every heading keeps the same treatment — warm-white title, muted count, muted subtitle. The
    Top games numerals carry the accent; the heading itself is not recoloured. */
 .sd-glyph{display:grid;place-items:center;flex:0 0 auto;width:var(--sd-glyph);height:var(--sd-glyph);color:var(--lime)}
-.sd-glyph svg{width:22px;height:22px;display:block;fill:none;stroke:currentColor}
+.sd-glyph svg{width:15px;height:15px;display:block;fill:none;stroke:currentColor}
+/* Top games: a low-opacity lime radial glow behind the whole ranked row — a glow, never a green
+   panel and never a visible rectangle. It is a centred ellipse that fades to fully transparent at
+   its own edge, so all four boundaries dissolve; it sits at z-index -1 inside the section's own
+   stacking context, behind the cards. */
+.sd-shelf[data-sd-shelf="top"]{position:relative;isolation:isolate}
+.sd-shelf[data-sd-shelf="top"]::before{content:'';position:absolute;inset:-18px -1% -6px;z-index:-1;pointer-events:none;background:radial-gradient(45% 45% at 50% 50%,#c4fa5314,transparent 100%)}
+/* Continue playing progress rail: 3px, pinned along the artwork's bottom edge. The preview paints
+   fixed sample fractions and says so in its own label; a real history entry paints an empty track
+   labelled "Gameplay progress unavailable" — a cross-origin frame cannot report gameplay progress. */
+.sd-rail{position:absolute;left:0;right:0;bottom:0;z-index:2;display:block;height:3px;background:#232a1d}
+.sd-rail-fill{display:block;height:100%;background:var(--lime)}
 
 /* Rows: hidden scrollbar; six whole cards at >=1200px; arrows, swipes and keyboard keep working. */
 /* Each width subtracts one extra pixel so sub-pixel rounding can never turn a fitted row into a
@@ -112,8 +126,9 @@
 .sd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
 .sd-grid .sd-card{min-width:0}
 
-/* Floating detail card: ~30% narrower, compact vertical rhythm, 44px action targets -- */
-.sd-panel{position:fixed;z-index:80;width:min(300px,92vw);display:flex;flex-direction:column;background:#151a13;border:1px solid var(--border);border-radius:10px;box-shadow:0 30px 70px #000000c4;animation:sd-panel-in .18s ease-out}
+/* Floating detail card: the page's own background, ~30% narrower than the original overlay, compact
+   vertical rhythm, 44px action targets. It is centred on the source card's thumbnail by the module. */
+.sd-panel{position:fixed;z-index:80;width:min(300px,92vw);display:flex;flex-direction:column;background:var(--bg);border:1px solid var(--border);border-radius:10px;box-shadow:0 30px 70px #000000c4;animation:sd-panel-in .18s ease-out}
 /* Transparent bridge across the gap, so a pointer travelling from the card into the panel
    never leaves "hovered" ground and the panel does not flicker shut. */
 .sd-panel::before{content:'';position:absolute;left:0;right:0;height:14px;top:-13px}
