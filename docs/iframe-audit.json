@@ -1,0 +1,2463 @@
+{
+  "schema": "gameflex.iframe-audit/1",
+  "generatedAt": "2026-10-10T08:03:37.665Z",
+  "generatedBy": "hermes:gameflexqa (scripts/iframe-audit.mjs)",
+  "catalogueSource": "dist/games.json",
+  "hostEnvironment": {
+    "os": "win32",
+    "node": "v26.7.0",
+    "browser": "Microsoft Edge (headless)",
+    "browserVersion": "155.0.4283.45",
+    "edgeBinary": "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
+  },
+  "harness": {
+    "origin": "http://127.0.0.1:4174",
+    "sandbox": [
+      "allow-scripts",
+      "allow-same-origin",
+      "allow-forms",
+      "allow-pointer-lock"
+    ],
+    "permissionsPolicy": [
+      "fullscreen",
+      "autoplay",
+      "gamepad"
+    ],
+    "requestedGrants": [
+      "fullscreen",
+      "autoplay",
+      "gamepad"
+    ],
+    "iframeBox": {
+      "width": 1280,
+      "height": 720
+    },
+    "viewport": {
+      "width": 1360,
+      "height": 820
+    },
+    "note": "Cross-origin frame. Harness served from 127.0.0.1, games are remote https origins. The standalone harness mirrors the player sandbox and permission configuration."
+  },
+  "method": {
+    "pageBudgetMs": 12000,
+    "preflightTimeoutMs": 8000,
+    "concurrency": 3,
+    "assetBudgetBytes": 52428800,
+    "assetBudgetEnforced": false,
+    "assetBudgetEnforcementStatus": "Enforcement was configured for this run but did not fire. The route guard tested a state flag that the byte counter never set, so no request was aborted once the budget estimate was passed. Cancellation is therefore NOT established for any session in this run; the two flagged sessions were measured, not stopped. Correction applied afterwards in scripts/iframe-audit.mjs (the state flag is now set, plus a pre-body guard that refuses known large-asset resources as the remaining budget runs down); an actual rerun is required before any enforcement claim can be made for the real hosts.",
+    "byteAccounting": "Bytes are estimates: the sum of declared response Content-Length headers, cross-checked against Playwright request.sizes() responseBodySize, reported as the larger of the two. These are not measured transferred bytes — compressed, chunked or header-less responses are missed, WebSocket traffic is not counted, and the same bytes may be counted once per observed response.",
+    "clicksPerformed": 0,
+    "classifications": [
+      "frame_document_observed",
+      "blocked",
+      "error",
+      "timeout",
+      "skipped_terms"
+    ],
+    "limitationsOfMethod": [
+      "Frame document presence is not gameplay. No human play was performed.",
+      "No permission inference: missing framing headers are not evidence of permission to embed.",
+      "Game assets are not downloaded deliberately; a session that exceeds the asset budget stops being observed, and with enforcement active further requests are aborted. Enforcement was inactive for this run, so no session in this run was actually stopped.",
+      "Bytes are estimates: the sum of declared response Content-Length headers, cross-checked against Playwright request.sizes() responseBodySize, reported as the larger of the two. These are not measured transferred bytes — compressed, chunked or header-less responses are missed, WebSocket traffic is not counted, and the same bytes may be counted once per observed response.",
+      "Partial duplicate of the byte-accounting caveat: Playwright request.sizes() may not fire at all for cross-origin out-of-process subresources, in which case only declared Content-Length headers contributed to the estimate.",
+      "Edge headless (no GPU) may behave differently from a GPU-accelerated desktop browser.",
+      "One run per game; no retry. Transient network conditions are not separated from steady state."
+    ]
+  },
+  "summary": {
+    "totalCatalogueUrls": 16,
+    "audited": 15,
+    "skipped": 1,
+    "counts": {
+      "frame_document_observed": 15,
+      "skipped_terms": 1
+    },
+    "frameDocumentObserved": [
+      "halo",
+      "bo1",
+      "quake3",
+      "surf",
+      "quake",
+      "quake2",
+      "rtcw",
+      "urbanterror",
+      "webxash",
+      "halomobile",
+      "pes6",
+      "skate",
+      "vicecity",
+      "simpsons",
+      "diablo"
+    ],
+    "assetBudgetExceeded": [
+      "surf",
+      "skate"
+    ],
+    "blockedOrErrored": [],
+    "timedOut": [],
+    "gameplayConfirmed": [],
+    "gameplayConfirmationNote": "No entry can appear here from this audit alone. Gameplay requires a human observer; user review remains pending."
+  },
+  "games": [
+    {
+      "id": "halo",
+      "title": "Halo: Combat Evolved",
+      "url": "https://mitchellhynes.com/halo/",
+      "ownFiles": true,
+      "startedAt": "2026-10-10T08:02:33.911Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (444 elements, 107 visible, 1 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://mitchellhynes.com/halo/halo.html",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://mitchellhynes.com/halo/halo.html",
+        "at": "2026-10-10T08:02:35.650Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:02:33.911Z",
+        "requestUrl": "https://mitchellhynes.com/halo/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://mitchellhynes.com/halo/",
+        "contentType": "text/html; charset=utf-8",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:02:34.390Z",
+        "host": "mitchellhynes.com"
+      },
+      "dom": {
+        "url": "https://mitchellhynes.com/halo/halo.html",
+        "title": "Halo: Combat Evolved",
+        "readyState": "complete",
+        "elementCount": 444,
+        "visibleElementCount": 107,
+        "canvasCount": 1,
+        "sizedCanvases": [
+          "1280x720"
+        ],
+        "fileInputs": 1,
+        "scriptCount": 4,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 922,
+        "bodyText": "Muted Focus game Game settings Made by Mitchell Hynes. Learn more Click the game or Focus game to capture the mouse This page needs COOP/COEP headers for threaded WebAssembly. A - Space B - F X - E / R Y - Tab / Wheel WHITE - Q BLACK - X LT - G / RMB RT - LMB MOVE - WASD AIM - Mouse L3 - C R3 - Z / MMB D-PAD - Arrows START - Esc BACK - F1 ONLINE MULTIPLAYER PLAY ONLINE 5 PLAYERS ONLINE 20 PLAYERS IN CAMPAIGN 19933 PLAYERS TODAY HALO CE · WEB Could not start: Failed to execute 'postMessage' on 'Worker': SharedArrayBuffer transfer requires self.crossOriginIsolated. Choose your Halo XISO To comply with copyright law and respect the original Halo CE decompilation team, this website does not provide Halo game data. Choose an XISO made from your own Xbox copy of Halo: Combat Evolved. Need help m",
+        "documentScrollHeight": 720
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": false,
+        "secondSampleSizedCanvases": [
+          "1280x720"
+        ],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/halo.png",
+        "capturedAt": "2026-10-10T08:02:46.468Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [],
+      "consoleWasmWorker": [],
+      "consoleErrors": [
+        {
+          "at": "2026-10-10T08:02:35.640Z",
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 403 ()",
+          "location": "https://mitchellhynes.com/v1/telemetry/runtime"
+        },
+        {
+          "at": "2026-10-10T08:02:35.654Z",
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 403 ()",
+          "location": "https://mitchellhynes.com/v1/telemetry/runtime"
+        },
+        {
+          "at": "2026-10-10T08:02:36.033Z",
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 403 ()",
+          "location": "https://mitchellhynes.com/v1/telemetry/runtime"
+        },
+        {
+          "at": "2026-10-10T08:02:36.623Z",
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 403 ()",
+          "location": "https://mitchellhynes.com/v1/telemetry/runtime"
+        }
+      ],
+      "pageErrors": [
+        {
+          "at": "2026-10-10T08:02:36.596Z",
+          "message": "Failed to execute 'postMessage' on 'Worker': SharedArrayBuffer transfer requires self.crossOriginIsolated."
+        }
+      ],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": true,
+        "matches": [],
+        "fileInputs": 1
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [
+        {
+          "label": "cross_origin_isolation_required",
+          "sample": "Muted Focus game Game settings Made by Mitchell Hynes. Learn more Click the game or Focus game to capture the mouse This page needs COOP/COEP headers for threaded WebAssembly. A - Space B - F X - E / …"
+        },
+        {
+          "label": "http_auth_or_limit_error",
+          "sample": "Failed to load resource: the server responded with a status of 403 ()"
+        }
+      ],
+      "hosts": {
+        "total": 4,
+        "adLike": [],
+        "list": [
+          {
+            "host": "mitchellhynes.com",
+            "requests": 73
+          },
+          {
+            "host": "challenges.cloudflare.com",
+            "requests": 3
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          },
+          {
+            "host": "halo-web-signaling.otherness-bugs.workers.dev",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 2171447,
+        "requestCount": 28,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 23,
+        "frameObservedMs": 238,
+        "observationMs": 10601,
+        "totalMs": 12078
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "canvas_present_static",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:02:46.497Z"
+    },
+    {
+      "id": "bo1",
+      "title": "Black Ops Zombies",
+      "url": "https://vel.gg/bo1z",
+      "ownFiles": false,
+      "startedAt": "2026-10-10T08:02:33.928Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (82 elements, 30 visible, 0 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://vel.gg/bo1z",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://vel.gg/bo1z",
+        "at": "2026-10-10T08:02:34.657Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:02:33.928Z",
+        "requestUrl": "https://vel.gg/bo1z",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://vel.gg/bo1z",
+        "contentType": "text/html",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:02:34.126Z",
+        "host": "vel.gg"
+      },
+      "dom": {
+        "url": "https://vel.gg/bo1z",
+        "title": "Zombies",
+        "readyState": "complete",
+        "elementCount": 82,
+        "visibleElementCount": 30,
+        "canvasCount": 0,
+        "sizedCanvases": [],
+        "fileInputs": 0,
+        "scriptCount": 2,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 71,
+        "bodyText": "Start on round 100 with up to 300 zombies at once and no perk machines.",
+        "documentScrollHeight": 720
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": false,
+        "secondSampleSizedCanvases": [],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/bo1.png",
+        "capturedAt": "2026-10-10T08:02:46.344Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [],
+      "consoleWasmWorker": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": false,
+        "matches": [],
+        "fileInputs": 0
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [],
+      "hosts": {
+        "total": 3,
+        "adLike": [],
+        "list": [
+          {
+            "host": "vel.gg",
+            "requests": 38
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          },
+          {
+            "host": "static.cloudflareinsights.com",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 482574,
+        "requestCount": 35,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 37,
+        "frameObservedMs": 237,
+        "observationMs": 10660,
+        "totalMs": 12218
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "page_ui_observed",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:02:46.366Z"
+    },
+    {
+      "id": "quake3",
+      "title": "Quake III Arena",
+      "url": "https://q3.pieter.com/",
+      "ownFiles": false,
+      "startedAt": "2026-10-10T08:02:33.930Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (286 elements, 126 visible, 0 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://q3.pieter.com/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://q3.pieter.com/",
+        "at": "2026-10-10T08:02:38.442Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:02:33.930Z",
+        "requestUrl": "https://q3.pieter.com/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://q3.pieter.com/",
+        "contentType": "text/html; charset=UTF-8",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:02:35.701Z",
+        "host": "q3.pieter.com"
+      },
+      "dom": {
+        "url": "https://q3.pieter.com/",
+        "title": "Play Quake III Online - q3.pieter.com (Non-commercial and unofficial)",
+        "readyState": "complete",
+        "elementCount": 286,
+        "visibleElementCount": 126,
+        "canvasCount": 0,
+        "sizedCanvases": [],
+        "fileInputs": 0,
+        "scriptCount": 4,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 970,
+        "bodyText": "PLAY QUAKE III MULTIPLAYER ONLINE A non-commercial unofficial preservation project PLAY Now with mobile + gamepad support 35 PLAYERS ONLINE Nino nigakiller bob GWach kurl94 Player rRamal17 Tuffx 123 bb sike Max zex aFTERSHOCK kunal Barry blyat Abshyd Yo jrzzin jerk 2 Zo Carlos Tikitki V1n nooooooooo 55 lalabhuri keker johm TOP PLAYERS 24H 7D 30D ALL TIME 1 spolem 1737 kills 2 STALIN 1732 kills 3 Vuki_Tuki 1565 kills 4 gg 1342 kills 5 3nozzz 1123 kills 6 john 1018 kills 7 123 1004 kills 8 DEX 1002 kills 9 P0ts 867 kills 10 XEPOBO MHE 762 kills CURRENT MAP Q3DM7 NEXT MAP Q3DM9 IN 08:52 DAILY MATCH @ 01:30 ASIA/CALCUTTA 11:57:13 Notifications blocked by browser By pieter.com (an online computer history museum) + powered by Q3JS by @lukathedev. Unofficial fan project — non-commercial and not a",
+        "documentScrollHeight": 1373
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": true,
+        "secondSampleSizedCanvases": [],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/quake3.png",
+        "capturedAt": "2026-10-10T08:02:47.848Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [
+        {
+          "at": "2026-10-10T08:02:38.455Z",
+          "type": "error",
+          "text": "Blocked autofocusing on a <input> element in a cross-origin subframe.",
+          "location": "https://q3.pieter.com/",
+          "matched": [
+            "/blocked/i",
+            "/cross-origin/i"
+          ]
+        }
+      ],
+      "consoleWasmWorker": [],
+      "consoleErrors": [
+        {
+          "at": "2026-10-10T08:02:38.455Z",
+          "type": "error",
+          "text": "Blocked autofocusing on a <input> element in a cross-origin subframe.",
+          "location": "https://q3.pieter.com/"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": true,
+        "matches": [
+          "/browse/i"
+        ],
+        "fileInputs": 0
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [
+        {
+          "label": "cross_origin_focus_blocked",
+          "sample": "Blocked autofocusing on a <input> element in a cross-origin subframe."
+        }
+      ],
+      "hosts": {
+        "total": 5,
+        "adLike": [],
+        "list": [
+          {
+            "host": "q3.pieter.com",
+            "requests": 5
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          },
+          {
+            "host": "scripts.simpleanalyticscdn.com",
+            "requests": 1
+          },
+          {
+            "host": "pieter.com",
+            "requests": 1
+          },
+          {
+            "host": "queue.simpleanalyticscdn.com",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 10298709,
+        "requestCount": 5,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 33,
+        "frameObservedMs": 237,
+        "observationMs": 10601,
+        "totalMs": 12147
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "page_ui_observed",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:02:47.875Z"
+    },
+    {
+      "id": "surf",
+      "title": "CS Surf",
+      "url": "https://surfd.net/",
+      "ownFiles": false,
+      "startedAt": "2026-10-10T08:02:46.366Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (872 elements, 183 visible, 1 canvas); session asset budget exceeded at 52 MB (estimate) — cancellation not established",
+      "clicksPerformed": 0,
+      "frameDestination": "https://surfd.net/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://surfd.net/",
+        "at": "2026-10-10T08:02:46.815Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:02:46.366Z",
+        "requestUrl": "https://surfd.net/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://surfd.net/",
+        "contentType": "text/html; charset=utf-8",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:02:46.473Z",
+        "host": "surfd.net"
+      },
+      "dom": {
+        "url": "https://surfd.net/",
+        "title": "Surfd — Classic surf",
+        "readyState": "complete",
+        "elementCount": 872,
+        "visibleElementCount": 183,
+        "canvasCount": 1,
+        "sizedCanvases": [
+          "300x150"
+        ],
+        "fileInputs": 0,
+        "scriptCount": 2,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 1057,
+        "bodyText": "surfd. Surf the web. Play surf Records Settings Sign in Discord ↗ Practice facility Free to play. No download. Desktop · Keyboard & mouse How to surf + Notes & credits Privacy Terms Play — Surfd SURF CLIENT / 01 Online Solo Find map Sort Collection Name Difficulty Course type Map Type Tier Boreas Linear T1 Utopia Linear T1 Mesa Linear T1 Demise Linear T1 Kitsune Staged T1 Aircontrol Linear T1 Lux Linear T1 Nyx Linear T1 Reprise Linear T2 Fornax Linear T1 Beginner Staged T1 Year3000 Staged T1 Ace Staged T1 Legends Linear T1 Eclipse Staged T2 Summer Staged T2 Forbidden Ways Linear T2 Tendies Linear T1 Derpis Staged T1 Prelude Linear T1 SELECTED COURSE Boreas surf_boreas · by Syncronyze Snowy ravines, long glass ramps and high-speed transfers. Course Linear · 2 checkpoints Difficulty Tier 1 L",
+        "documentScrollHeight": 720
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": true,
+        "elementCountDelta": 0,
+        "bodyTextChanged": false,
+        "secondSampleSizedCanvases": [
+          "1280x720"
+        ],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/surf.png",
+        "capturedAt": "2026-10-10T08:02:51.748Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [],
+      "consoleWasmWorker": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": false,
+        "matches": [],
+        "fileInputs": 0
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [
+        {
+          "label": "account_or_signin_ui",
+          "sample": "surfd. Surf the web. Play surf Records Settings Sign in Discord ↗ Practice facility Free to play. No download. Desktop · Keyboard & mouse How to surf + Notes & credits Privacy Terms Play — Surfd SURF …"
+        }
+      ],
+      "hosts": {
+        "total": 2,
+        "adLike": [],
+        "list": [
+          {
+            "host": "surfd.net",
+            "requests": 29
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 54821106,
+        "requestCount": 20,
+        "budgetBytes": 52428800,
+        "budgetExceeded": true,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 21,
+        "frameObservedMs": 228,
+        "observationMs": 1995,
+        "totalMs": 5275
+      },
+      "limitations": [
+        "asset budget exceeded: 52 MB (estimate) against the 50 MB budget; enforcement was inactive for this run so the page was not actually prevented from continuing — cancellation not established, and the observed document state is an early snapshot"
+      ],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "canvas_present_and_changing",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:02:51.774Z"
+    },
+    {
+      "id": "quake",
+      "title": "Quake",
+      "url": "https://q1.pieter.com/",
+      "ownFiles": false,
+      "startedAt": "2026-10-10T08:02:46.497Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (139 elements, 113 visible, 0 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://q1.pieter.com/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://q1.pieter.com/",
+        "at": "2026-10-10T08:02:47.710Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:02:46.497Z",
+        "requestUrl": "https://q1.pieter.com/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://q1.pieter.com/",
+        "contentType": "text/html",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:02:47.013Z",
+        "host": "q1.pieter.com"
+      },
+      "dom": {
+        "url": "https://q1.pieter.com/",
+        "title": "Play QuakeWorld Multiplayer Online - q1.pieter.com (Non-commercial and unofficial)",
+        "readyState": "complete",
+        "elementCount": 139,
+        "visibleElementCount": 113,
+        "canvasCount": 0,
+        "sizedCanvases": [],
+        "fileInputs": 0,
+        "scriptCount": 5,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 963,
+        "bodyText": "PLAY QUAKEWORLD MULTIPLAYER ONLINE A non-commercial unofficial preservation project by pieter.com LOW-LATENCY · CLIENT-SIDE PREDICTION PLAY Real QuakeWorld in your browser · up to 8 players · no install 23 PLAYERS ONLINE · MAP E1M7 jk alex Player pablosu aaaa Player crown WebProbe null Gebor test Kk lol91 rehan aaa gruphete skvirtuoz ffdfda bangput Player ahr frank pilingrueso Notifications blocked by browser DAILY MATCH @ 01:30 ASIA/CALCUTTA 11:57:02 TOP PLAYERS 24H 7D ALL 1 iv.dog 931 2 asd 678 3 Hello run 533 4 Rosteeld 512 5 aeonaeonaeonaeo 497 6 ni666erfa666ot 399 7 balls555 366 8 vexAU 353 9 qu4rtz 350 10 123 332 By pieter.com (an online computer history museum). Powered by FTE QuakeWorld. Unofficial fan project — non-commercial and not affiliated with id Software. Prefer the classic",
+        "documentScrollHeight": 1119
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": -1,
+        "bodyTextChanged": true,
+        "secondSampleSizedCanvases": [],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/quake.png",
+        "capturedAt": "2026-10-10T08:02:59.106Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [
+        {
+          "at": "2026-10-10T08:02:47.724Z",
+          "type": "error",
+          "text": "Blocked autofocusing on a <input> element in a cross-origin subframe.",
+          "location": "https://q1.pieter.com/",
+          "matched": [
+            "/blocked/i",
+            "/cross-origin/i"
+          ]
+        }
+      ],
+      "consoleWasmWorker": [],
+      "consoleErrors": [
+        {
+          "at": "2026-10-10T08:02:47.724Z",
+          "type": "error",
+          "text": "Blocked autofocusing on a <input> element in a cross-origin subframe.",
+          "location": "https://q1.pieter.com/"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": true,
+        "matches": [
+          "/browse/i"
+        ],
+        "fileInputs": 0
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [
+        {
+          "label": "cross_origin_focus_blocked",
+          "sample": "Blocked autofocusing on a <input> element in a cross-origin subframe."
+        }
+      ],
+      "hosts": {
+        "total": 5,
+        "adLike": [],
+        "list": [
+          {
+            "host": "q1.pieter.com",
+            "requests": 6
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          },
+          {
+            "host": "pieter.com",
+            "requests": 1
+          },
+          {
+            "host": "scripts.simpleanalyticscdn.com",
+            "requests": 1
+          },
+          {
+            "host": "queue.simpleanalyticscdn.com",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 149849,
+        "requestCount": 7,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 23,
+        "frameObservedMs": 224,
+        "observationMs": 10648,
+        "totalMs": 12093
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "page_ui_observed",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:02:59.123Z"
+    },
+    {
+      "id": "quake2",
+      "title": "Quake II",
+      "url": "https://q2.pieter.com/",
+      "ownFiles": false,
+      "startedAt": "2026-10-10T08:02:47.875Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (116 elements, 93 visible, 0 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://q2.pieter.com/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://q2.pieter.com/",
+        "at": "2026-10-10T08:02:49.090Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:02:47.875Z",
+        "requestUrl": "https://q2.pieter.com/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://q2.pieter.com/",
+        "contentType": "text/html",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:02:48.365Z",
+        "host": "q2.pieter.com"
+      },
+      "dom": {
+        "url": "https://q2.pieter.com/",
+        "title": "Play Quake II Multiplayer Online - q2.pieter.com (Non-commercial and unofficial)",
+        "readyState": "complete",
+        "elementCount": 116,
+        "visibleElementCount": 93,
+        "canvasCount": 0,
+        "sizedCanvases": [],
+        "fileInputs": 0,
+        "scriptCount": 5,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 778,
+        "bodyText": "PLAY QUAKE II MULTIPLAYER ONLINE A non-commercial unofficial preservation project by pieter.com PLAY Real Quake II in your browser · up to 8 players · no install 8 PLAYERS ONLINE · MAP Q2DM3 Player tristan Careetaa markled rafael pol folterknuut Player Notifications blocked by browser DAILY MATCH @ 01:30 ASIA/CALCUTTA 11:57:00 TOP PLAYERS 24H 7D ALL 1 Drowsy 533 2 Kenny POwers 239 3 alarion 232 4 Deivid 181 5 pichulita 153 6 Buns 122 7 123 117 8 sp00ky 117 9 elchicojulio 116 10 asd 113 By pieter.com (an online computer history museum). Powered by FTE QuakeWorld. Unofficial fan project — non-commercial and not affiliated with id Software. Also play: DroneSim · Fly · Quake · Quake III · RTCW · Urban Terror · Doom · PieterOS · Windows XP · Windows 3.11 · Radio · Lofi ATC",
+        "documentScrollHeight": 1074
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": true,
+        "secondSampleSizedCanvases": [],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/quake2.png",
+        "capturedAt": "2026-10-10T08:03:00.411Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [
+        {
+          "at": "2026-10-10T08:02:49.104Z",
+          "type": "error",
+          "text": "Blocked autofocusing on a <input> element in a cross-origin subframe.",
+          "location": "https://q2.pieter.com/",
+          "matched": [
+            "/blocked/i",
+            "/cross-origin/i"
+          ]
+        }
+      ],
+      "consoleWasmWorker": [],
+      "consoleErrors": [
+        {
+          "at": "2026-10-10T08:02:49.104Z",
+          "type": "error",
+          "text": "Blocked autofocusing on a <input> element in a cross-origin subframe.",
+          "location": "https://q2.pieter.com/"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": true,
+        "matches": [
+          "/browse/i"
+        ],
+        "fileInputs": 0
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [
+        {
+          "label": "cross_origin_focus_blocked",
+          "sample": "Blocked autofocusing on a <input> element in a cross-origin subframe."
+        }
+      ],
+      "hosts": {
+        "total": 5,
+        "adLike": [],
+        "list": [
+          {
+            "host": "q2.pieter.com",
+            "requests": 6
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          },
+          {
+            "host": "pieter.com",
+            "requests": 1
+          },
+          {
+            "host": "scripts.simpleanalyticscdn.com",
+            "requests": 1
+          },
+          {
+            "host": "queue.simpleanalyticscdn.com",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 58635,
+        "requestCount": 7,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 33,
+        "frameObservedMs": 233,
+        "observationMs": 10670,
+        "totalMs": 12046
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "page_ui_observed",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:03:00.433Z"
+    },
+    {
+      "id": "rtcw",
+      "title": "Return to Castle Wolfenstein",
+      "url": "https://rtcw.pieter.com/",
+      "ownFiles": false,
+      "startedAt": "2026-10-10T08:02:51.774Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (137 elements, 105 visible, 0 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://rtcw.pieter.com/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://rtcw.pieter.com/",
+        "at": "2026-10-10T08:02:52.948Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:02:51.774Z",
+        "requestUrl": "https://rtcw.pieter.com/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://rtcw.pieter.com/",
+        "contentType": "text/html",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:02:52.257Z",
+        "host": "rtcw.pieter.com"
+      },
+      "dom": {
+        "url": "https://rtcw.pieter.com/",
+        "title": "Play Return to Castle Wolfenstein Multiplayer Online - rtcw.pieter.com (Non-commercial and unofficial)",
+        "readyState": "complete",
+        "elementCount": 137,
+        "visibleElementCount": 105,
+        "canvasCount": 0,
+        "sizedCanvases": [],
+        "fileInputs": 0,
+        "scriptCount": 6,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 1006,
+        "bodyText": "RTCW PLAY RETURN TO CASTLE WOLFENSTEIN MULTIPLAYER ONLINE A non-commercial unofficial preservation project by pieter.com MP_BEACH · MULTIPLAYER IN YOUR BROWSER PLAY Real RTCW multiplayer engine (iortcw) compiled to WebAssembly. ⚠ First load downloads ~380 MB of game data (cached after). Desktop + Chrome recommended. ● 16 PLAYERS ONLINE · MP_DEPOT Player Player1 j gbgbgb mAESTRIC suraj vengence das keker lucky micheal v laude thecoderinside Parhon ikamax21 Notifications blocked by browser DAILY MATCH @ 01:30 ASIA/CALCUTTA 11:56:57 TOP PLAYERS 24H 7D ALL 1 HUMBIS 623 2 hgj 539 3 katsura 391 4 coconuts 281 5 123 269 6 asd 247 7 test 219 8 BUDDACE 202 9 dd 163 10 Jun!or M!nt 156 By pieter.com (an online computer history museum). Engine: iortcw + Wwasm. Unofficial fan project — non-commercial a",
+        "documentScrollHeight": 964
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": true,
+        "secondSampleSizedCanvases": [],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/rtcw.png",
+        "capturedAt": "2026-10-10T08:03:04.422Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [
+        {
+          "at": "2026-10-10T08:02:52.962Z",
+          "type": "error",
+          "text": "Blocked autofocusing on a <input> element in a cross-origin subframe.",
+          "location": "https://rtcw.pieter.com/",
+          "matched": [
+            "/blocked/i",
+            "/cross-origin/i"
+          ]
+        }
+      ],
+      "consoleWasmWorker": [],
+      "consoleErrors": [
+        {
+          "at": "2026-10-10T08:02:52.962Z",
+          "type": "error",
+          "text": "Blocked autofocusing on a <input> element in a cross-origin subframe.",
+          "location": "https://rtcw.pieter.com/"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": true,
+        "matches": [
+          "/browse/i"
+        ],
+        "fileInputs": 0
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [
+        {
+          "label": "cross_origin_focus_blocked",
+          "sample": "Blocked autofocusing on a <input> element in a cross-origin subframe."
+        }
+      ],
+      "hosts": {
+        "total": 5,
+        "adLike": [],
+        "list": [
+          {
+            "host": "rtcw.pieter.com",
+            "requests": 5
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          },
+          {
+            "host": "pieter.com",
+            "requests": 1
+          },
+          {
+            "host": "scripts.simpleanalyticscdn.com",
+            "requests": 1
+          },
+          {
+            "host": "queue.simpleanalyticscdn.com",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 12739257,
+        "requestCount": 5,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 32,
+        "frameObservedMs": 243,
+        "observationMs": 10785,
+        "totalMs": 12165
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "page_ui_observed",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:03:04.442Z"
+    },
+    {
+      "id": "urbanterror",
+      "title": "Urban Terror",
+      "url": "https://ut.pieter.com/",
+      "ownFiles": false,
+      "startedAt": "2026-10-10T08:02:59.124Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (136 elements, 106 visible, 0 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://ut.pieter.com/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://ut.pieter.com/",
+        "at": "2026-10-10T08:03:00.350Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:02:59.124Z",
+        "requestUrl": "https://ut.pieter.com/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://ut.pieter.com/",
+        "contentType": "text/html",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:02:59.666Z",
+        "host": "ut.pieter.com"
+      },
+      "dom": {
+        "url": "https://ut.pieter.com/",
+        "title": "Play Urban Terror Multiplayer Online - ut.pieter.com (Non-commercial and unofficial)",
+        "readyState": "complete",
+        "elementCount": 136,
+        "visibleElementCount": 106,
+        "canvasCount": 0,
+        "sizedCanvases": [],
+        "fileInputs": 0,
+        "scriptCount": 6,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 1220,
+        "bodyText": "PLAY URBAN TERROR MULTIPLAYER ONLINE Urban Terror is made by FrozenSand. This is an unofficial, non-commercial web-based preservation. CASA · TURNPIKE · ABBEY · UPTOWN · MORE · MULTIPLAYER IN YOUR BROWSER PLAY Real Urban Terror engine (ioUrbanTerror) compiled to WebAssembly. ⚠ First load downloads game data (cached after). Desktop + Chrome recommended. ● 16 PLAYERS ONLINE · MAP UT4_CASA diddler pobegun -gto- Inkx lAWLIET jah soh tom Player lol MeATTT noctiere Zero FANOG3 tbirds29 Player Notifications blocked by browser DAILY MATCH @ 01:30 ASIA/CALCUTTA 11:56:49 TOP PLAYERS 24H 7D ALL 1 Player 4442 2 myller 1973 3 crqr 1737 4 NME 1466 5 NotionBackups.com 1441 6 Cuz 1370 7 0000000000 1353 8 javi 1276 9 Qais 1240 10 HiEnA 1114 By pieter.com (an online computer history museum). Urban Terror is",
+        "documentScrollHeight": 1037
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 1,
+        "bodyTextChanged": true,
+        "secondSampleSizedCanvases": [],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/urbanterror.png",
+        "capturedAt": "2026-10-10T08:03:11.829Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [
+        {
+          "at": "2026-10-10T08:03:00.364Z",
+          "type": "error",
+          "text": "Blocked autofocusing on a <input> element in a cross-origin subframe.",
+          "location": "https://ut.pieter.com/",
+          "matched": [
+            "/blocked/i",
+            "/cross-origin/i"
+          ]
+        }
+      ],
+      "consoleWasmWorker": [],
+      "consoleErrors": [
+        {
+          "at": "2026-10-10T08:03:00.364Z",
+          "type": "error",
+          "text": "Blocked autofocusing on a <input> element in a cross-origin subframe.",
+          "location": "https://ut.pieter.com/"
+        }
+      ],
+      "pageErrors": [],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": true,
+        "matches": [
+          "/browse/i"
+        ],
+        "fileInputs": 0
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [
+        {
+          "label": "cross_origin_focus_blocked",
+          "sample": "Blocked autofocusing on a <input> element in a cross-origin subframe."
+        }
+      ],
+      "hosts": {
+        "total": 5,
+        "adLike": [],
+        "list": [
+          {
+            "host": "ut.pieter.com",
+            "requests": 7
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          },
+          {
+            "host": "pieter.com",
+            "requests": 1
+          },
+          {
+            "host": "scripts.simpleanalyticscdn.com",
+            "requests": 1
+          },
+          {
+            "host": "queue.simpleanalyticscdn.com",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 9219696,
+        "requestCount": 8,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 23,
+        "frameObservedMs": 227,
+        "observationMs": 10717,
+        "totalMs": 12163
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "page_ui_observed",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:03:11.860Z"
+    },
+    {
+      "id": "webxash",
+      "title": "Half-Life / Counter-Strike 1.6",
+      "url": "https://x8bitrain.github.io/webXash/",
+      "ownFiles": true,
+      "startedAt": "2026-10-10T08:03:00.433Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (63 elements, 53 visible, 1 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://x8bitrain.github.io/webXash/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://x8bitrain.github.io/webXash/",
+        "at": "2026-10-10T08:03:00.799Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:03:00.433Z",
+        "requestUrl": "https://x8bitrain.github.io/webXash/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://x8bitrain.github.io/webXash/",
+        "contentType": "text/html; charset=utf-8",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:03:00.501Z",
+        "host": "x8bitrain.github.io"
+      },
+      "dom": {
+        "url": "https://x8bitrain.github.io/webXash/",
+        "title": "WebXash",
+        "readyState": "complete",
+        "elementCount": 63,
+        "visibleElementCount": 53,
+        "canvasCount": 1,
+        "sizedCanvases": [
+          "300x150"
+        ],
+        "fileInputs": 1,
+        "scriptCount": 1,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 177,
+        "bodyText": "Half-Life Counter-Strike HLDM (85M) Uplink (45M) Day One (78M) Start Demo Open game Folder Open ZIP Fullscreen sv_cheats 1 Console Add Remove Download Instructions GitHub Xash3D",
+        "documentScrollHeight": 720
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": false,
+        "secondSampleSizedCanvases": [
+          "300x150"
+        ],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/webxash.png",
+        "capturedAt": "2026-10-10T08:03:12.619Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [],
+      "consoleWasmWorker": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": true,
+        "matches": [],
+        "fileInputs": 1
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [],
+      "hosts": {
+        "total": 2,
+        "adLike": [],
+        "list": [
+          {
+            "host": "x8bitrain.github.io",
+            "requests": 4
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 63459,
+        "requestCount": 4,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 35,
+        "frameObservedMs": 235,
+        "observationMs": 10739,
+        "totalMs": 12118
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "canvas_present_static",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:03:12.641Z"
+    },
+    {
+      "id": "halomobile",
+      "title": "Halo CE Mobile",
+      "url": "https://hcemobile.com/",
+      "ownFiles": true,
+      "startedAt": "2026-10-10T08:03:04.442Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (773 elements, 199 visible, 2 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://hcemobile.com/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://hcemobile.com/",
+        "at": "2026-10-10T08:03:05.611Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:03:04.442Z",
+        "requestUrl": "https://hcemobile.com/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://hcemobile.com/",
+        "contentType": "text/html; charset=utf-8",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:03:04.494Z",
+        "host": "hcemobile.com"
+      },
+      "dom": {
+        "url": "https://hcemobile.com/",
+        "title": "HCEMobile - Halo: Combat Evolved Mobile",
+        "readyState": "complete",
+        "elementCount": 773,
+        "visibleElementCount": 199,
+        "canvasCount": 2,
+        "sizedCanvases": [
+          "300x150",
+          "300x150"
+        ],
+        "fileInputs": 3,
+        "scriptCount": 7,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 3654,
+        "bodyText": "ESPAÑOL COMBAT EVOLVED · ON YOUR PHONE HALO CE MOBILE Install the app to play full screen, keep your saved games, and play offline. INSTALL ON IPHONE / IPAD INSTALL ON ANDROID NEW HERE? HOW TO PLAY Install, add your game, play online, controls CONTINUE IN THE BROWSER An unofficial fan project created under Microsoft's Game Content Usage Rules using assets from Halo: Combat Evolved. Not endorsed by or affiliated with Microsoft. Halo © Microsoft Corporation. NEW HERE? HOW TO PLAY Install, add your game, play online, controls ESPAÑOL HALO CE MOBILE Halo: Combat Evolved, rebuilt from its decompilation to run in your browser. Threads: unavailable. Reload the page; if this message stays, your browser is too old. Graphics: WebGL 2 in a worker (iOS 17 or later) Private file storage Using a control",
+        "documentScrollHeight": 2483
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": false,
+        "secondSampleSizedCanvases": [
+          "300x150",
+          "300x150"
+        ],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/halomobile.png",
+        "capturedAt": "2026-10-10T08:03:16.769Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [],
+      "consoleWasmWorker": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": true,
+        "matches": [
+          "/browse/i"
+        ],
+        "fileInputs": 3
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [
+        {
+          "label": "app_install_prompt",
+          "sample": "ESPAÑOL COMBAT EVOLVED · ON YOUR PHONE HALO CE MOBILE Install the app to play full screen, keep your saved games, and play offline. INSTALL ON IPHONE / IPAD INSTALL ON ANDROID NEW HERE? HOW TO PLAY In…"
+        }
+      ],
+      "hosts": {
+        "total": 3,
+        "adLike": [],
+        "list": [
+          {
+            "host": "hcemobile.com",
+            "requests": 28
+          },
+          {
+            "host": "halo-ce-mobile.hce-mobile.workers.dev",
+            "requests": 2
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 743050,
+        "requestCount": 29,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 34,
+        "frameObservedMs": 246,
+        "observationMs": 10647,
+        "totalMs": 12274
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "canvas_present_static",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:03:16.793Z"
+    },
+    {
+      "id": "pes6",
+      "title": "PES 6",
+      "url": "https://pes6.optijuegos.net/",
+      "ownFiles": false,
+      "startedAt": "2026-10-10T08:03:11.860Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (404 elements, 106 visible, 1 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://pes6.optijuegos.net/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://www.google.com/recaptcha/api2/aframe",
+        "at": "2026-10-10T08:03:15.823Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:03:11.860Z",
+        "requestUrl": "https://pes6.optijuegos.net/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://pes6.optijuegos.net/",
+        "contentType": "text/html; charset=utf-8",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:03:12.287Z",
+        "host": "pes6.optijuegos.net"
+      },
+      "dom": {
+        "url": "https://pes6.optijuegos.net/",
+        "title": "PES 6 Web Online Port",
+        "readyState": "complete",
+        "elementCount": 404,
+        "visibleElementCount": 106,
+        "canvasCount": 1,
+        "sizedCanvases": [
+          "480x272"
+        ],
+        "fileInputs": 3,
+        "scriptCount": 36,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 1916,
+        "bodyText": "PES 6 Web Online Pro Evolution Soccer 6 (PSP) recompilado para el navegador Jugar con relatos originales españoles (precarga) Jugar con relatos de Mariano Closs, Argentina (precarga) Jugar sin relatos (Más ligero) 75 fps Pantalla completa Controles Acerca de PES 6 Web Online y preguntas frecuentes GENERAL GRÁFICOS PARTIDAS ONLINE DATOS CHAT LOG Los ajustes se guardan en este navegador al cambiarlos. Volumen, frame rate, resolución interna y suavizado se aplican al instante; el resto, al reiniciar el juego. AUDIO Volumen 100% INICIO Saltar intro No Sí Idioma (con saltar intro) El último usado Español English Français Deutsch Italiano DESCARGAS Aviso de carga sobre el juego Sí (por defecto) No Descargar el juego completo (unos 300 MB) No (se baja mientras jugás) Sí, en segundo plano CONTROLE",
+        "documentScrollHeight": 1115
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": false,
+        "secondSampleSizedCanvases": [
+          "480x272"
+        ],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/pes6.png",
+        "capturedAt": "2026-10-10T08:03:24.424Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [],
+      "consoleWasmWorker": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [
+        {
+          "at": "2026-10-10T08:03:13.566Z",
+          "url": "https://pes6.optijuegos.net/PES6Recomp.wasm.gz?probe=1791619393192",
+          "resourceType": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "at": "2026-10-10T08:03:15.319Z",
+          "url": "https://pagead2.googlesyndication.com/pagead/ping?e=1",
+          "resourceType": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "at": "2026-10-10T08:03:15.320Z",
+          "url": "https://pagead2.googlesyndication.com/pagead/ping?e=1",
+          "resourceType": "fetch",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": true,
+        "matches": [],
+        "fileInputs": 3
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [],
+      "hosts": {
+        "total": 11,
+        "adLike": [
+          "pagead2.googlesyndication.com",
+          "googleads.g.doubleclick.net"
+        ],
+        "list": [
+          {
+            "host": "pes6.optijuegos.net",
+            "requests": 43
+          },
+          {
+            "host": "pagead2.googlesyndication.com",
+            "requests": 8
+          },
+          {
+            "host": "googleads.g.doubleclick.net",
+            "requests": 3
+          },
+          {
+            "host": "ep2.adtrafficquality.google",
+            "requests": 3
+          },
+          {
+            "host": "gitlab.com",
+            "requests": 2
+          },
+          {
+            "host": "ep1.adtrafficquality.google",
+            "requests": 2
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          },
+          {
+            "host": "fonts.googleapis.com",
+            "requests": 1
+          },
+          {
+            "host": "static.cloudflareinsights.com",
+            "requests": 1
+          },
+          {
+            "host": "fonts.gstatic.com",
+            "requests": 1
+          },
+          {
+            "host": "www.google.com",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 21114953,
+        "requestCount": 17,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 37,
+        "frameObservedMs": 237,
+        "observationMs": 10714,
+        "totalMs": 12137
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "canvas_present_static",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:03:24.451Z"
+    },
+    {
+      "id": "skate",
+      "title": "Skate 3 — Fan Game",
+      "url": "https://skate.aaddpp.lol/",
+      "ownFiles": true,
+      "startedAt": "2026-10-10T08:03:12.641Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (73 elements, 21 visible, 1 canvas); session asset budget exceeded at 2245 MB (estimate) — cancellation not established",
+      "clicksPerformed": 0,
+      "frameDestination": "https://skate.aaddpp.lol/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://skate.aaddpp.lol/",
+        "at": "2026-10-10T08:03:14.539Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:03:12.641Z",
+        "requestUrl": "https://skate.aaddpp.lol/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://skate.aaddpp.lol/",
+        "contentType": "text/html; charset=utf-8",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:03:13.220Z",
+        "host": "skate.aaddpp.lol"
+      },
+      "dom": {
+        "url": "https://skate.aaddpp.lol/",
+        "title": "skate. 3 — Fan Game",
+        "readyState": "complete",
+        "elementCount": 73,
+        "visibleElementCount": 21,
+        "canvasCount": 1,
+        "sizedCanvases": [
+          "300x150"
+        ],
+        "fileInputs": 0,
+        "scriptCount": 2,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 79,
+        "bodyText": "Connecting to the game server and the game data… DISCORD DONATE BUY ME A COFFEE",
+        "documentScrollHeight": 720
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": false,
+        "secondSampleSizedCanvases": [
+          "300x150"
+        ],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/skate.png",
+        "capturedAt": "2026-10-10T08:03:17.266Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [],
+      "consoleWasmWorker": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [
+        {
+          "at": "2026-10-10T08:03:15.906Z",
+          "url": "https://gamedata.xposed.wtf/skate3-game-data.zip",
+          "resourceType": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "at": "2026-10-10T08:03:16.856Z",
+          "url": "https://gamedata.xposed.wtf/skate3-game-data-7.zip",
+          "resourceType": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "at": "2026-10-10T08:03:16.965Z",
+          "url": "https://gamedata.xposed.wtf/skate3-game-data-5.zip",
+          "resourceType": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "at": "2026-10-10T08:03:16.983Z",
+          "url": "https://gamedata.xposed.wtf/skate3-game-data-3.zip",
+          "resourceType": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "at": "2026-10-10T08:03:16.983Z",
+          "url": "https://gamedata.xposed.wtf/skate3-game-data-2.zip",
+          "resourceType": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "at": "2026-10-10T08:03:16.987Z",
+          "url": "https://gamedata.xposed.wtf/skate3-game-data-6.zip",
+          "resourceType": "fetch",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "at": "2026-10-10T08:03:16.989Z",
+          "url": "https://gamedata.xposed.wtf/skate3-game-data-4.zip",
+          "resourceType": "fetch",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": false,
+        "matches": [],
+        "fileInputs": 0
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [],
+      "hosts": {
+        "total": 4,
+        "adLike": [],
+        "list": [
+          {
+            "host": "gamedata.xposed.wtf",
+            "requests": 23
+          },
+          {
+            "host": "skate.aaddpp.lol",
+            "requests": 9
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          },
+          {
+            "host": "static.cloudflareinsights.com",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 2353936171,
+        "requestCount": 28,
+        "budgetBytes": 52428800,
+        "budgetExceeded": true,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 22,
+        "frameObservedMs": 222,
+        "observationMs": 2623,
+        "totalMs": 4046
+      },
+      "limitations": [
+        "asset budget exceeded: 2245 MB (estimate) against the 50 MB budget; enforcement was inactive for this run so the page was not actually prevented from continuing — cancellation not established, and the observed document state is an early snapshot"
+      ],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "canvas_present_static",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:03:17.287Z"
+    },
+    {
+      "id": "vicecity",
+      "title": "GTA: Vice City",
+      "url": "https://joncodeofficial.github.io/gta-vice-city-wasm/",
+      "ownFiles": true,
+      "startedAt": "2026-10-10T08:03:16.793Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (190 elements, 109 visible, 1 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://joncodeofficial.github.io/gta-vice-city-wasm/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://joncodeofficial.github.io/gta-vice-city-wasm/",
+        "at": "2026-10-10T08:03:17.357Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:03:16.793Z",
+        "requestUrl": "https://joncodeofficial.github.io/gta-vice-city-wasm/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://joncodeofficial.github.io/gta-vice-city-wasm/",
+        "contentType": "text/html; charset=utf-8",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:03:16.864Z",
+        "host": "joncodeofficial.github.io"
+      },
+      "dom": {
+        "url": "https://joncodeofficial.github.io/gta-vice-city-wasm/",
+        "title": "GTA: Vice City — WASM Port",
+        "readyState": "complete",
+        "elementCount": 190,
+        "visibleElementCount": 109,
+        "canvasCount": 1,
+        "sizedCanvases": [
+          "300x150"
+        ],
+        "fileInputs": 3,
+        "scriptCount": 7,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 1296,
+        "bodyText": "Grand Theft Auto: Vice City Import your game.tar.gz once — it's stored locally in your browser via OPFS and served by a Service Worker. No CDN, no external server, no recurring downloads. After the first import it works fully offline. Import required Setup The imported archive is stored locally by this browser, so you can come back later without reimporting unless you want to replace it. Download game.tar.gz SELECT GAME.TAR.GZ No file selected Reset game data Enable cheats Start to play Saves Skins DISCLAIMER: Unofficial fan project, not affiliated with, endorsed by or sponsored by Rockstar Games or Take-Two Interactive. It does not include the game's data files, and you need your own legitimate copy of Grand Theft Auto: Vice City to play. All trademarks and copyrights belong to their resp",
+        "documentScrollHeight": 1348
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": false,
+        "secondSampleSizedCanvases": [
+          "300x150"
+        ],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/vicecity.png",
+        "capturedAt": "2026-10-10T08:03:28.968Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [],
+      "consoleWasmWorker": [
+        {
+          "at": "2026-10-10T08:03:17.265Z",
+          "type": "log",
+          "text": "[setup] registering SW...",
+          "location": "https://joncodeofficial.github.io/gta-vice-city-wasm/assets/index-DWiBPar2.js",
+          "matched": [
+            "/wasm/i"
+          ]
+        },
+        {
+          "at": "2026-10-10T08:03:17.326Z",
+          "type": "log",
+          "text": "[setup] SW ready",
+          "location": "https://joncodeofficial.github.io/gta-vice-city-wasm/assets/index-DWiBPar2.js",
+          "matched": [
+            "/wasm/i"
+          ]
+        },
+        {
+          "at": "2026-10-10T08:03:17.326Z",
+          "type": "log",
+          "text": "[setup] SW not yet controlling page — reloading...",
+          "location": "https://joncodeofficial.github.io/gta-vice-city-wasm/assets/index-DWiBPar2.js",
+          "matched": [
+            "/wasm/i"
+          ]
+        },
+        {
+          "at": "2026-10-10T08:03:17.438Z",
+          "type": "log",
+          "text": "[setup] registering SW...",
+          "location": "https://joncodeofficial.github.io/gta-vice-city-wasm/assets/index-DWiBPar2.js",
+          "matched": [
+            "/wasm/i"
+          ]
+        },
+        {
+          "at": "2026-10-10T08:03:17.441Z",
+          "type": "log",
+          "text": "[setup] SW ready",
+          "location": "https://joncodeofficial.github.io/gta-vice-city-wasm/assets/index-DWiBPar2.js",
+          "matched": [
+            "/wasm/i"
+          ]
+        },
+        {
+          "at": "2026-10-10T08:03:17.443Z",
+          "type": "warning",
+          "text": "[waitForGameReady] attempt 1: OPFS marker '_game_ready' not found",
+          "location": "https://joncodeofficial.github.io/gta-vice-city-wasm/assets/index-DWiBPar2.js",
+          "matched": [
+            "/wasm/i"
+          ]
+        },
+        {
+          "at": "2026-10-10T08:03:17.596Z",
+          "type": "warning",
+          "text": "[waitForGameReady] attempt 2: OPFS marker '_game_ready' not found",
+          "location": "https://joncodeofficial.github.io/gta-vice-city-wasm/assets/index-DWiBPar2.js",
+          "matched": [
+            "/wasm/i"
+          ]
+        },
+        {
+          "at": "2026-10-10T08:03:17.596Z",
+          "type": "log",
+          "text": "[setup] game ready in OPFS: false OPFS marker '_game_ready' not found",
+          "location": "https://joncodeofficial.github.io/gta-vice-city-wasm/assets/index-DWiBPar2.js",
+          "matched": [
+            "/wasm/i"
+          ]
+        },
+        {
+          "at": "2026-10-10T08:03:17.596Z",
+          "type": "log",
+          "text": "[setup] waiting for file selection",
+          "location": "https://joncodeofficial.github.io/gta-vice-city-wasm/assets/index-DWiBPar2.js",
+          "matched": [
+            "/wasm/i"
+          ]
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [
+        {
+          "at": "2026-10-10T08:03:17.315Z",
+          "url": "https://joncodeofficial.github.io/gta-vice-city-wasm/intro.mp4",
+          "resourceType": "media",
+          "failure": "net::ERR_ABORTED"
+        },
+        {
+          "at": "2026-10-10T08:03:17.454Z",
+          "url": "https://joncodeofficial.github.io/gta-vice-city-wasm/intro.mp4",
+          "resourceType": "media",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": true,
+        "matches": [
+          "/browse/i",
+          "/\\.tar\\.gz/i"
+        ],
+        "fileInputs": 3
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [],
+      "hosts": {
+        "total": 2,
+        "adLike": [],
+        "list": [
+          {
+            "host": "joncodeofficial.github.io",
+            "requests": 20
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 16846607,
+        "requestCount": 20,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 23,
+        "frameObservedMs": 226,
+        "observationMs": 10696,
+        "totalMs": 12104
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "canvas_present_static",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:03:28.986Z"
+    },
+    {
+      "id": "simpsons",
+      "title": "The Simpsons: Hit & Run",
+      "url": "https://shar-wasm.cjoseph.workers.dev/?skipmovie",
+      "ownFiles": false,
+      "startedAt": "2026-10-10T08:03:17.287Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (35 elements, 7 visible, 1 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://shar-wasm.cjoseph.workers.dev/?skipmovie",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://shar-wasm.cjoseph.workers.dev/?skipmovie",
+        "at": "2026-10-10T08:03:18.929Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:03:17.287Z",
+        "requestUrl": "https://shar-wasm.cjoseph.workers.dev/?skipmovie",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://shar-wasm.cjoseph.workers.dev/?skipmovie",
+        "contentType": "text/html; charset=utf-8",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:03:18.417Z",
+        "host": "shar-wasm.cjoseph.workers.dev"
+      },
+      "dom": {
+        "url": "https://shar-wasm.cjoseph.workers.dev/?skipmovie",
+        "title": "The Simpsons: Hit & Run - WASM",
+        "readyState": "complete",
+        "elementCount": 35,
+        "visibleElementCount": 7,
+        "canvasCount": 1,
+        "sizedCanvases": [
+          "300x150"
+        ],
+        "fileInputs": 0,
+        "scriptCount": 1,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 4,
+        "bodyText": "Play",
+        "documentScrollHeight": 720
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": false,
+        "secondSampleSizedCanvases": [
+          "300x150"
+        ],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/simpsons.png",
+        "capturedAt": "2026-10-10T08:03:30.459Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [],
+      "consoleWasmWorker": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": false,
+        "matches": [],
+        "fileInputs": 0
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [],
+      "hosts": {
+        "total": 2,
+        "adLike": [],
+        "list": [
+          {
+            "host": "shar-wasm.cjoseph.workers.dev",
+            "requests": 94
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 50032516,
+        "requestCount": 92,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 23,
+        "frameObservedMs": 236,
+        "observationMs": 10751,
+        "totalMs": 12042
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "canvas_present_static",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:03:30.476Z"
+    },
+    {
+      "id": "diablo",
+      "title": "Diablo",
+      "url": "https://johnimril.github.io/diablo_web/",
+      "ownFiles": true,
+      "startedAt": "2026-10-10T08:03:24.451Z",
+      "classification": "frame_document_observed",
+      "classificationReason": "document rendered inside the sandboxed frame (93 elements, 54 visible, 1 canvas)",
+      "clicksPerformed": 0,
+      "frameDestination": "https://johnimril.github.io/diablo_web/",
+      "frameHttpStatus": {
+        "status": 200,
+        "url": "https://johnimril.github.io/diablo_web/",
+        "at": "2026-10-10T08:03:25.209Z"
+      },
+      "preflight": {
+        "startedAt": "2026-10-10T08:03:24.451Z",
+        "requestUrl": "https://johnimril.github.io/diablo_web/",
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://johnimril.github.io/diablo_web/",
+        "contentType": "text/html; charset=utf-8",
+        "xFrameOptions": null,
+        "cspFrameAncestors": null,
+        "cspPresent": false,
+        "location": null,
+        "finishedAt": "2026-10-10T08:03:24.521Z",
+        "host": "johnimril.github.io"
+      },
+      "dom": {
+        "url": "https://johnimril.github.io/diablo_web/",
+        "title": "Diablo Web - Original Diablo in Your Browser",
+        "readyState": "complete",
+        "elementCount": 93,
+        "visibleElementCount": 54,
+        "canvasCount": 1,
+        "sizedCanvases": [
+          "640x480"
+        ],
+        "fileInputs": 1,
+        "scriptCount": 1,
+        "webAssemblyAvailable": true,
+        "bodyTextLength": 345,
+        "bodyText": "THE GATES OF TRISTRAM DIABLO Play the original Diablo in your browser. ✦ Play Free Demo ✦ Shareware · 25–50 MB first download. Limited content. No purchase or MPQ needed. Load Your MPQ Own Diablo? Select or drop DIABDAT.MPQ for the full game. Browser adaptation by Nikita Maksimov GitHub Repository · Portfolio Controls, limitations & game files",
+        "documentScrollHeight": 720
+      },
+      "activity": {
+        "windowMs": 1200,
+        "canvasSizesChanged": false,
+        "elementCountDelta": 0,
+        "bodyTextChanged": false,
+        "secondSampleSizedCanvases": [
+          "640x480"
+        ],
+        "note": "DOM deltas across a ~1.2s window. Indicates a live runtime/loader, not confirmed gameplay."
+      },
+      "visual": {
+        "screenshot": "artifacts/iframe-audit/diablo.png",
+        "capturedAt": "2026-10-10T08:03:36.862Z",
+        "viewport": {
+          "width": 1360,
+          "height": 820
+        },
+        "iframeBox": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "consoleSecurity": [],
+      "consoleWasmWorker": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "failedRequests": [],
+      "popupsBlocked": 0,
+      "downloadsBlocked": 0,
+      "topNavigationAttempts": 0,
+      "ownFilePrompt": {
+        "detected": true,
+        "matches": [
+          "/browse/i",
+          "/\\.mpq\\b/i"
+        ],
+        "fileInputs": 1
+      },
+      "ownFileEvidenceSource": "frame DOM text/file inputs (+ console text)",
+      "notableMessages": [],
+      "hosts": {
+        "total": 2,
+        "adLike": [],
+        "list": [
+          {
+            "host": "johnimril.github.io",
+            "requests": 4
+          },
+          {
+            "host": "127.0.0.1:4174",
+            "requests": 1
+          }
+        ]
+      },
+      "assetBytes": {
+        "responseBodyBytes": 262578,
+        "requestCount": 4,
+        "budgetBytes": 52428800,
+        "budgetExceeded": false,
+        "measurement": "max(sum of playwright request.sizes().responseBodySize, sum of response content-length headers) observed on the page target — an estimate of declared sizes, not measured transferred bytes",
+        "enforced": false,
+        "estimate": true
+      },
+      "timings": {
+        "harnessCommitMs": 20,
+        "frameObservedMs": 229,
+        "observationMs": 10799,
+        "totalMs": 12341
+      },
+      "limitations": [],
+      "permissionsGrant": {
+        "requested": [
+          "fullscreen",
+          "autoplay",
+          "gamepad"
+        ],
+        "granted": [],
+        "method": "iframe allow attribute + launch flags (grantPermissions rejects these names)",
+        "error": "browserContext.grantPermissions: Unknown permission: fullscreen"
+      },
+      "visualTier": "canvas_present_static",
+      "visualTierNote": "Derived from frame DOM/console only. Not a gameplay confirmation; a human observer is required for that. No automated vision analysis of the screenshots was performed.",
+      "finishedAt": "2026-10-10T08:03:36.890Z"
+    },
+    {
+      "id": "wasmarcade",
+      "title": "WASM Arcade",
+      "url": "https://wasmarcade.com/pc-games",
+      "classification": "skipped_terms",
+      "classificationReason": "Publisher terms explicitly prohibit embedding their pages; no frame navigation attempted. Recorded from the pinned player configuration, not re-tested.",
+      "clicksPerformed": 0,
+      "frameNavigationAttempted": false,
+      "startedAt": "2026-10-10T08:02:33.266Z",
+      "finishedAt": "2026-10-10T08:02:33.267Z"
+    }
+  ]
+}
