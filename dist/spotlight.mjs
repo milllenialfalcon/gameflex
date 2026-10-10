@@ -168,7 +168,42 @@ export function initSpotlightHero({ hero, isBusy = () => false } = {}) {
   const refresh = () => { paint(); start(); };
 
   // Hovering the hero deliberately does not pause: the pointer no longer stops the beat.
-  root.addEventListener('focusin', () => { state.focus = true; refresh(); });
+  // Focus pauses the beat, but only when it arrives on its own — a keyboard Tab, the arrow-key
+  // handler, or a programmatic .focus(). A pointer press focuses the control it lands on, and
+  // because that control keeps focus long after the pointer is gone, counting pointer-borne
+  // focus as a pause would latch the slideshow frozen for good after a click on preview/next/
+  // pause. So a pointer press marks the focus it is about to land as pointer-borne (consumed by
+  // the matching focusin, or expired if the press landed on nothing focusable) and that focus
+  // never pauses; a press also releases any focus pause already held, so a click can never leave
+  // the beat stuck. Keyboard focus still pauses exactly as before.
+  let pointerFocus = false, pointerFocusTimer = 0;
+  // The marker is bounded by the gesture that set it. It is normally consumed by the focusin the
+  // press lands, but a press on an already-focused control fires no focusin, and a press on a
+  // non-focusable part of the hero fires none either — leaving the marker set after the click, so
+  // a quick keyboard Tab within the remaining window would be misread as pointer-borne and never
+  // pause. Releasing it on the document's pointerup/pointercancel keeps it alive only for the
+  // gesture itself (the focusin, when there is one, still arrives before the release).
+  const clearPointerFocus = () => {
+    clearTimeout(pointerFocusTimer); pointerFocusTimer = 0;
+    if (!pointerFocus) return;
+    pointerFocus = false;
+  };
+  root.addEventListener('pointerdown', () => {
+    pointerFocus = true;
+    clearTimeout(pointerFocusTimer);
+    pointerFocusTimer = setTimeout(() => { pointerFocus = false; }, 1200);
+    if (state.focus) { state.focus = false; refresh(); }
+  }, true);
+  // Document capture: the release has to be seen even when the press ended outside the hero
+  // (drag off a thumb, or a pointercancel). Clearing the marker does NOT touch state.focus, so
+  // a real focus pause is never released by a release event.
+  document.addEventListener('pointerup', clearPointerFocus, true);
+  document.addEventListener('pointercancel', clearPointerFocus, true);
+  root.addEventListener('focusin', () => {
+    state.focus = !pointerFocus;
+    if (pointerFocus) { pointerFocus = false; clearTimeout(pointerFocusTimer); }
+    refresh();
+  });
   root.addEventListener('focusout', event => {
     if (root.contains(event.relatedTarget)) return;
     state.focus = false; refresh();
@@ -184,6 +219,10 @@ export function initSpotlightHero({ hero, isBusy = () => false } = {}) {
 
   pause.addEventListener('click', () => {
     state.manual = !state.manual;
+    // Explicit Play is an unambiguous request to run: release any focus pause it might otherwise
+    // fight (a pointer press already cleared it above; this covers keyboard activation too), so a
+    // single press always resumes.
+    if (!state.manual) state.focus = false;
     pause.setAttribute('aria-pressed', String(state.manual));
     pause.setAttribute('aria-label', state.manual ? 'Play the spotlight slideshow' : 'Pause the spotlight slideshow');
     refresh();

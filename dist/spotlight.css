@@ -28,7 +28,7 @@
    keyboard focus. Identical at desktop and mobile, so the header height is untouched. */
 .page-spotlight .nav-link{position:relative}
 .page-spotlight .nav-link.active:after,
-.page-spotlight .nav-link:focus-visible:after{content:'';position:absolute;right:0;left:auto;transform:none;bottom:3px;width:24px;height:2px;background:var(--lime);transition:width .22s ease}
+.page-spotlight .nav-link:focus-visible:after{content:'';position:absolute;right:0;left:auto;transform:none;bottom:3px;width:24px;height:2px;background:var(--lime);transition:width .5s cubic-bezier(.4,0,.2,1)}
 .page-spotlight .nav-link.active:hover:after,
 .page-spotlight .nav-link.active:focus-visible:after{width:100%}
 @media(max-width:720px){
@@ -37,6 +37,19 @@
   .page-spotlight .nav-link{display:inline-flex;align-items:center;min-height:44px;padding:0}
   .page-spotlight .header-icon{width:44px;height:44px}
 }
+
+/* Header order on the spotlight UI: search, then the favourites heart with the saved count,
+   then the dummy account, then the burger placeholder. The favourites heart is a header icon,
+   so it keeps the same 40px (44px on the spotlight header) touch target as the other tools. */
+.page-spotlight .favourite-button{position:relative;color:#cfd8c4}
+.page-spotlight .favourite-button svg{width:18px;height:18px}
+.page-spotlight .favourite-button:hover{border-color:var(--lime);color:var(--lime)}
+.page-spotlight .favourite-button.active,
+.page-spotlight .favourite-button[aria-current="page"]{border-color:var(--lime);color:var(--lime)}
+.page-spotlight .favourite-count{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;display:grid;place-items:center;border-radius:999px;background:var(--lime);color:#0b0d0b;font-size:11px;font-weight:700;line-height:1}
+/* The burger is a placeholder until a real menu lands; the popover shows a short note instead
+   of the old original-home / spotlight-preview links. */
+.page-spotlight .popover .popover-note{margin:0;padding:6px 12px;font-size:13px;line-height:1.6;color:#a9b39c}
 
 /* The header and the footer use the straight Pixel text wordmark the shared pages use —
    "GAMEFLEX" plus the lime <span class="logo-pixel">, no curve image. The anchor keeps class

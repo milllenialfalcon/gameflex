@@ -2,7 +2,11 @@
 
 A private, curated browser-game directory. Charcoal, electric lime, a capital-case pixel GAMEFLEX wordmark, and artwork-led shelves. Search the collection, filter by genre, save favourites locally, and launch games inside the Gameflex player. Shelf buttons and Left/Right keyboard controls advance one game at a time.
 
-The catalogue has 54 listings and an 11-slide spotlight carousel. All 38 DOS Zone entries remain sandbox pending: they open an internal explanation, never a playable session or an external fallback. The original 16 entries retain their individual player decisions. The menu beside search links the original homepage and `spotlight.html`, a separate hero comparison with quiet progress controls and seven-second autoplay. The account button is a placeholder.
+`dist/index.html` is the Spotlight home; `dist/spotlight.html` is an identical alias. The legacy homepage is no longer offered. The hero rotates eight shuffled game slides plus one brand promo, with five upcoming game previews. Autoplay advances every seven seconds after pointer clicks; keyboard focus, reduced motion, an offscreen hero and a hidden tab pause it. Explicit Play resumes a focus pause. The header carries search, favourites (heart with live count), account and a burger placeholder. The Discover underline animates over 500ms.
+
+Ordinary desktop shelves show six captionless cards per row using the local, name-bearing artwork mapped in `dist/spotlight-thumbnails.json`; the Continue playing rail shows five direct-launch cards with sample progress until real history exists and keeps its name lines; Top games is a portrait neon-rank row. Section glyphs sit outside the heading text (16px desktop, 12px mobile), aligned to the first card.
+
+The catalogue has 54 listings: the original 16 plus 38 DOS Zone entries that remain sandbox pending. All 54 keep their existing player semantics. A pending entry opens an internal explanation, never a playable session and never an external new-tab fallback. Favourites stay in `localStorage`. See `docs/spotlight-home-qa.md` for the verified Spotlight home behaviour and limits.
 
 ## Run
 
@@ -64,4 +68,4 @@ The separate Hermes `gameflexresearch` profile installs Agent Reach and research
 
 See `research/README.md`, `research/review-queue.md` and `research/candidates.csv`. The canonical JSON is tracked in Git; `node scripts/research-db.mjs build` regenerates the local SQLite database. Both assistant verification and explicit human verification are required before an entry becomes eligible for a separate catalogue change. No automatic publication or recurring research schedule is configured.
 
-Spotlight discovery: five upcoming previews over eight quality-curated shuffled hero games; seven desktop cards; title overlays inside the artwork; headings with subtitles and counts; an editorial Top 10; local recent launches first; Play Now; filter and search grids remain. See docs/spotlight-discovery.md. Run npm run test:discovery, npm run test:hero and npm run test:library for the Spotlight checks.
+Spotlight discovery: five upcoming previews over eight quality-curated shuffled hero games; six captionless cards per row on ordinary desktop shelves; headings left-aligned to the first card with their glyph in the gutter; an editorial Top 10 in portrait; Continue playing as five direct launches with sample progress; and the existing filter and search grids. See `docs/spotlight-discovery.md` and `docs/spotlight-home-qa.md`. Run `npm run test:discovery`, `npm run test:hero` and `npm run test:library` for the Spotlight checks.

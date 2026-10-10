@@ -104,8 +104,9 @@ try {
   const page = await context.newPage();
   const errors = [], consoleErrors = [], pops = [];
   page.on('pageerror', error => errors.push(error.message));
-  // The optional media map (spotlight-media.json) is absent in this tree, so its fetch 404s.
-  // That is a network noise line, not a page error; app.js already treats it as "no override".
+  // The catalogue artwork maps (spotlight-media.json, spotlight-thumbnails.json, spotlight-portraits.json)
+  // are all shipped in this tree; a missing one would fall back to the catalogue art. Other console
+  // errors are real failures.
   page.on('console', message => { if (message.type() === 'error') consoleErrors.push({ text: message.text(), url: message.location()?.url || '' }); });
   page.on('popup', popup => pops.push(popup.url()));
   await blockExternal(page);
@@ -262,7 +263,7 @@ try {
   assert.equal(await demo.count(), 1, 'an empty list brings the Continue playing demo back');
   const shelvesText = await page.locator('#shelves').innerText();
   assert(!/\d+\s?%/.test(shelvesText), 'the shelves never print a fabricated progress percentage');
-  pass('malformed JSON and unknown/duplicate stored ids degrade to the preview or filtered shelf, no percentage shown');
+  pass('malformed JSON and unknown/duplicate stored ids degrade to the Continue playing demo or a filtered shelf, no percentage shown');
 
   /* ------------------------------------------------------------- no detours */
   assert.deepEqual(pops, [], `no launch path opened a new tab: ${pops.join(', ')}`);

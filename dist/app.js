@@ -73,8 +73,12 @@ function render() {
   $('#empty-copy').textContent = search ? `No matches for “${search}”. Try another title or reset the filters.` : view === 'favourites' ? 'Tap the heart on any game to save it for later. We’ll keep your picks right here in this browser.' : 'No verified games match these filters. Explore the rest of the collection.';
   $('#surprise').disabled = filtered.length === 0;
   syncHearts(); updateArrows();
-  document.querySelectorAll('.game-row').forEach(row => row.addEventListener('scroll', updateArrows, {passive:true}));
 }
+// One capture-phase listener on the document handles every .game-row, including rows that a
+// later asynchronous repaint (thumbnail map, recent-history) swaps in without calling render().
+// Scroll does not bubble, so the capture phase is the only way to see a row's scroll here; the
+// listener is passive because updateArrows never calls preventDefault.
+document.addEventListener('scroll', event => { if (event.target instanceof Element && event.target.matches('.game-row')) updateArrows(); }, { capture: true, passive: true });
 function updateArrows() {
   document.querySelectorAll('[data-scroll]').forEach(button => {
     const row = document.getElementById(`row-${button.dataset.scroll}`); if (!row) return;

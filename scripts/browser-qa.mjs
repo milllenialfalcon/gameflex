@@ -1,11 +1,20 @@
 /**
  * gameflex browser QA.
  *
- * Combined-catalogue regression (37 listings: 16 reviewed games plus 21 DOS
- * listings marked sandbox-pending) plus in-site player coverage.
+ * Combined-catalogue regression for the APPROVED default Spotlight page (index.html
+ * carries `page-spotlight`) — 54 listings: 16 reviewed games plus 38 DOS listings
+ * marked sandbox-pending — plus in-site player coverage.
  *
  * Expected counts are derived from dist/games.json, read locally, so the
  * assertions track the shipped catalogue instead of a hardcoded number.
+ *
+ * Catalogue selectors are the Spotlight browse layer's, not the retired homepage
+ * inline-card markup: cards are `.sd-card[data-game]`, a curated card's thumbnail is a
+ * `button.sd-art[data-sd-open]` that opens the floating `.sd-panel`, the Continue playing
+ * row's cards are direct-launch `a.sd-art[href="#play/<id>"][data-play]` anchors, and the
+ * panel reuses the shared `[data-play]` / `[data-favourite]` / `[data-details]` handlers.
+ * Reachability is asserted over the rendered `[data-game]` set, and every card's
+ * accessible label must name its game.
  *
  * Fixtures: every non-loopback request (artwork, fonts and game hosts are the
  * only external ones) is answered with a deterministic local fixture page, so
@@ -13,9 +22,10 @@
  * The fixture marks itself, and the suite asserts the marker is what the frame
  * actually rendered.
  *
- * Server: uses GAMEFLEX_QA_URL when set, otherwise http://127.0.0.1:4173 when
- * that is already serving, otherwise starts its own static server for dist/
- * (with the .mjs and .png MIME types that scripts/serve.mjs does not map).
+ * Server: uses GAMEFLEX_QA_URL when set, otherwise http://127.0.0.1:4176 when
+ * that preview is already serving, otherwise starts its own static server for dist/
+ * (with the .mjs and .png MIME types that scripts/serve.mjs does not map). The
+ * retired homepage port 4173 is never used.
  *
  * Teardown runs in a finally: a failed check still closes the fixture browser and
  * the local mock relay, so a failure reports instead of hanging on an open handle.
@@ -47,7 +57,7 @@ async function reachable(url) {
 
 async function ensureServer() {
   if (process.env.GAMEFLEX_QA_URL) return { base: process.env.GAMEFLEX_QA_URL.replace(/\/$/, ''), stop: async () => {} };
-  if (await reachable('http://127.0.0.1:4173')) return { base: 'http://127.0.0.1:4173', stop: async () => {} };
+  if (await reachable('http://127.0.0.1:4176')) return { base: 'http://127.0.0.1:4176', stop: async () => {} };
   const server = http.createServer(async (request, response) => {
     try {
       const pathname = decodeURIComponent(new URL(request.url, 'http://127.0.0.1').pathname);
@@ -101,9 +111,17 @@ const playerOpen = () => page.evaluate(() => document.getElementById('player').h
 const stageState = () => page.locator('#player-stage').getAttribute('data-state');
 const statusText = () => page.locator('#player-status').textContent();
 const panelStart = () => page.locator('.player-panel [data-player-action="start"]');
+const shelfCards = () => page.locator('#shelves .sd-card');
+const curatedRow = () => page.locator('[data-sd-shelf="curated"] .sd-row').first();
+// Open a card's floating detail panel by clicking its thumbnail. A Continue playing card is a
+// direct-launch link into the player, so panel checks always use an ordinary (curated/grid) card.
+const openPanel = async (selector) => {
+  await page.locator(selector).first().click();
+  await page.locator('.sd-panel').waitFor({ timeout: 3000 });
+};
 
 /* ------------------------------------------------------ static source checks */
-for (const file of ['dist/app.js', 'dist/player.mjs', 'dist/index.html']) {
+for (const file of ['dist/app.js', 'dist/player.mjs', 'dist/spotlight-discovery.mjs', 'dist/index.html']) {
   const source = await readFile(file, 'utf8');
   assert(!/window\.open\s*\(/.test(source), `${file} must not open windows`);
   assert(!/target\s*=\s*["']_blank/i.test(source), `${file} must not use target=_blank`);
@@ -113,70 +131,93 @@ pass('no window.open or target=_blank anywhere in the shipped frontend source');
 
 /* ---------------------------------------------------- catalogue regression */
 await page.goto(base);
-await page.locator('.game-card').first().waitFor();
+await shelfCards().first().waitFor();
 await page.evaluate(() => document.fonts.ready);
 await page.screenshot({ path: 'artifacts/qa/desktop.png', fullPage: true });
-const count = await page.locator('.game-card').count();
-const launchHrefs = await page.locator('.game-card a[data-play]').evaluateAll(els => els.map(a => a.getAttribute('href')));
-const uniqueGames = new Set(launchHrefs).size;
+const count = await shelfCards().count();
+// Reachability is measured over the rendered Spotlight cards: every catalogue id must be on
+// screen as a `[data-game]` card somewhere in the browse layer.
+const uniqueRenderedIds = [...new Set(await page.evaluate(() => [...document.querySelectorAll('#shelves [data-game]')].map(node => node.dataset.game)))].sort();
 assert.equal(LISTINGS - DOS_LISTINGS.length, 16, 'the catalogue preserves the 16 original listings');
 assert(DOS_LISTINGS.length >= 21, 'the catalogue preserves the existing DOS listings');
 assert.equal(PENDING_LISTINGS.length, DOS_LISTINGS.length, 'every DOS listing is still marked sandbox-pending');
-assert.equal(uniqueGames, LISTINGS, `catalogue lists all ${LISTINGS} reviewed games`);
 assert.equal(countFor(g => !g.provider), 16, 'the catalogue keeps its 16 reviewed games');
-assert(count >= LISTINGS, 'shelves still render cards');
-const renderedIds = [...new Set(launchHrefs.map(href => href.replace('#play/', '')))].sort();
-assert.deepEqual(renderedIds, CATALOGUE_IDS, 'every catalogue listing is reachable from a rendered card');
+assert(count >= LISTINGS, 'the Spotlight shelves still render cards');
+assert.deepEqual(uniqueRenderedIds, CATALOGUE_IDS, 'every catalogue listing is reachable from a rendered card');
+// Every rendered card is labelled with its own game: an ordinary (captionless) card keeps its
+// name only in the accessible label on the artwork button.
+const gamesById = new Map(GAMES.map(game => [game.id, game]));
+const cardLabels = await page.evaluate(() => [...document.querySelectorAll('#shelves .sd-card')].map(card => ({
+  id: card.dataset.game || '',
+  label: card.querySelector('.sd-art')?.getAttribute('aria-label') || '',
+})));
+const unlabelled = cardLabels.filter(entry => { const game = gamesById.get(entry.id); return !game || !entry.label.includes(game.title); });
+assert.equal(unlabelled.length, 0, `every rendered card is labelled with its game name (${unlabelled.map(entry => entry.id).join(', ') || 'none'})`);
 assert.equal((await page.locator('.site-header .wordmark').textContent()).trim(), 'GAMEFLEX');
-for (const selector of ['.card-meta', '.card-tag', '.shelf-subtitle', '.collection-count', '.hero-note', 'footer']) {
+for (const selector of ['.shelf-subtitle', '.collection-count', '.small-print p', 'footer']) {
   assert(await page.locator(selector).first().evaluate(el => parseFloat(getComputedStyle(el).fontSize) >= 12), `${selector} readable text size`);
 }
 const bodyCopy = await page.evaluate(() => document.body.innerText.toLowerCase());
 for (const banned of ['new tab', 'opens in a new tab', 'one tab away']) {
   assert(!bodyCopy.includes(banned), `catalogue copy must not advertise "${banned}"`);
 }
-pass(`desktop catalogue renders all ${LISTINGS} games (16 original + ${DOS_LISTINGS.length} DOS), pixel wordmark, readable supporting text, in-site copy only`);
+pass(`desktop Spotlight catalogue renders all ${LISTINGS} games (16 original + ${DOS_LISTINGS.length} DOS), every card labelled, pixel wordmark, readable supporting text, in-site copy only`);
 
 async function checkShelfStep() {
-  const row = page.locator('#row-shooters');
+  // Pick the first curated row wide enough to scroll, so the one-card arrow step is meaningful.
+  const target = await page.evaluate(() => {
+    const row = [...document.querySelectorAll('[data-sd-shelf="curated"] .sd-row')]
+      .find(node => node.scrollWidth > node.clientWidth + 20 && node.querySelectorAll('.sd-card').length >= 2);
+    return row ? row.id : '';
+  });
+  assert(target, 'a curated Spotlight row is horizontally scrollable for the arrow step');
+  // The row element is `#row-<shelfId>`; the arrow buttons key off the bare shelf id.
+  const scrollKey = target.replace(/^row-/, '');
+  const row = page.locator(`#${target}`);
   const pitch = await row.evaluate(el => el.children[1].getBoundingClientRect().left - el.children[0].getBoundingClientRect().left);
-  const right = page.locator('[data-scroll="shooters"][data-direction="1"]');
-  const left = page.locator('[data-scroll="shooters"][data-direction="-1"]');
+  const right = page.locator(`[data-scroll="${scrollKey}"][data-direction="1"]`);
+  const left = page.locator(`[data-scroll="${scrollKey}"][data-direction="-1"]`);
   await right.click();
-  await page.waitForFunction(p => Math.abs(document.querySelector('#row-shooters').scrollLeft - p) < 3, pitch);
+  await page.waitForFunction(({ id, p }) => Math.abs(document.getElementById(id).scrollLeft - p) < 3, { id: target, p: pitch });
+  // Replacement rows must update arrow state themselves; no resize or synthetic repair.
   await left.click();
-  await page.waitForFunction(() => document.querySelector('#row-shooters').scrollLeft < 3);
-  const firstArt = row.locator('.game-art').nth(0), nextArt = row.locator('.game-art').nth(1);
+  await page.waitForFunction(id => document.getElementById(id).scrollLeft < 3, target);
+  const firstArt = row.locator('.sd-art').nth(0), nextArt = row.locator('.sd-art').nth(1);
   await firstArt.focus(); await page.keyboard.press('ArrowRight');
   assert(await nextArt.evaluate(el => el === document.activeElement), 'keyboard movement keeps focus on the newly shown game');
   await page.keyboard.press('ArrowLeft');
-  await page.waitForFunction(() => document.querySelector('#row-shooters').scrollLeft < 3);
+  await page.waitForFunction(id => document.getElementById(id).scrollLeft < 3, target);
+  await page.keyboard.press('Escape');
 }
 await checkShelfStep();
 pass('shelf arrows and ArrowLeft/ArrowRight still step one card');
 
-await page.locator('[data-favourite="halo"]').first().click();
+// Favourites are saved through the floating panel's shared [data-favourite] control.
+await openPanel('[data-sd-shelf="curated"] .sd-card[data-game="halo"] .sd-art');
+await page.locator('.sd-panel [data-favourite]').click();
 assert.equal(await page.locator('#favourite-count').textContent(), '1');
-await page.reload(); await page.locator('.game-card').first().waitFor();
+await page.reload(); await shelfCards().first().waitFor();
 assert.equal(await page.locator('#favourite-count').textContent(), '1', 'favourites persist across reload');
 await page.locator('[data-view="favourites"]').click();
-assert.equal(await page.locator('.game-card').count(), 1);
-await page.locator('[data-favourite="halo"]').click();
+assert.equal(await page.locator('#shelves .sd-card').count(), 1);
+await openPanel('#shelves .sd-card[data-game="halo"] .sd-art');
+await page.locator('.sd-panel [data-favourite]').click();
 assert(await page.locator('#empty-state').isVisible());
 await page.locator('#reset').click();
 const matches = (game, needle) => `${game.title} ${game.genre} ${game.description} ${(game.tags || []).join(' ')}`.toLowerCase().includes(needle.toLowerCase());
 await page.locator('#search').fill('quAke');
-assert.equal(await page.locator('.game-card').count(), countFor(g => matches(g, 'quAke')), 'case-insensitive search');
+assert.equal(await page.locator('#shelves .sd-card').count(), countFor(g => matches(g, 'quAke')), 'case-insensitive search');
 await page.locator('#search').fill('zzzz-not-a-game');
 assert(await page.locator('#empty-state').isVisible());
 await page.locator('#reset').click();
 await page.locator('[data-category="sports"]').click();
-assert.equal(await page.locator('.game-card').count(), countFor(g => g.category === 'sports'), 'the sports filter shows exactly the catalogue sports titles');
+assert.equal(await page.locator('#shelves .sd-card').count(), countFor(g => g.category === 'sports'), 'the sports filter shows exactly the catalogue sports titles');
 assert(await page.locator('[data-category="strategy"]').isVisible(), 'the strategy filter is now visible because the catalogue has strategy titles');
 await page.locator('[data-view="discover"]').click();
-pass('favourites add/remove/persist, favourites empty state, search and filters match the catalogue, strategy filter visible');
+pass('favourites add/remove/persist through the panel, favourites empty state, search and filters match the catalogue, strategy filter visible');
 
-await page.locator('[data-details="halo"]').first().click();
+await openPanel('[data-sd-shelf="curated"] .sd-card[data-game="halo"] .sd-art');
+await page.locator('.sd-panel [data-details="halo"]').click();
 assert(await page.locator('#details').isVisible());
 assert((await page.locator('#details .requirements').textContent()).includes('XISO'));
 assert.equal(await page.locator('#details a[target]').count(), 0, 'the details action must not open a new tab');
@@ -185,15 +226,15 @@ await page.keyboard.press('Escape');
 assert(!(await page.locator('#details').isVisible()));
 pass('details dialog keeps its requirements and now offers an in-site action only');
 
-const launchLinks = await page.locator('.game-card a[data-play]').evaluateAll(els => els.map(a => ({ href: a.getAttribute('href'), target: a.getAttribute('target') })));
-assert(launchLinks.length >= LISTINGS, 'every card is a launch path');
-assert(launchLinks.every(link => /^#play\/[a-z0-9_-]+$/.test(link.href) && link.target === null), 'every tile and title launches through #play/<id>');
-const launchIds = [...new Set(launchLinks.map(link => link.href.slice('#play/'.length)))];
-assert.equal(launchIds.length, LISTINGS, `all ${LISTINGS} catalogue launch links are internal`);
-assert.deepEqual(launchIds.sort(), CATALOGUE_IDS, 'the internal launch links cover exactly the catalogue');
-assert.equal(await page.locator('a[target]').count(), 0, 'no target attributes anywhere in the catalogue');
-assert.equal(await page.locator('a[href^="http"]').count(), 0, 'no external anchors in the catalogue');
-pass(`all ${LISTINGS} catalogue launch links are internal #play/<id> hashes, with no external anchors`);
+// The Continue playing demo is the only direct-launch row on a fresh visit: its cards are real
+// #play/<id> anchors carrying data-play and no target, so the catalogue launches in-site.
+const demoLinks = await page.locator('[data-sd-shelf="demo"] .sd-card .sd-art').evaluateAll(els => els.map(a => ({ tag: a.tagName, href: a.getAttribute('href'), target: a.getAttribute('target'), play: a.getAttribute('data-play') })));
+assert(demoLinks.length >= 1, 'the fresh browser shows the Continue playing demo shelf');
+assert(demoLinks.every(link => link.tag === 'A' && /^#play\/[a-z0-9_-]+$/.test(link.href) && link.target === null && link.href === `#play/${link.play}`), 'every direct-launch card is an internal #play/<id> anchor with a matching data-play and no target');
+assert(demoLinks.every(link => CATALOGUE_IDS.includes(link.play)), 'every direct-launch id is a real catalogue game');
+assert.equal(await page.locator('#shelves a[target]').count(), 0, 'no target attributes anywhere in the catalogue');
+assert.equal(await page.locator('#shelves a[href^="http"]').count(), 0, 'no external anchors in the catalogue');
+pass(`all ${LISTINGS} catalogue cards are reachable in-site, with no external anchors and no target attributes`);
 
 /* ------------------------------------------------------- player: open state */
 await page.evaluate(() => { window.__GAMEFLEX_PLAYER_TIMEOUT_MS = 6000; });
@@ -346,9 +387,10 @@ await page.evaluate(() => window.scrollTo(0, 0));
 await page.locator('.game-art').first().click();
 await page.keyboard.press('/');
 assert(!(await page.locator('#search').evaluate(el => el === document.activeElement)), 'the search shortcut is paused while the player is open');
-const shelfScroll = await page.locator('#row-shooters').evaluate(el => el.scrollLeft);
+const pauseRowId = await curatedRow().getAttribute('id');
+const shelfScroll = await page.locator(`#${pauseRowId}`).evaluate(el => el.scrollLeft);
 await page.keyboard.press('ArrowRight');
-assert.equal(await page.locator('#row-shooters').evaluate(el => el.scrollLeft), shelfScroll, 'catalogue shelf shortcuts are paused while the player is open');
+assert.equal(await page.locator(`#${pauseRowId}`).evaluate(el => el.scrollLeft), shelfScroll, 'catalogue shelf shortcuts are paused while the player is open');
 await page.locator('#player-favourite').click();
 assert.equal(await page.locator('#player-favourite').getAttribute('aria-pressed'), 'true');
 assert.equal(await page.locator('#favourite-count').textContent(), '1', 'the player heart feeds the same favourites store');
@@ -674,6 +716,7 @@ pass('no popups, no dialogs and no console errors across the whole run');
 const report = {
   passed: true,
   base,
+  view: 'spotlight (index.html page-spotlight)',
   catalogue: {
     listings: LISTINGS,
     reviewed: countFor(g => !g.provider),

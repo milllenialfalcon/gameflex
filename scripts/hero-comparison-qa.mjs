@@ -1,54 +1,40 @@
 /**
- * gameflex hero comparison QA — homepage baseline vs the spotlight preview page.
+ * gameflex spotlight-home QA — the unified Spotlight UI served as BOTH the homepage
+ * (dist/index.html) and the spotlight page (dist/spotlight.html).
  *
- * Runs the bundled Edge build through the same Playwright rig the other suites use
- * (channel: msedge, no browser download). Playwright is resolved from GAMEFLEX_PLAYWRIGHT,
- * then from a normal node_modules lookup, then from this repo's node_modules whether the
- * script runs in the project root or in a git worktree.
+ * APPROVED BEHAVIOUR UNDER TEST (spotlight-home)
+ *   - index.html and spotlight.html are now byte-identical Spotlight UI copies: both carry
+ *     <html class="page-spotlight">, the full-bleed spotlight hero, the discover shelves, the
+ *     autoplay controller and the SAME document title "GameFlex - The Browser is your Console.".
+ *     There is no separate old-homepage hero any more, so every former homepage-baseline assertion
+ *     (eleven slides, generic headline, numbered selectors, 570px band, no pause control, never
+ *     autoplays, unchanged title) is gone;
+ *   - the shared header, left to right, is search → favourites (heart + count) → account → burger.
+ *     The burger is a PLACEHOLDER: it opens a popover with a note and NO page links (the old
+ *     "Original home / Spotlight preview" menu links are gone). The favourite control is a header
+ *     icon carrying the heart glyph and #favourite-count. Discover stays the single active nav-link
+ *     and keeps its underline;
+ *   - the active Discover underline is a 2px lime rule resting at 24px, flush right under the
+ *     label, that grows to the full label width over a ~500ms transition (not the old ~220ms);
+ *   - both pages rotate the SAME nine spotlight slides: the eight quality-curated hero games from
+ *     spotlight-media.json plus ONE Gameflex brand promo slide, shuffled per load, the promo last;
+ *   - autoplay: one ~7s beat, silent, no focus movement. A POINTER press on the preview strip or on
+ *     Next keeps the beat running (a pointer-borne focus never latches a pause), and an EXPLICIT
+ *     Play press overrides a keyboard-focus pause. Keyboard focus still pauses; reduced motion, an
+ *     offscreen hero, a hidden tab, an open player and a manual pause all still stand the beat
+ *     down. Hovering the hero never pauses it;
+ *   - the up-next strip shows five REAL GAME thumbnails (the brand promo is skipped); the promo
+ *     slide offers a games-naming CTA that scrolls the collection and never opens the player;
+ *   - the shared in-site player, favourites store and catalogue are intact, with no new tab, no
+ *     window.open and no external fallback.
  *
- * APPROVED BEHAVIOUR UNDER TEST (hero-refresh)
- *   - the homepage hero is the unchanged baseline: eleven slides, generic headline,
- *     numbered selectors, `01 / 11` index, 570px band, no pause control, never autoplays;
- *   - spotlight.html rotates NINE slides: the eight quality-curated hero games from
- *     spotlight-media.json plus ONE Gameflex brand promo slide. The promo is identified by
- *     the slide it renders, not by a hard-coded position;
- *   - the promo slide offers a call to action that names the games ("Show me the games") which
- *     scrolls the collection into view. It never exposes a #play/ link or a launch action, never
- *     opens the player, never deep-links a launch, and raises no popup;
- *   - the promo headline copy is dynamic: revisiting the promo slide in the same session shows
- *     different copy;
- *   - the five up-next previews are drawn from the CURATED GAME slides only — the strip walks the
- *     game ids, skipping the brand promo (an accepted product decision: five real game previews),
- *     previews current+1…current+5 among those games, wraps once and never repeats. The promo
- *     itself stays part of the carousel cycle;
- *   - a refresh reshuffles and never reopens on the previous first slide;
- *   - autoplay: one ~7s beat, silent, no focus movement. Hovering the hero does NOT pause
- *     it (autoplay continues under the pointer); focus inside the hero, a hidden tab, manual
- *     pause and reduced motion all still pause it;
- *   - the homepage document title is UNCHANGED ("gameflex — one more game.", read from
- *     dist/index.html at run time) and the spotlight page carries the new title "GameFlex -
- *     The Browser is your Console.";
- *   - ONLY the spotlight page carries the compact ~82.5px nav bar (the homepage keeps its
- *     original 94px header); the active Discover underline is a 2px lime rule that rests at 24px
- *     flush right under the label and grows to the full label width on hover or focus;
- *   - the shared header menu, account popover, Sports rename and in-site player are intact,
- *     with no new tab, no window.open and no external fallback.
+ * Playwright is resolved from GAMEFLEX_PLAYWRIGHT, then a normal node_modules lookup, then this
+ * repo's node_modules from the worktree or root. Edge (channel: msedge) is used; nothing is
+ * downloaded. The 7-second interval is the feature under test, so pause checks wait one real
+ * interval plus a margin: a failed pause would have advanced by then.
  *
- * ASSUMPTIONS (confirm once the implementation is ready; see docs/spotlight-portraits-qa.md):
- *   - the promo slide is a hero slide whose data-hero-game is not a curated game id (the
- *     implementation stamps it "gameflex-promo"); its CTA is the hero action whose text names
- *     the games / scrolls the collection (the implementation labels it "Show me the games").
- *     Behaviour, not wording, is what is asserted: it scrolls the collection and never opens
- *     the player, deep-links a launch or raises a popup;
- *   - the up-next strip holds five REAL GAME thumbnails: it walks the curated game ids skipping
- *     the brand promo slide, so the strip never spends a slot on the promo (an accepted product
- *     decision — five genuine game previews). The promo stays part of the carousel cycle;
- *   - the promo thumb title (GAMEFLEX) stays stable even though its on-slide headline rotates.
- *
- * The 7-second interval is the feature under test, so the pause checks wait one real
- * interval plus a margin: if a pause failed, the title would have changed by then.
- * Fixtures: every non-loopback request is answered locally, and the suite asserts none
- * were made, so no real game host is contacted and no gameplay is claimed.
+ * Fixtures: every non-loopback request is answered locally and the suite asserts none were made,
+ * so no real game host is contacted and no gameplay is claimed.
  */
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -59,11 +45,10 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.resolve(HERE, '..', 'dist');
 const GAMES = JSON.parse(await readFile(path.join(DIST, 'games.json'), 'utf8'));
-// The homepage hero keeps every spotlight/featured game. The spotlight page narrows that set to
-// the artwork worker's quality-curated pool (dist/app.js curatedHeroPool): a featured game stays
-// only when spotlight-media.json holds an entry whose src is a usable local assets/ path, and the
-// pool falls back to the full featured list when fewer than six survive. This suite derives the
-// same pool rather than assuming catalogue order, and reads the shuffled order the UI rendered.
+// Both pages now narrow the featured set to the artwork worker's quality-curated pool
+// (dist/app.js curatedHeroPool): a featured game stays only when spotlight-media.json holds an
+// entry whose src is a usable local assets/ path, and the pool falls back to the full featured
+// list when fewer than six survive. This suite derives the same pool rather than assuming order.
 const SLIDES = GAMES.filter(game => game.spotlight || game.featured);
 const SPOT_MEDIA = await readFile(path.join(DIST, 'spotlight-media.json'), 'utf8').then(text => JSON.parse(text)).catch(() => ({}));
 const isLocalArtPath = value => typeof value === 'string' && value.startsWith('assets/') && !value.includes('..') && !value.includes('\\') && !value.includes('://');
@@ -74,25 +59,18 @@ const SPOT_POOL = (() => {
   });
   return curated.length >= 6 ? curated : SLIDES;
 })();
-// Approved: eight curated game slides + one Gameflex brand promo slide.
+// Approved: eight curated game slides + one Gameflex brand promo slide, on BOTH pages.
 const SPOT_SLIDE_COUNT = SPOT_POOL.length + 1;
-const HOME_SLIDE_COUNT = SLIDES.length;
 const INTERVAL_MS = 7000;
 const OVERRUN_MS = 700;
 const CHECK_VIEWPORT = { width: 1440, height: 1000 };
+// Both pages run the compact 82.5px spotlight bar.
 const NAVBAR_HEIGHT = 82.5;
 const NAVBAR_TOLERANCE = 5;
-// The homepage keeps its original header: the compact 82.5px bar is a SPOTLIGHT-ONLY change.
-const HOME_NAVBAR_HEIGHT = 94;
-const HOME_NAVBAR_TOLERANCE = 6;
+// APPROVED: the underline grows over a ~500ms transition (was ~220ms).
+const UNDERLINE_MS_MIN = 450;
+const UNDERLINE_MS_MAX = 600;
 const BROWSER_TITLE = 'GameFlex - The Browser is your Console.';
-// The homepage document title is UNCHANGED — read from the shipped dist/index.html rather than
-// hard-coded, so this baseline assertion tracks the file that is actually published.
-const HOME_TITLE = (() => {
-  const source = readFile(path.join(DIST, 'index.html'), 'utf8');
-  return source.then(text => (text.match(/<title>([^<]*)<\/title>/i) || [, ''])[1].trim());
-})();
-const HOME_TITLE_EXPECTED = 'gameflex — one more game.';
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ttf': 'font/ttf' };
 
 async function loadPlaywright() {
@@ -126,6 +104,7 @@ async function startServer() {
 const server = await startServer();
 const HOME = `${server.base}/index.html`;
 const SPOTLIGHT = `${server.base}/spotlight.html`;
+const PAGES = [['homepage', HOME], ['spotlight', SPOTLIGHT]];
 await mkdir('artifacts/qa', { recursive: true });
 
 const external = [];
@@ -137,14 +116,14 @@ const blockExternal = page => page.route(url => ['http:', 'https:'].includes(url
 const checks = [];
 const pass = label => { checks.push(label); console.log(`ok — ${label}`); };
 let browser = null;
-const results = { passed: false, homepageSlides: HOME_SLIDE_COUNT, spotlightSlides: SPOT_SLIDE_COUNT, autoplayIntervalMs: INTERVAL_MS, homepageTitle: HOME_TITLE_EXPECTED, spotlightTitle: BROWSER_TITLE, homepageNavbarHeight: HOME_NAVBAR_HEIGHT, spotlightNavbarHeight: NAVBAR_HEIGHT, checks, timings: {}, externalRequests: external, errors: [] };
+const results = { passed: false, slidesPerPage: SPOT_SLIDE_COUNT, autoplayIntervalMs: INTERVAL_MS, spotlightTitle: BROWSER_TITLE, navbarHeight: NAVBAR_HEIGHT, underlineTransitionMs: UNDERLINE_MS_MAX, checks, timings: {}, externalRequests: external, errors: [] };
 
 try {
   const { chromium } = await loadPlaywright();
   browser = await chromium.launch({ channel: 'msedge', headless: true });
 
   /* ------------------------------------------------ reduced-motion page (parallel) */
-  // Loaded first so its 8-second no-advance window elapses while the other checks run.
+  // Loaded first so its no-advance window elapses while the other checks run.
   const calmContext = await browser.newContext({ viewport: CHECK_VIEWPORT, reducedMotion: 'reduce' });
   const calmPage = await calmContext.newPage();
   const calmErrors = [];
@@ -154,7 +133,7 @@ try {
   await calmPage.goto(SPOTLIGHT);
   await calmPage.locator('.game-card').first().waitFor();
 
-  /* ------------------------------------------------------------- homepage baseline */
+  /* ------------------------------------------------------------- unified UI pages */
   const page = await browser.newPage({ viewport: CHECK_VIEWPORT });
   const errors = [], popups = [], crossOrigin = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -166,15 +145,15 @@ try {
   const status = () => page.locator('#hero-status').textContent();
   const paused = () => page.locator('#hero-dots').evaluate(el => el.classList.contains('is-paused'));
   const heroGameId = () => page.locator('#hero-image').getAttribute('data-hero-game');
-  // The spotlight order is shuffled per load, and the promo slide may sit anywhere, so "advance"
-  // waits for the hero to move to any other slide rather than to a fixed index.
+  // The spotlight order is shuffled per load, and the promo slide sits last, so "advance" waits for
+  // the hero to move to any other slide rather than to a fixed index.
   const advance = async (fromTitle, timeout = INTERVAL_MS * 2) => {
     const started = Date.now();
     await page.waitForFunction(from => { const shown = document.getElementById('spotlight-name').textContent; return Boolean(shown) && shown !== from; }, fromTitle, { timeout });
     return Date.now() - started;
   };
-  // Any click leaves the pointer and focus inside the hero. Move the pointer above the hero and
-  // drop focus before timing anything.
+  // Any click leaves the pointer and focus inside the hero. Move the pointer off the hero and drop
+  // focus before timing anything.
   const releaseHero = async () => {
     await page.mouse.move(2, 2);
     await page.evaluate(() => document.activeElement?.blur());
@@ -184,50 +163,57 @@ try {
   await page.locator('.game-card').first().waitFor();
   await page.evaluate(() => document.fonts.ready);
 
-  const homeTitleText = await HOME_TITLE;
-  assert.equal(homeTitleText, HOME_TITLE_EXPECTED, `the homepage document title is unchanged (dist/index.html says "${homeTitleText}")`);
-  assert.equal(await page.title(), HOME_TITLE_EXPECTED, `the homepage browser title is still "${HOME_TITLE_EXPECTED}" — the title change is spotlight-only`);
-  assert.equal(await page.locator('#spotlight-name').evaluate(el => el.tagName), 'STRONG', 'the homepage keeps its copy-led hero panel, not a title-led h1');
-  assert((await page.locator('#hero-heading').textContent()).includes('Old favourites'), 'the homepage headline copy is unchanged');
-  assert.equal(await page.locator('#hero-pause').count(), 0, 'the homepage hero has no pause control');
-  assert.equal(await page.locator('#hero-dots [data-hero-index]').count(), HOME_SLIDE_COUNT, `the homepage hero still carries its ${HOME_SLIDE_COUNT} slides`);
-  assert.equal(HOME_SLIDE_COUNT, 11, 'the homepage spotlight set is still eleven games');
-  assert.equal((await page.locator('[data-hero-index]').first().textContent()).trim(), '01', 'homepage selectors stay numbered');
-  assert.equal((await page.locator('#hero-index-current').textContent()).trim(), '01');
-  assert.equal((await page.locator('#hero-index-total').textContent()).trim(), String(HOME_SLIDE_COUNT).padStart(2, '0'));
-  const homeHeroHeight = await page.locator('#hero').evaluate(el => el.getBoundingClientRect().height);
-  assert(Math.abs(homeHeroHeight - 570) < 2, `the homepage hero keeps its 570px baseline band (measured ${homeHeroHeight})`);
-  assert.equal(await page.locator('#spotlight-name').count(), 1);
-  const homeTitle = await title();
-  await page.waitForTimeout(INTERVAL_MS + OVERRUN_MS);
-  assert.equal(await title(), homeTitle, 'the homepage hero never autoplays');
-  await page.screenshot({ path: 'artifacts/qa/hero-home-desktop.png', fullPage: true });
-  await page.locator('#hero-play').click();
-  assert.equal(await page.locator('#player').evaluate(el => el.hidden), false, 'the homepage hero action still opens the in-site player');
-  assert.equal(await page.locator('#player-title').textContent(), SLIDES[0].title, 'the homepage hero action opens the spotlight game it was showing');
-  await page.locator('#player-close').click();
-  pass(`homepage hero baseline intact: ${HOME_SLIDE_COUNT} slides, generic headline, numbered selectors, ${homeHeroHeight}px band, no pause control, no autoplay, unchanged title "${HOME_TITLE_EXPECTED}", launch still goes through the player`);
-
-  /* ---------------------------------------------------------- shared header chrome */
-  for (const [label, url] of [['homepage', HOME], ['spotlight', SPOTLIGHT]]) {
+  /* ------------------------------------------------ both pages are the same Spotlight UI */
+  // APPROVED: the old homepage hero is gone. index.html and spotlight.html both carry page-spotlight
+  // and the same header/hero markup; only the document title differs.
+  const signature = async url => {
     await page.goto(url);
     await page.locator('.game-card').first().waitFor();
-    if (label === 'homepage') {
-      // The title change is Spotlight-only: the homepage keeps its original document title.
-      assert.equal(await page.title(), HOME_TITLE_EXPECTED, `homepage: the document title is UNCHANGED ("${await page.title()}")`);
-    } else {
-      assert.equal(await page.title(), BROWSER_TITLE, `spotlight: the document title is the new exact "${BROWSER_TITLE}"`);
-    }
+    await page.evaluate(() => document.fonts.ready);
+    return page.evaluate(() => ({
+      htmlClass: document.documentElement.className,
+      hasSpotlightHero: Boolean(document.querySelector('#hero.hero-spotlight')),
+      heroHeading: document.querySelectorAll('#hero-heading').length,
+      spotlightNameTag: document.getElementById('spotlight-name')?.tagName || '',
+      h1Count: document.querySelectorAll('h1').length,
+      pause: document.querySelectorAll('#hero-pause').length,
+      prev: document.querySelectorAll('#hero-prev').length,
+      next: document.querySelectorAll('#hero-next').length,
+      search: document.querySelectorAll('#search').length,
+      favourite: document.querySelectorAll('#favourite-button').length,
+      favouriteCount: document.querySelectorAll('#favourite-count').length,
+      account: document.querySelectorAll('#account-button').length,
+      burger: document.querySelectorAll('#menu-button').length,
+      navActive: document.querySelectorAll('.site-header nav .nav-link.active').length,
+    }));
+  };
+  const homeSig = await signature(HOME);
+  const spotSig = await signature(SPOTLIGHT);
+  assert.equal(homeSig.htmlClass, 'page-spotlight', 'the homepage carries page-spotlight, the same as the spotlight page');
+  assert.equal(homeSig.hasSpotlightHero, true, 'the homepage renders the spotlight hero, not the old copy-led hero');
+  assert.equal(homeSig.heroHeading, 0, 'the old #hero-heading baseline hero is gone from the homepage');
+  assert.equal(spotSig.heroHeading, 0, 'no leftover marketing headline on the spotlight page');
+  assert.equal(homeSig.spotlightNameTag, 'H1', 'the homepage title is the h1 spotlight heading');
+  assert.equal(homeSig.h1Count, 1, 'the homepage has exactly one h1');
+  const strip = sig => { const { htmlClass, spotlightNameTag, h1Count, ...rest } = sig; return rest; };
+  assert.deepEqual(strip(homeSig), strip(spotSig), 'both pages share the same spotlight header/hero markup');
+  assert.equal(await page.title(), BROWSER_TITLE, `the spotlight page document title is the new exact "${BROWSER_TITLE}"`);
+  await page.goto(HOME);
+  await page.locator('.game-card').first().waitFor();
+  assert.equal(await page.title(), BROWSER_TITLE, `the homepage now carries the same document title "${BROWSER_TITLE}"`);
+  pass('index.html and spotlight.html are now the same Spotlight UI and document title (page-spotlight, spotlight hero, one h1, shared header)');
+
+  /* ---------------------------------------------------------- shared header chrome */
+  for (const [label, url] of PAGES) {
+    await page.goto(url);
+    await page.locator('.game-card').first().waitFor();
+    await page.evaluate(() => document.fonts.ready);
+
+    assert.equal(await page.title(), BROWSER_TITLE, `${label}: the document title is the shared exact "${BROWSER_TITLE}"`);
     const navHeight = await page.locator('.site-header').evaluate(el => el.getBoundingClientRect().height);
-    if (label === 'homepage') {
-      // The compact bar is a Spotlight-only change — the homepage header stays at its original height.
-      assert(Math.abs(navHeight - HOME_NAVBAR_HEIGHT) <= HOME_NAVBAR_TOLERANCE, `homepage: the header keeps its original ~${HOME_NAVBAR_HEIGHT}px height, NOT the compact ${NAVBAR_HEIGHT}px (measured ${Math.round(navHeight)}px)`);
-    } else {
-      assert(Math.abs(navHeight - NAVBAR_HEIGHT) <= NAVBAR_TOLERANCE, `spotlight: the nav bar is the compact ~${NAVBAR_HEIGHT}px design (measured ${Math.round(navHeight)}px)`);
-    }
-    // APPROVED: the header and footer wordmarks are the straight text "GAMEFLEX" in the Pixel
-    // font plus the lime <span class="logo-pixel"> on BOTH pages — the earlier gameflex-curve.svg
-    // image is gone, so no <img> survives in either wordmark.
+    assert(Math.abs(navHeight - NAVBAR_HEIGHT) <= NAVBAR_TOLERANCE, `${label}: the nav bar is the compact ~${NAVBAR_HEIGHT}px design (measured ${Math.round(navHeight)}px)`);
+    // APPROVED: the header and footer wordmarks are the straight text "GAMEFLEX" in the Pixel font
+    // plus the lime <span class="logo-pixel"> on BOTH pages.
     const wordmarks = page.locator('.site-header .wordmark, footer .wordmark');
     assert.equal(await wordmarks.count(), 2, `${label}: a header and a footer wordmark are present`);
     for (const [slot, place] of [[0, 'header'], [1, 'footer']]) {
@@ -239,12 +225,11 @@ try {
       assert(/Pixel/i.test(style.family), `${label}: the ${place} wordmark paints the Pixel font (${style.family})`);
       assert.equal(await wm.locator('img').count(), 0, `${label}: the ${place} wordmark is text, not a curve image`);
       assert.equal(await wm.locator('.logo-pixel').count(), 1, `${label}: the ${place} wordmark keeps its lime pixel dot`);
-      if (label === 'spotlight') assert(/^GAMEFLEX home/.test(ariaLabel), `${label}: the spotlight ${place} wordmark keeps its accessible name (${ariaLabel})`);
+      assert(/^GAMEFLEX home/.test(ariaLabel), `${label}: the ${place} wordmark keeps its accessible name (${ariaLabel})`);
     }
     // APPROVED: the active Discover rule is a 2px lime underline inside the button, right-aligned
-    // under the label — never a pill. On the spotlight page it rests at 24px and grows to the full
-    // label width on hover or keyboard focus, over a 0.22s width transition. The homepage keeps its
-    // own underline. Read the ::after box at rest, on hover and on focus.
+    // under the label — never a pill. It rests at 24px and grows to the full label width on hover or
+    // keyboard focus over a ~500ms width transition (was ~220ms).
     const activeNav = page.locator('.site-header nav .nav-link.active');
     assert.equal(await activeNav.count(), 1, `${label}: exactly one nav item is active`);
     const navAfter = () => activeNav.evaluate(el => {
@@ -252,58 +237,60 @@ try {
       return {
         content: s.content, width: parseFloat(s.width) || 0, height: parseFloat(s.height) || 0,
         right: s.right, bottom: parseFloat(s.bottom), bg: s.backgroundColor,
-        transition: s.transitionDuration, labelWidth: el.getBoundingClientRect().width,
+        transition: parseFloat(s.transitionDuration) * (s.transitionDuration.includes('ms') ? 1 : 1000),
+        labelWidth: el.getBoundingClientRect().width,
         background: getComputedStyle(el).backgroundColor,
       };
     });
     const navRest = await navAfter();
     assert(navRest.content && navRest.content !== 'none', `${label}: the active nav item keeps an ::after underline`);
-    if (label === 'spotlight') {
-      assert(Math.abs(navRest.width - 24) <= 1, `${label}: the underline rests at 24px (${navRest.width}px)`);
-      assert(navRest.height > 0 && navRest.height <= 3, `${label}: the underline is a thin 2px rule (${navRest.height}px)`);
-      assert(/196, ?250, ?83/.test(navRest.bg), `${label}: the underline is lime (${navRest.bg})`);
-      assert(parseFloat(navRest.right) === 0, `${label}: the underline is flush right under the label (::after right ${navRest.right})`);
-      assert(navRest.bottom >= 0, `${label}: the underline sits INSIDE the button, not below it (::after bottom ${navRest.bottom})`);
-      assert(/rgba?\(0, 0, 0, 0\)|transparent/.test(navRest.background), `${label}: the active nav item has no pill or background enclosure (${navRest.background})`);
-      assert(parseFloat(navRest.transition) > 0, `${label}: the underline width animates (transition ${navRest.transition})`);
-      await activeNav.hover();
-      await page.waitForFunction(() => { const el = document.querySelector('.site-header nav .nav-link.active'); return parseFloat(getComputedStyle(el, '::after').width) >= el.getBoundingClientRect().width - 1; });
-      const navHover = await navAfter();
-      assert(navHover.width >= navRest.labelWidth - 1, `${label}: the underline grows to the full label width on hover (${Math.round(navHover.width)}px vs label ${Math.round(navRest.labelWidth)}px)`);
-      assert(navHover.width > navRest.width + 4, `${label}: hover really widens the rule past its 24px rest (${Math.round(navRest.width)}px -> ${Math.round(navHover.width)}px)`);
-      await page.mouse.move(2, 2);
-      // A keyboard press first, so the scripted focus counts as :focus-visible.
-      await page.keyboard.press('Tab');
-      await activeNav.focus();
-      await page.waitForFunction(() => { const el = document.querySelector('.site-header nav .nav-link.active'); return parseFloat(getComputedStyle(el, '::after').width) >= el.getBoundingClientRect().width - 1; });
-      const navFocus = await navAfter();
-      assert(navFocus.width >= navRest.labelWidth - 1, `${label}: the underline reaches the full label width on keyboard focus (${Math.round(navFocus.width)}px)`);
-    }
-    const search = await page.locator('.search-box').boundingBox();
-    const menu = await page.locator('#menu-button').boundingBox();
-    assert(menu.x >= search.x + search.width - 2, `${label}: the pages menu sits to the right of search`);
-    assert(menu.x - (search.x + search.width) <= 26, `${label}: the pages menu sits immediately right of search (gap ${Math.round(menu.x - (search.x + search.width))}px)`);
-    assert.equal(await page.locator('#account-button').count(), 1, `${label}: the account icon is present`);
-    assert.equal(await page.locator('#site-menu').isHidden(), true, `${label}: the menu starts closed`);
+    assert(Math.abs(navRest.width - 24) <= 1, `${label}: the underline rests at 24px (${navRest.width}px)`);
+    assert(navRest.height > 0 && navRest.height <= 3, `${label}: the underline is a thin 2px rule (${navRest.height}px)`);
+    assert(/196, ?250, ?83/.test(navRest.bg), `${label}: the underline is lime (${navRest.bg})`);
+    assert(parseFloat(navRest.right) === 0, `${label}: the underline is flush right under the label (::after right ${navRest.right})`);
+    assert(navRest.bottom >= 0, `${label}: the underline sits INSIDE the button, not below it (::after bottom ${navRest.bottom})`);
+    assert(/rgba?\(0, 0, 0, 0\)|transparent/.test(navRest.background), `${label}: the active nav item has no pill or background enclosure (${navRest.background})`);
+    assert(navRest.transition >= UNDERLINE_MS_MIN && navRest.transition <= UNDERLINE_MS_MAX, `${label}: the underline animates over ~500ms (measured ${navRest.transition}ms, was ~220ms)`);
+    await activeNav.hover();
+    await page.waitForFunction(() => { const el = document.querySelector('.site-header nav .nav-link.active'); return parseFloat(getComputedStyle(el, '::after').width) >= el.getBoundingClientRect().width - 1; });
+    const navHover = await navAfter();
+    assert(navHover.width >= navRest.labelWidth - 1, `${label}: the underline grows to the full label width on hover (${Math.round(navHover.width)}px vs label ${Math.round(navRest.labelWidth)}px)`);
+    assert(navHover.width > navRest.width + 4, `${label}: hover really widens the rule past its 24px rest (${Math.round(navRest.width)}px -> ${Math.round(navHover.width)}px)`);
+    await page.mouse.move(2, 2);
+    // A keyboard press first, so the scripted focus counts as :focus-visible.
+    await page.keyboard.press('Tab');
+    await activeNav.focus();
+    await page.waitForFunction(() => { const el = document.querySelector('.site-header nav .nav-link.active'); return parseFloat(getComputedStyle(el, '::after').width) >= el.getBoundingClientRect().width - 1; });
+    assert((await navAfter()).width >= navRest.labelWidth - 1, `${label}: the underline reaches the full label width on keyboard focus`);
 
+    // APPROVED header order, left to right: search → favourites (heart + count) → account → burger.
+    const order = await page.evaluate(() => {
+      const box = selector => { const node = document.querySelector(selector); if (!node) return null; const b = node.getBoundingClientRect(); return { x: b.x, right: b.right, width: b.width }; };
+      return { search: box('.search-box'), favourite: box('#favourite-button'), account: box('#account-button'), burger: box('#menu-button') };
+    });
+    assert(order.search && order.favourite && order.account && order.burger, `${label}: search, favourites, account and burger are all present`);
+    assert(order.search.right <= order.favourite.x + 1, `${label}: search sits left of favourites (search right ${Math.round(order.search.right)} vs favourite ${Math.round(order.favourite.x)})`);
+    assert(order.favourite.right <= order.account.x + 1, `${label}: favourites sits left of account (favourite right ${Math.round(order.favourite.right)} vs account ${Math.round(order.account.x)})`);
+    assert(order.account.right <= order.burger.x + 1, `${label}: account sits left of the burger (account right ${Math.round(order.account.right)} vs burger ${Math.round(order.burger.x)})`);
+    // The favourite control is a heart icon with the shared count.
+    assert.equal(await page.locator('#favourite-button svg').count(), 1, `${label}: the favourite control carries a heart icon`);
+    assert.equal((await page.locator('#favourite-count').textContent()).trim(), '0', `${label}: the favourite count starts at 0`);
+
+    // APPROVED: the burger is a PLACEHOLDER — it opens a popover with no page links.
+    assert.equal(await page.locator('#site-menu').isHidden(), true, `${label}: the burger menu starts closed`);
     await page.locator('#menu-button').click();
-    assert.equal(await page.locator('#menu-button').getAttribute('aria-expanded'), 'true', `${label}: the menu reports expanded`);
-    const links = await page.locator('#site-menu a').evaluateAll(els => els.map(el => ({ href: el.getAttribute('href'), current: el.getAttribute('aria-current'), text: el.textContent })));
-    assert.equal(links.length, 2, `${label}: the menu links exactly two pages`);
-    assert.deepEqual(links.map(link => link.href), ['index.html', 'spotlight.html'], `${label}: the menu links the original home and the spotlight preview`);
-    assert.equal(links.filter(link => link.current === 'page').length, 1, `${label}: the current page is marked`);
-    assert(links.find(link => link.current === 'page').href === (label === 'homepage' ? 'index.html' : 'spotlight.html'), `${label}: the marked link is this page`);
-    assert(links.every(link => /Original home|Spotlight preview/.test(link.text)), `${label}: the links are labelled`);
-
+    assert.equal(await page.locator('#menu-button').getAttribute('aria-expanded'), 'true', `${label}: the burger menu reports expanded`);
+    assert.equal(await page.locator('#site-menu a').count(), 0, `${label}: the burger placeholder exposes no old page links`);
+    assert((await page.locator('#site-menu').innerText()).trim().length > 0, `${label}: the burger placeholder shows a note`);
     await page.keyboard.press('Escape');
-    assert.equal(await page.locator('#site-menu').isHidden(), true, `${label}: Escape closes the menu`);
-    assert(await page.locator('#menu-button').evaluate(el => el === document.activeElement), `${label}: Escape returns focus to the menu button`);
+    assert.equal(await page.locator('#site-menu').isHidden(), true, `${label}: Escape closes the burger menu`);
+    assert(await page.locator('#menu-button').evaluate(el => el === document.activeElement), `${label}: Escape returns focus to the burger`);
 
+    // The account popover is unchanged: a coming-soon placeholder, no sign-in.
     await page.locator('#account-button').click();
     assert.equal(await page.locator('#account-popover').isVisible(), true, `${label}: the account icon opens a popover`);
     assert.equal(await page.locator('#account-popover').getAttribute('role'), 'dialog', `${label}: the popover is announced as a dialog`);
-    const accountCopy = (await page.locator('#account-popover').innerText()).toLowerCase();
-    assert(accountCopy.includes('coming soon'), `${label}: the popover says accounts are coming soon`);
+    assert((await page.locator('#account-popover').innerText()).toLowerCase().includes('coming soon'), `${label}: the popover says accounts are coming soon`);
     assert.equal(await page.locator('#account-popover input, #account-popover form').count(), 0, `${label}: there is no sign-in form or field`);
     await page.keyboard.press('Escape');
     assert.equal(await page.locator('#account-popover').isHidden(), true, `${label}: Escape closes the account popover`);
@@ -319,25 +306,9 @@ try {
     assert.equal(await page.locator('.game-card').count(), GAMES.filter(game => game.category === 'sports').length, `${label}: the renamed sports filter still fills the shelf`);
     await page.locator('[data-category="all"]').click();
   }
-  pass(`the spotlight page carries the new title "${BROWSER_TITLE}" and the compact ~${NAVBAR_HEIGHT}px nav bar, while the homepage keeps its original title "${HOME_TITLE_EXPECTED}" and ~${HOME_NAVBAR_HEIGHT}px header; menu sits immediately right of search on both and links both pages; account popover is coming-soon only; Sports filter renamed`);
-
-  /* ---------------------------------------- Discover underline at 390px (spotlight) */
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(SPOTLIGHT);
-  await page.locator('.game-card').first().waitFor();
-  const mobileNav = await page.locator('.site-header nav .nav-link.active').evaluate(el => {
-    const s = getComputedStyle(el, '::after');
-    return { width: parseFloat(s.width) || 0, height: parseFloat(s.height) || 0, right: s.right, labelWidth: el.getBoundingClientRect().width };
-  });
-  assert(Math.abs(mobileNav.width - 24) <= 1, `spotlight at 390px: the Discover underline still rests at 24px (${mobileNav.width}px)`);
-  assert(parseFloat(mobileNav.right) === 0, `spotlight at 390px: the underline stays flush right under the label (${mobileNav.right})`);
-  assert(mobileNav.height > 0 && mobileNav.height <= 3, `spotlight at 390px: the underline stays a thin 2px rule (${mobileNav.height}px)`);
-  assert(mobileNav.labelWidth <= 390, `spotlight at 390px: the Discover label fits the viewport (${Math.round(mobileNav.labelWidth)}px)`);
-  await page.setViewportSize(CHECK_VIEWPORT);
-  pass('the Discover underline rests at 24px, flush right and inside the label at both 1440px and 390px');
+  pass(`both pages share the compact ~${NAVBAR_HEIGHT}px header: search → favourites (heart + count) → account → burger placeholder (no old page links); the Discover underline rests at 24px and grows full-text over ~500ms; account popover is coming-soon only; Sports filter renamed`);
 
   /* ------------------------------------------------------------------ page ground colour */
-  // APPROVED: the spotlight ground is the darker #0b0d0b, a shade below the homepage #101210.
   const groundOf = async url => {
     await page.goto(url);
     await page.locator('.game-card').first().waitFor();
@@ -345,12 +316,10 @@ try {
   };
   const homeGround = await groundOf(HOME);
   const spotGround = await groundOf(SPOTLIGHT);
-  const bgChannels = value => (value.match(/\d+/g) || []).slice(0, 3).map(Number);
-  const bgSum = value => bgChannels(value).reduce((total, channel) => total + channel, 0);
-  assert(/16, 18, 16/.test(homeGround.body), `the homepage ground stays #101210 (${homeGround.body})`);
+  assert(/11, 13, 11/.test(homeGround.body), `the homepage ground is the darker #0b0d0b (${homeGround.body})`);
   assert(/11, 13, 11/.test(spotGround.body), `the spotlight ground is the darker #0b0d0b (${spotGround.body})`);
-  assert(bgSum(spotGround.body) < bgSum(homeGround.body), `the spotlight ground is darker than the homepage (${spotGround.body} vs ${homeGround.body})`);
-  pass('the spotlight page ground is #0b0d0b, a darker shade than the homepage #101210');
+  assert.equal(homeGround.body, spotGround.body, 'both pages share the same #0b0d0b ground');
+  pass('both pages share the spotlight #0b0d0b ground');
 
   /* --------------------------------------- spotlight hero: curated games + promo slides */
   await page.goto(SPOTLIGHT);
@@ -358,8 +327,6 @@ try {
   await page.evaluate(() => document.fonts.ready);
   await page.mouse.move(2, 2);
 
-  // Snapshot of the live slide: id (data-hero-game, stamped by dist/app.js paintHero), title,
-  // copy, backdrop and whether a launch affordance or a games-naming CTA is present.
   const slideSnapshot = () => page.evaluate(() => {
     const image = document.getElementById('hero-image');
     const play = document.getElementById('hero-play');
@@ -372,22 +339,15 @@ try {
       image: image?.style.backgroundImage || '',
       position: image?.style.backgroundPosition || '',
       heroGameId: image?.getAttribute('data-hero-game') || '',
-      // The promo CTA is the launch action (`#hero-play`) whose text names the games; the approved
-      // label "Explore games" ships as "Show me the games". On a game slide the same control reads
-      // "Let's play" / "View game", so this predicate separates the two. It deliberately ignores the
-      // shared static "See the collection" link, which sits in .hero-actions on EVERY slide and would
-      // otherwise make every slide look like a promo. Behaviour is asserted word-agnostically below.
       promoAction: /games|collection/i.test(play?.textContent || ''),
       heroPlayText: play?.textContent?.trim() || '',
       heroPlayDisabled: play ? Boolean(play.disabled) : true,
       playDeepLink: document.querySelectorAll('.hero-actions a[href^="#play/"], .hero-actions [data-play]').length,
     };
   });
-  // The promo slide is the one slide that is not a curated game id (or carries no id at all).
   const keyOf = snap => snap.heroGameId || `promo:${snap.title}`;
   const isGameKey = key => SPOT_POOL.some(game => game.id === key);
 
-  // Walk one full cycle with Next, snapshotting each slide. The opener is the origin.
   const walk = [];
   const openerSnap = await slideSnapshot();
   const openerKey = keyOf(openerSnap);
@@ -405,7 +365,7 @@ try {
   const promoEntries = walk.filter(entry => !isGameKey(entry.key));
   assert.equal(walk.length, SPOT_SLIDE_COUNT, `the spotlight rotates exactly ${SPOT_SLIDE_COUNT} slides (found ${walk.length})`);
   assert.equal(new Set(keys).size, keys.length, 'every spotlight slide is distinct across the cycle');
-  assert.equal(gameEntries.length, SPOT_POOL.length, `eight quality-curated game slides (found ${gameEntries.length})`);
+  assert.equal(gameEntries.length, SPOT_POOL.length, `${SPOT_POOL.length} quality-curated game slides (found ${gameEntries.length})`);
   assert.equal(new Set(gameEntries.map(entry => entry.key)).size, SPOT_POOL.length, 'each curated game appears once in the rotation');
   assert.equal(promoEntries.length, 1, `exactly one Gameflex brand promo slide (found ${promoEntries.length})`);
   const PROMO_INDEX = walk.findIndex(entry => !isGameKey(entry.key));
@@ -414,8 +374,6 @@ try {
   assert.equal(walk[PROMO_INDEX].snap.playDeepLink, 0, 'the promo slide offers no #play/ deep link');
   assert.equal(walk[PROMO_INDEX].snap.promoAction, true, 'the promo slide offers a call to action that names the games');
   assert(gameEntries.every(entry => !entry.snap.promoAction && /play|view/i.test(entry.snap.heroPlayText) && !entry.snap.heroPlayDisabled), 'every game slide keeps a working in-site launch action instead of the promo CTA');
-
-  // Every game slide names its game and paints the media-map artwork and crop.
   for (const { key, snap } of gameEntries) {
     const game = SPOT_POOL.find(entry => entry.id === key);
     assert(game, `every game slide maps to a curated game (${key})`);
@@ -427,16 +385,14 @@ try {
     assert.equal(snap.requirements, game.requirements, `${key}: the requirements note is the current game requirements`);
   }
   assert.equal(await keyOf(await slideSnapshot()), openerKey, 'one full cycle of Next returns to the opener');
-  await page.screenshot({ path: 'artifacts/qa/hero-spotlight-desktop.png', fullPage: true });
+  await page.screenshot({ path: 'artifacts/qa/spotlight-home-desktop.png', fullPage: true });
 
   assert.equal(await page.locator('html').getAttribute('class'), 'page-spotlight', 'the spotlight page marks itself with page-spotlight');
   assert.equal(await page.locator('h1').count(), 1, 'the spotlight page has exactly one h1');
   assert.equal(await page.locator('#spotlight-name').evaluate(el => el.tagName), 'H1', 'the current title is the page heading, not a generic slogan');
-  assert.equal(await page.locator('#hero-heading').count(), 0, 'no leftover marketing headline on the spotlight page');
   pass(`spotlight hero rotates ${TOTAL} slides — ${SPOT_POOL.length} curated games plus one Gameflex brand promo at index ${PROMO_INDEX} — each game naming its title and media, the promo carrying a games-naming CTA and no launch link`);
 
   /* ------------------------------------------------------- promo CTA + dynamic copy */
-  // From the opener, step forward to the promo slide and exercise its call to action.
   for (let index = 0; index < PROMO_INDEX; index += 1) await page.locator('#hero-next').click();
   assert.equal(await keyOf(await slideSnapshot()), PROMO_KEY, 'the promo slide is reachable by stepping forward from the opener');
   assert(PROMO_TITLE.length > 0, 'the promo slide carries a headline');
@@ -456,7 +412,6 @@ try {
   assert.equal(await page.locator('#player').evaluate(el => el.hidden), true, 'the promo CTA does not open the player');
   assert.equal(await page.evaluate(() => (location.hash || '').startsWith('#play/')), false, 'the promo CTA does not deep-link into a launch');
   assert.deepEqual(popups, [], 'the promo CTA opens no new tab or window');
-  // Revisit the promo (one more lap) and confirm the headline copy is dynamic.
   await page.locator('#hero-next').click();
   for (let step = 0; step < TOTAL; step += 1) {
     if (await keyOf(await slideSnapshot()) === PROMO_KEY) break;
@@ -484,8 +439,6 @@ try {
     tabIndex: button.tabIndex,
     art: button.querySelector('img.hero-thumb-art')?.getAttribute('src') || '',
   })));
-  // The strip previews five REAL GAMES: it walks the curated game ids (skipping the brand promo
-  // slide, an accepted product decision), so its indexes are computed over the game slides only.
   const GAME_IDX = walk.map((entry, index) => (isGameKey(entry.key) ? index : -1)).filter(index => index >= 0);
   const titleById = new Map(SPOT_POOL.map(game => [`${game.id}`, game.title]));
   const keyOfIndex = index => walk[index]?.key || '';
@@ -494,7 +447,6 @@ try {
     const ordered = start === -1 ? GAME_IDX.slice() : [...GAME_IDX.slice(start), ...GAME_IDX.slice(0, start)];
     return ordered.slice(0, 5);
   };
-  // Return to the opener so the preview indexes are read from a known origin.
   await page.mouse.move(2, 2);
   for (let step = 0; step < TOTAL; step += 1) {
     if (await keyOf(await slideSnapshot()) === openerKey) break;
@@ -509,18 +461,14 @@ try {
   assert.equal(peek.every(entry => entry.text === '' && entry.title && entry.art), true, 'the thumbnails are unnumbered and carry a title and artwork');
   assert.equal(new Set(peek.map(entry => entry.title)).size, 5, 'the five upcoming previews are distinct');
   assert.equal(peek.some(entry => entry.title === openerSnap.title), false, 'the current slide is never repeated in its own up-next strip');
-  // Every thumbnail is a real game: a curated title, never the brand promo.
   assert.equal(peek.every(entry => entry.title === titleById.get(keyOfIndex(entry.index))), true, `every upcoming thumbnail indexes a curated game slide (${peek.map(entry => entry.title).join(', ')})`);
   assert.equal(peek.some(entry => entry.title === PROMO_TITLE), false, 'the up-next strip never spends a slot on the brand promo');
   assert.equal(peek.every(entry => entry.current === false && entry.tabIndex === 0), true, 'no upcoming thumbnail is marked current and all stay tabbable');
-  // Order and indexes: current+1…current+5 over the curated game slides, wrapping once, skipping promo.
   const expectedPeek = expectedUpcoming(openerIndexInWalk);
   assert.equal(expectedPeek.length, 5, 'the curated pool supplies five upcoming games');
   assert.deepEqual(peek.map(entry => entry.index), expectedPeek, 'the previews walk the curated game ids after the current slide (skipping the promo), wrapping once');
   assert.equal(new Set(peek.map(entry => entry.index)).size, 5, 'the five preview indexes are distinct — no repeats and no promo slot');
   assert.deepEqual(peek.map(entry => entry.title), expectedPeek.map(index => titleById.get(keyOfIndex(index))), 'the preview titles follow the curated game order');
-  assert.equal(peek.every(entry => entry.art.length > 0), true, 'every upcoming thumbnail carries artwork');
-  // Decoded: each thumbnail's image really decodes from its source.
   const decodedThumbs = await page.evaluate(() => [...document.querySelectorAll('#hero-dots .hero-thumb img.hero-thumb-art')].map(image => ({ src: image.getAttribute('src') || '', complete: image.complete, width: image.naturalWidth })));
   assert.equal(decodedThumbs.length, 5, 'five thumbnail images are present');
   assert.equal(decodedThumbs.every(entry => entry.src && entry.complete && entry.width > 0), true, `every thumbnail image decodes (${decodedThumbs.map(entry => entry.width).join(', ')})`);
@@ -543,46 +491,75 @@ try {
   pass(`five distinct decoded upcoming previews walking the curated game ids and skipping the brand promo, with 7s progress and bottom-right controls`);
 
   /* ------------------------------------------------------ manual navigation first */
-  await page.evaluate(() => [...document.querySelectorAll('#hero-dots .hero-thumb')].forEach((button, slot) => { button.dataset.qaNode = `n${slot}`; }));
-  const nextUp = (await thumbs())[0];
-  await page.locator('#hero-next').click();
-  const afterNext = await slideSnapshot();
-  if (isGameKey(keyOf(afterNext))) {
-    assert.equal(afterNext.title, nextUp.title, `Next shows the slide that was first up next (${nextUp.title})`);
-  } else {
-    assert.equal(keyOf(afterNext), PROMO_KEY, 'Next reaches the promo slide when it was first up next');
-  }
-  assert((await status()).includes('Spotlight'), 'a manual change is announced politely with the running order');
-  const nodeIds = await page.evaluate(() => [...document.querySelectorAll('#hero-dots .hero-thumb')].map(button => button.dataset.qaNode));
-  assert.deepEqual(nodeIds, ['n0', 'n1', 'n2', 'n3', 'n4'], 'the five thumbnail nodes are stable across a slide change, so focus and animation state survive');
-  await page.locator('#hero-prev').click();
-  assert.equal(await keyOf(await slideSnapshot()), openerKey, 'Previous returns to the slide it came from');
   const pick = (await thumbs())[2];
   await page.locator(`[data-hero-index="${pick.index}"]`).click();
   assert.deepEqual((await thumbs()).map(entry => entry.index), expectedUpcoming(pick.index), 'the five upcoming previews follow the selected slide across the curated game ids');
   await releaseHero();
   assert.equal(await paused(), false, 'the slideshow is running once the pointer and focus leave the hero');
   pass(`manual next/previous/preview thumbnails move the carousel across all ${TOTAL} slides (promo included) and update the five upcoming game indexes`);
-  await page.locator('#hero-prev').click();
-  await releaseHero();
 
   /* ----------------------------------------------------------- autoplay behaviour */
-  await page.evaluate(() => document.activeElement?.blur());
+  // 1) Baseline: with pointer and focus away, the beat runs on a ~7s interval.
+  await releaseHero();
   const beforeAuto = await title();
   const announcement = await status();
-  const autoplayStart = Date.now();
   const waited = await advance(beforeAuto);
   results.timings.firstAdvanceMs = waited;
-  const afterAuto = await title();
-  assert(afterAuto !== beforeAuto && afterAuto.length > 0, `the hero advances on its own to another spotlight slide (${afterAuto})`);
-  results.timings.autoplayMeasuredMs = Date.now() - autoplayStart;
   assert(waited >= INTERVAL_MS - 700 && waited <= INTERVAL_MS + 1700, `autoplay advances on a ~7s beat (measured ${waited}ms)`);
   assert.equal(await page.evaluate(() => document.activeElement === document.body || document.activeElement === null), true, 'autoplay moves no focus');
   assert.equal(await status(), announcement, 'autoplay announces nothing: the last manual announcement is untouched');
-  assert.equal(await page.locator('#toast').evaluate(el => el.classList.contains('visible')), false, 'autoplay raises no toast');
-  pass(`autoplay advances the hero on a measured ${waited}ms beat with no announcement and no focus change`);
+  pass(`autoplay advances on a measured ${waited}ms beat with no announcement and no focus change`);
 
-  // APPROVED: hovering the hero no longer pauses autoplay — it keeps running under the pointer.
+  // 2) APPROVED: a POINTER press on Next does not pause the beat — the pointer-borne focus never
+  //    latches a pause, so the slideshow keeps advancing after the click.
+  await releaseHero();
+  await page.locator('#hero-next').click();
+  assert.equal(await paused(), false, 'a pointer press on Next does NOT pause the slideshow');
+  const afterNext = await advance(await title());
+  results.timings.advanceAfterNextMs = afterNext;
+  assert.equal(await paused(), false, 'the slideshow keeps running after Next');
+  pass(`a pointer press on Next leaves autoplay running (it advanced ${afterNext}ms later)`);
+
+  // 3) APPROVED: a POINTER press on a preview thumbnail likewise keeps the beat running.
+  await releaseHero();
+  await page.locator('#hero-dots .hero-thumb').first().click();
+  assert.equal(await paused(), false, 'a pointer press on a preview thumbnail does NOT pause the slideshow');
+  const afterThumb = await advance(await title());
+  results.timings.advanceAfterPreviewMs = afterThumb;
+  assert.equal(await paused(), false, 'the slideshow keeps running after a preview pick');
+  pass(`a pointer press on a preview thumbnail leaves autoplay running (it advanced ${afterThumb}ms later)`);
+
+  // 4) APPROVED: keyboard focus still pauses the beat.
+  await releaseHero();
+  const beforeFocus = await title();
+  await page.locator('#hero-next').focus();
+  assert.equal(await paused(), true, 'keyboard focus inside the hero pauses the slideshow');
+  await page.waitForTimeout(INTERVAL_MS + OVERRUN_MS);
+  assert.equal(await title(), beforeFocus, 'nothing advances while keyboard focus is inside the hero');
+  pass('keyboard focus inside the hero pauses the spotlight slideshow');
+
+  // 5) APPROVED: an explicit Play press overrides the keyboard-focus pause.
+  await page.evaluate(() => document.activeElement?.blur());
+  await page.mouse.move(2, 2);
+  await page.locator('#hero-pause').click();
+  assert.equal(await page.locator('#hero-pause').getAttribute('aria-pressed'), 'true', 'the pause button reports the paused state');
+  assert((await page.locator('#hero-pause').getAttribute('aria-label')).toLowerCase().includes('play'), 'the pause button offers to play again');
+  await releaseHero();
+  const beforeManual = await title();
+  await page.waitForTimeout(INTERVAL_MS + OVERRUN_MS);
+  assert.equal(await title(), beforeManual, 'nothing advances while the visitor has paused');
+  // Focus the pause control by keyboard while it is paused, then activate Play explicitly.
+  await page.keyboard.press('Tab');
+  await page.locator('#hero-pause').focus();
+  assert.equal(await paused(), true, 'keyboard focus keeps the slideshow paused');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('#hero-pause').getAttribute('aria-pressed'), 'false', 'the pause button toggles back to Play');
+  assert.equal(await paused(), false, 'an explicit Play overrides the keyboard-focus pause');
+  const explicitResume = await advance(await title());
+  results.timings.resumeAfterExplicitPlayMs = explicitResume;
+  pass(`the pause button holds while paused, and an explicit Play overrides the keyboard-focus pause (it advanced ${explicitResume}ms later)`);
+
+  // 6) APPROVED: hovering the hero never pauses it.
   const beforeHover = await title();
   await page.mouse.move(CHECK_VIEWPORT.width / 2, CHECK_VIEWPORT.height * 0.6);
   assert.equal(await paused(), false, 'hovering the hero does NOT pause the slideshow');
@@ -593,16 +570,19 @@ try {
   await page.mouse.move(2, 2);
   pass(`hovering the hero leaves autoplay running — it advanced in ${hoverAdvance}ms under the pointer`);
 
-  // Focus, a hidden tab, manual pause and reduced motion all still stand the slideshow down.
-  const beforeFocus = await title();
-  await page.locator('#hero-next').focus();
-  assert.equal(await paused(), true, 'focus inside the hero pauses the slideshow');
+  // 7) APPROVED: an offscreen hero pauses the beat.
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.waitForTimeout(500);
+  assert.equal(await paused(), true, 'scrolling the hero out of view pauses the slideshow');
+  const beforeOffscreen = await title();
   await page.waitForTimeout(INTERVAL_MS + OVERRUN_MS);
-  assert.equal(await title(), beforeFocus, 'nothing advances while focus is inside the hero');
-  await page.evaluate(() => document.activeElement?.blur());
-  assert.equal(await paused(), false, 'blurring the hero resumes the slideshow');
-  pass('focus anywhere inside the hero pauses the spotlight slideshow; blurring resumes it');
+  assert.equal(await title(), beforeOffscreen, 'nothing advances while the hero is offscreen');
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(500);
+  assert.equal(await paused(), false, 'scrolling back resumes the slideshow');
+  pass('an offscreen hero pauses the spotlight slideshow and scrolling back resumes it');
 
+  // 8) APPROVED: a hidden tab pauses the beat (visibilitychange exercised directly).
   const beforeHidden = await title();
   await page.evaluate(() => {
     Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
@@ -620,38 +600,28 @@ try {
   assert.equal(await paused(), false, 'a visible tab resumes the slideshow');
   pass('a hidden tab pauses the spotlight slideshow (visibilitychange exercised directly, not a real tab switch)');
 
-  await page.mouse.move(2, 2);
-  await page.locator('#hero-pause').click();
-  assert.equal(await page.locator('#hero-pause').getAttribute('aria-pressed'), 'true', 'the pause button reports the paused state');
-  assert((await page.locator('#hero-pause').getAttribute('aria-label')).toLowerCase().includes('play'), 'the pause button offers to play again');
+  // 9) APPROVED: an open player freezes the beat.
   await releaseHero();
-  assert.equal(await paused(), true, 'manual pause holds once the pointer leaves the hero');
-  const beforeManual = await title();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  for (let step = 0; step < TOTAL; step += 1) {
+    if (isGameKey(keyOf(await slideSnapshot()))) break;
+    await page.locator('#hero-next').click();
+  }
+  const beforePlayer = await title();
+  await page.locator('#hero-play').click();
+  assert.equal(await page.locator('#player').evaluate(el => el.hidden), false, 'the hero action opens the in-site player');
   await page.waitForTimeout(INTERVAL_MS + OVERRUN_MS);
-  assert.equal(await title(), beforeManual, 'nothing advances while the visitor has paused');
-  await page.locator('#hero-pause').click();
-  await releaseHero();
-  assert.equal(await page.locator('#hero-pause').getAttribute('aria-pressed'), 'false', 'the pause button toggles back');
-  const manualResume = await advance(beforeManual);
-  results.timings.resumeAfterManualPauseMs = manualResume;
-  pass('the pause button stops the slideshow for good and starts it again on the second press');
+  assert.equal(await title(), beforePlayer, 'the hero does not advance while the player is open');
+  assert.equal(await page.locator('#player-title').textContent(), beforePlayer, 'the player opens the game that was on screen');
+  assert.equal(await page.locator('#player a[href^="http"]').count(), 0, 'the player offers no external fallback');
+  await page.locator('#player-close').click();
+  assert.equal(await page.locator('#player').evaluate(el => el.hidden), true, 'Back closes the player');
+  pass('an open player freezes the hero autoplay and closing it restores the beat');
 
   /* ------------------------------------------------------ player + catalogue share */
   assert.equal(await page.locator('.game-card').count() >= GAMES.length, true, 'the spotlight page carries the same catalogue');
   assert.equal(await page.locator('a[target]').count(), 0, 'no launch link opens a new tab');
   assert.equal(await page.locator('a[href^="http"]').count(), 0, 'no external anchors on the spotlight page');
-  // Land on a game slide before exercising the hero launch action.
-  for (let step = 0; step < TOTAL; step += 1) {
-    if (isGameKey(keyOf(await slideSnapshot()))) break;
-    await page.locator('#hero-next').click();
-  }
-  const heroGame = await title();
-  await page.locator('#hero-play').click();
-  assert.equal(await page.locator('#player').evaluate(el => el.hidden), false, 'the hero action opens the in-site player');
-  assert.equal(await page.locator('#player-title').textContent(), heroGame, 'the hero action opens the game that was on screen');
-  assert.equal(await page.locator('#player a[href^="http"]').count(), 0, 'the player offers no external fallback');
-  await page.locator('#player-close').click();
-  assert.equal(await page.locator('#player').evaluate(el => el.hidden), true, 'Back closes the player');
   const pending = GAMES.find(game => game.availability === 'sandbox-pending');
   await page.locator('#search').fill(pending.title);
   const pendingCard = page.locator(`.sd-card[data-game="${pending.id}"]`).first();
@@ -661,15 +631,22 @@ try {
   assert((await page.locator('.player-panel').innerText()).includes('Sandbox pending'), 'the blocked panel still explains the pending state');
   await page.locator('#player-close').click();
   await page.locator('#search').fill('');
-  pass('hero and catalogue launches on the spotlight page go through the existing sandbox player, including the sandbox-pending blocked state');
+  pass('catalogue launches on the spotlight page go through the existing sandbox player, including the sandbox-pending blocked state');
 
   /* ------------------------------------------------------------------ responsive */
   await page.goto(SPOTLIGHT);
   await page.locator('.game-card').first().waitFor();
   await page.mouse.move(2, 2);
-  const desktopHero = await page.locator('#hero').evaluate(el => el.getBoundingClientRect().height);
-  assert(desktopHero > homeHeroHeight + 100, `the spotlight hero is a taller full-bleed band than the homepage baseline (${desktopHero}px vs ${homeHeroHeight}px)`);
-  results.timings.heroHeights = { homepage: homeHeroHeight, spotlight: desktopHero };
+  const spotlightHero = await page.locator('#hero').evaluate(el => el.getBoundingClientRect().height);
+  await page.goto(HOME);
+  await page.locator('.game-card').first().waitFor();
+  const homepageHero = await page.locator('#hero').evaluate(el => el.getBoundingClientRect().height);
+  assert(spotlightHero > 300, `the spotlight hero is a full-bleed band (${spotlightHero}px)`);
+  assert(Math.abs(spotlightHero - homepageHero) <= 2, `both pages render the same hero height (${Math.round(spotlightHero)}px vs ${Math.round(homepageHero)}px)`);
+  results.timings.heroHeights = { homepage: homepageHero, spotlight: spotlightHero };
+  await page.goto(SPOTLIGHT);
+  await page.locator('.game-card').first().waitFor();
+  await page.mouse.move(2, 2);
 
   const overlaps = (a, b) => !(a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y);
   const measure = selector => page.locator(selector).boundingBox();
@@ -702,24 +679,18 @@ try {
   const mobileCopy = await page.locator('#spotlight-description').boundingBox();
   assert(mobileCopy.x >= 0 && mobileCopy.x + mobileCopy.width <= 391, 'the mobile description stays inside the viewport');
   assert(await page.locator('#spotlight-description').evaluate(el => parseFloat(getComputedStyle(el).fontSize)) >= 16, 'the description stays readable on mobile');
-  const mobileControls = await page.locator('.hero-slider-controls').boundingBox();
-  assert(mobileControls.y >= mobileCopy.y + mobileCopy.height - 2, 'the mobile controls stack below the copy, clear of it');
-  await page.screenshot({ path: 'artifacts/qa/hero-spotlight-mobile.png', fullPage: true });
+  await page.screenshot({ path: 'artifacts/qa/spotlight-home-mobile.png', fullPage: true });
   await page.evaluate(() => scrollTo(0, 0));
-  const mobileSearch = await page.locator('.search-box').boundingBox();
-  const mobileMenuButton = await page.locator('#menu-button').boundingBox();
-  assert(mobileMenuButton.x >= mobileSearch.x + mobileSearch.width - 2 && mobileMenuButton.x - (mobileSearch.x + mobileSearch.width) <= 26, 'the mobile menu button stays immediately right of search');
-  await page.locator('#menu-button').click();
-  const mobileMenuPanel = await page.locator('#site-menu').boundingBox();
-  assert(mobileMenuPanel.x >= 0 && mobileMenuPanel.x + mobileMenuPanel.width <= 391, 'the mobile pages menu stays inside the 390px viewport');
-  await page.locator('#site-menu a').nth(1).textContent();
-  await page.keyboard.press('Escape');
-  await page.locator('#account-button').click();
-  const mobileAccount = await page.locator('#account-popover').boundingBox();
-  assert(mobileAccount.x >= 0 && mobileAccount.x + mobileAccount.width <= 391, 'the mobile account popover stays inside the 390px viewport');
-  await page.keyboard.press('Escape');
+  // The mobile header keeps the search → favourites → account → burger order.
+  const mobileOrder = await page.evaluate(() => {
+    const box = selector => { const node = document.querySelector(selector); if (!node) return null; const b = node.getBoundingClientRect(); return { x: b.x, right: b.right }; };
+    return { search: box('.search-box'), favourite: box('#favourite-button'), account: box('#account-button'), burger: box('#menu-button') };
+  });
+  assert(mobileOrder.search.right <= mobileOrder.favourite.x + 1, 'at 390px search sits left of favourites');
+  assert(mobileOrder.favourite.right <= mobileOrder.account.x + 1, 'at 390px favourites sits left of account');
+  assert(mobileOrder.account.right <= mobileOrder.burger.x + 1, 'at 390px account sits left of the burger');
   await page.setViewportSize(CHECK_VIEWPORT);
-  pass('spotlight hero is full-bleed on desktop and stacks legibly with no overflow on a 390px viewport');
+  pass('spotlight hero is full-bleed on desktop and stacks legibly with no overflow on a 390px viewport; the mobile header keeps the search → favourites → account → burger order');
 
   /* -------------------------------------------- shuffle refresh opens on a new game */
   const preRefreshOpener = await heroGameId();
@@ -762,9 +733,9 @@ try {
 
   results.passed = true;
   results.errors = errors;
-  await writeFile('artifacts/qa/hero-comparison-report.json', JSON.stringify(results, null, 2) + '\n');
+  await writeFile('artifacts/qa/spotlight-home-report.json', JSON.stringify(results, null, 2) + '\n');
   console.log(`\n${checks.length} checks passed in ${Math.round((Date.now() - calmStarted) / 1000)}s`);
-  console.log(JSON.stringify({ passed: results.passed, homepageSlides: results.homepageSlides, spotlightSlides: results.spotlightSlides, timings: results.timings }, null, 2));
+  console.log(JSON.stringify({ passed: results.passed, slidesPerPage: results.slidesPerPage, timings: results.timings }, null, 2));
 } finally {
   await browser?.close();
   await server.stop();

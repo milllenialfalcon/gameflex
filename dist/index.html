@@ -1,15 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="page-spotlight">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101210">
-  <meta name="description" content="Old favourites, played right here. Curated browser games and ports launch inside the gameflex player. Save favourites, no account, no launcher.">
-  <title>gameflex — one more game.</title>
+  <meta name="theme-color" content="#0b0d0b">
+  <meta name="description" content="Curated browser games and ports that launch inside the gameflex player, right on this page. Save favourites in your browser. No account, no launcher.">
+  <title>GameFlex - The Browser is your Console.</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/pixel.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/body.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="spotlight.css">
+  <link rel="stylesheet" href="spotlight-discovery.css">
   <script src="app.js" type="module"></script>
 </head>
 <body>
@@ -18,18 +20,11 @@
     <a class="wordmark" href="#" aria-label="GAMEFLEX home">GAMEFLEX<span class="logo-pixel" aria-hidden="true"></span></a>
     <nav aria-label="Main navigation">
       <button class="nav-link active" data-view="discover" aria-current="page">Discover</button>
-      <button class="nav-link" data-view="favourites">My favourites <span id="favourite-count">0</span></button>
     </nav>
     <div class="header-right">
       <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Find your next game" aria-label="Search games" autocomplete="off"><kbd>/</kbd></label>
+      <button class="header-icon favourite-button" id="favourite-button" type="button" data-view="favourites" aria-label="My favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg><span class="favourite-count" id="favourite-count">0</span></button>
       <div class="header-tools">
-        <div class="menu-anchor">
-          <button class="header-icon" id="menu-button" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Browse gameflex pages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-          <nav class="popover" id="site-menu" aria-label="Gameflex pages" hidden>
-            <a href="index.html" aria-current="page">Original home<span>Homepage spotlight</span></a>
-            <a href="spotlight.html">Spotlight preview<span>Full-bleed hero</span></a>
-          </nav>
-        </div>
         <div class="menu-anchor">
           <button class="header-icon" id="account-button" type="button" aria-expanded="false" aria-controls="account-popover" aria-label="Account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.7"/><path d="M4.6 20a7.4 7.4 0 0 1 14.8 0"/></svg></button>
           <div class="popover account-popover" id="account-popover" role="dialog" aria-modal="false" aria-labelledby="account-title" hidden>
@@ -38,32 +33,34 @@
             <button class="button lime" id="account-close" type="button">Got it</button>
           </div>
         </div>
+        <div class="menu-anchor">
+          <button class="header-icon" id="menu-button" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Browse gameflex pages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          <nav class="popover" id="site-menu" aria-label="Gameflex pages" hidden>
+            <p class="popover-note">More pages are on the way.</p>
+          </nav>
+        </div>
       </div>
     </div>
   </header>
   <main>
-    <section class="hero" id="hero" aria-labelledby="hero-heading">
+    <section class="hero hero-spotlight" id="hero" aria-labelledby="spotlight-name">
       <div class="hero-image" id="hero-image" aria-hidden="true"></div><div class="hero-shade" aria-hidden="true"></div>
-      <div class="hero-content">
-        <div class="eyebrow"><span class="live-dot"></span> THE BROWSER IS YOUR CONSOLE</div>
-        <h1 id="hero-heading">Old favourites.<br><span>Right here.</span></h1>
-        <p>The games you grew up on. A few you missed.<br>They load inside gameflex. No installs, no extra tabs.</p>
-        <div class="hero-actions"><button class="button lime" id="hero-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>Let's play</button><a class="button ghost" href="#catalogue">Explore the collection <span aria-hidden="true">↓</span></a></div>
-        <span class="hero-note">Some ports need your original game files.</span>
-      </div>
       <div class="hero-slider" id="hero-slider" role="group" aria-roledescription="carousel" aria-label="Spotlight games">
         <div class="hero-slide">
-          <span class="eyebrow">IN THE SPOTLIGHT</span>
-          <strong id="spotlight-name">Halo: Combat Evolved</strong>
-          <span class="hero-slide-meta" id="spotlight-genre">Sci-fi shooter</span>
-          <p class="hero-slide-copy" id="spotlight-description">An old-school classic, back in your browser.</p>
+          <div class="eyebrow"><span class="live-dot" aria-hidden="true"></span> <span id="spotlight-tag">IN THE SPOTLIGHT</span></div>
+          <h1 id="spotlight-name">Halo: Combat Evolved</h1>
+          <p class="hero-slide-meta" id="spotlight-genre"></p>
+          <p class="hero-slide-copy" id="spotlight-description"></p>
           <p class="hero-slide-req" id="spotlight-requirements"></p>
+          <div class="hero-actions"><button class="button lime" id="hero-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>Let's play</button><a class="button ghost" href="#catalogue">See the collection <span aria-hidden="true">↓</span></a></div>
         </div>
         <div class="hero-slider-controls">
-          <button class="hero-arrow" id="hero-prev" type="button" aria-label="Previous spotlight game">‹</button>
           <div class="hero-dots" id="hero-dots" role="group" aria-label="Spotlight slides"></div>
-          <button class="hero-arrow" id="hero-next" type="button" aria-label="Next spotlight game">›</button>
-          <span class="hero-index" aria-hidden="true"><span id="hero-index-current">01</span> / <span id="hero-index-total">01</span> <i></i></span>
+          <div class="hero-buttons">
+            <button class="hero-arrow" id="hero-prev" type="button" aria-label="Previous spotlight game">‹</button>
+            <button class="hero-arrow" id="hero-next" type="button" aria-label="Next spotlight game">›</button>
+            <button class="hero-arrow hero-pause" id="hero-pause" type="button" aria-pressed="false" aria-label="Pause the spotlight slideshow"><svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 5v14M14.5 5v14"/></svg><svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg></button>
+          </div>
         </div>
         <p class="hero-status" id="hero-status" role="status" aria-live="polite"></p>
       </div>
@@ -76,7 +73,7 @@
       <aside class="small-print"><span class="pixel-decoration" aria-hidden="true">i</span><div><strong>Stay here. Keep playing.</strong><p>Choose a game to open the player. Some ports need your original game files; others may not run here yet. Check the notes before you start.</p></div><button id="about-button">How it works</button></aside>
     </section>
   </main>
-  <footer><a class="wordmark footer-logo" href="#">GAMEFLEX<span class="logo-pixel" aria-hidden="true"></span></a><span>Made for the “one more game” crowd.</span><span class="footer-right">Curated classics. Zero launchers.<span class="tiny-cross" aria-hidden="true">✚</span></span></footer>
+  <footer><a class="wordmark footer-logo" href="#" aria-label="GAMEFLEX home">GAMEFLEX<span class="logo-pixel" aria-hidden="true"></span></a><span>Made for the “one more game” crowd.</span><span class="footer-right">Curated classics. Zero launchers.<span class="tiny-cross" aria-hidden="true">✚</span></span></footer>
   <section class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="player-title" hidden>
     <div class="player-shell">
       <div class="player-bar">

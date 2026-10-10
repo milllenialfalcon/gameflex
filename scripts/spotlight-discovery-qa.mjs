@@ -15,11 +15,15 @@
  *     TEN carrying a decoded portrait poster — with a large green-outlined, glowing rank numeral
  *     whose baseline lands on the poster's bottom edge; a ranked card paints no visible .sd-name
  *     (the name lives in the card's accessible label). The shelf heading glyphs are 16px
- *     stroke-only marks in their own gutter, vertically centred across the h3 + subtitle block;
- *     the heading title sits in a .sd-title-text span and the subtitle is left-aligned with the
- *     actual title text. Curated rows hold all 54 catalogue ids uniquely at most 8 per row.
- *     Resting cards put the game name below the artwork, every shelf carries a subtitle and a
- *     zero-padded count, scrollbars stay hidden and the first rows decode real images;
+ *     stroke-only marks parked LEFT of the heading text in the page gutter, vertically centred
+ *     across the h3 + subtitle block; the heading title + subtitle keep the first card's left
+ *     edge and the title sits in a .sd-title-text span. Curated rows hold all 54 catalogue ids
+ *     uniquely at most 8 per row. APPROVED: ordinary shelf cards paint NO caption at all — the
+ *     landscape artwork (sourced from spotlight-thumbnails.json where present, which bakes the
+ *     name into the picture) is the whole card, so only the card's accessible label still names
+ *     the game; the Continue playing row keeps its name line and progress rail. Every shelf
+ *     carries a subtitle and a zero-padded count, scrollbars stay hidden and the first rows
+ *     decode real images;
  *   - at 1440px exactly six whole cards fit a row (the sixth ends inside the row, the seventh
  *     does not) and the card width matches the computed (100% − 5·gap) ⁄ 6 formula;
  *   - the floating detail panel: opens on hover with title, description, availability and
@@ -48,6 +52,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.resolve(HERE, '..', 'dist');
 const GAMES = JSON.parse(await readFile(path.join(DIST, 'games.json'), 'utf8'));
+// APPROVED: the landscape artwork map (game id → {image, source}). Ordinary shelf cards and the
+// result grid paint `image` when it is a plain local assets/ path, and fall back to the catalogue
+// art otherwise. Missing entries are expected for some catalogue games.
+const THUMBS = await readFile(path.join(DIST, 'spotlight-thumbnails.json'), 'utf8').then(text => JSON.parse(text)).catch(() => ({}));
+const isLocalAsset = value => typeof value === 'string' && value.startsWith('assets/') && !value.includes('..') && !value.includes('\\') && !value.includes('://');
 const VIEWPORT = { width: 1440, height: 1000 };
 const MOBILE = { width: 390, height: 844 };
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ttf': 'font/ttf' };
@@ -110,8 +119,9 @@ try {
   const page = await browser.newPage({ viewport: VIEWPORT });
   const errors = [], consoleErrors = [];
   page.on('pageerror', error => errors.push(error.message));
-  // The optional media map (spotlight-media.json) is absent in this tree, so its fetch 404s;
-  // app.js already treats that as "no override". Other console errors are real failures.
+  // The catalogue artwork maps (spotlight-media.json, spotlight-thumbnails.json,
+  // spotlight-portraits.json) are all shipped in this tree; a missing one would fall back to the
+  // catalogue's own art. Other console errors are real failures.
   page.on('console', message => { if (message.type() === 'error') consoleErrors.push({ text: message.text(), url: message.location()?.url || '' }); });
   page.on('popup', popup => pops.push(popup.url()));
   await blockExternal(page);
@@ -149,10 +159,20 @@ try {
       curatedIds: [...document.querySelectorAll('[data-sd-shelf="curated"] [data-game]')].map(node => node.dataset.game),
       topIds: [...document.querySelectorAll('[data-sd-shelf="top"] [data-game]')].map(node => node.dataset.game),
       nameCount: document.querySelectorAll('#shelves .sd-card .sd-name').length,
-      // The ranked Top cards carry no visible name element — the numeral must not be overlapped,
-      // so the title lives in the card's accessible label instead.
+      // APPROVED: ordinary shelf cards paint NO caption at all. The ranked Top cards never paint a
+      // name line (the numeral must not be overlapped), and ordinary cards leave the name to the
+      // artwork; only the direct-launch Continue playing cards keep a name line.
       rankCards: document.querySelectorAll('#shelves .sd-card.sd-ranked').length,
       rankNameCount: document.querySelectorAll('#shelves .sd-card.sd-ranked .sd-name').length,
+      directCards: document.querySelectorAll('#shelves .sd-card[data-sd-direct]').length,
+      ordinaryNameCount: [...document.querySelectorAll('#shelves .sd-card')].filter(card => !card.classList.contains('sd-ranked') && !card.hasAttribute('data-sd-direct') && card.querySelector('.sd-name')).length,
+      // Every ordinary (unranked, non-direct) shelf card must be labelled — the accessible name
+      // lives on the artwork button — and its src comes from spotlight-thumbnails.json when present.
+      ordinaryArt: [...document.querySelectorAll('#shelves .sd-card')].filter(card => !card.classList.contains('sd-ranked') && !card.hasAttribute('data-sd-direct')).map(card => ({
+        id: card.dataset.game,
+        src: card.querySelector('.sd-art img')?.getAttribute('src') || '',
+        label: card.querySelector('.sd-art')?.getAttribute('aria-label') || '',
+      })),
       namesInsideArt: [...document.querySelectorAll('#shelves .sd-card')].filter(card => card.querySelector('.sd-art')?.contains(card.querySelector('.sd-name'))).length,
       namesBelowArt: [...document.querySelectorAll('#shelves .sd-card')].filter(card => {
         const art = card.querySelector('.sd-art'), name = card.querySelector('.sd-name');
@@ -184,12 +204,26 @@ try {
   assert(/editorial/i.test(topShelf.subtitle) && !/play count|popular|most played/i.test(topShelf.subtitle), `the Top games subtitle is editorial and makes no popularity claim ("${topShelf.subtitle}")`);
   assert(browse.shelves.every(shelf => shelf.subtitle.length > 10 && shelf.count === String(shelf.cards).padStart(2, '0')), 'every shelf carries a subtitle and a zero-padded count matching its cards');
   const totalCards = browse.shelves.reduce((n, shelf) => n + shelf.cards, 0);
+  assert(totalCards > 0, 'the shelves render cards');
   assert.equal(browse.rankCards, 10, `the ranked Top games row holds ten rank cards (found ${browse.rankCards})`);
   assert.equal(browse.rankNameCount, 0, 'no ranked Top card paints a visible .sd-name — the numeral is never overlapped');
-  assert.equal(browse.nameCount, totalCards - browse.rankCards, 'every unranked card has a name and the ranked cards carry it in their label instead');
-  assert.equal(browse.namesInsideArt, 0, 'the game name sits below the artwork, not inside it');
-  assert.equal(browse.namesBelowArt, browse.nameCount, 'every resting card paints its name below the artwork');
+  assert.equal(browse.ordinaryNameCount, 0, 'ordinary shelf cards paint no caption at all — the artwork carries the name');
+  assert(browse.directCards >= 1, `the Continue playing shelf supplies the only named cards (found ${browse.directCards})`);
+  assert.equal(browse.nameCount, browse.directCards, 'only the direct-launch Continue playing cards keep a visible name line');
+  assert.equal(browse.namesInsideArt, 0, 'no card name sits inside the artwork');
+  assert.equal(browse.namesBelowArt, browse.nameCount, 'the name line sits below the artwork on the cards that keep one');
   assert.equal(browse.captions, 0, 'no meta, tag chip or heart control sits beneath a resting card');
+  // APPROVED: every ordinary shelf card is labelled with its game (the accessible name lives on the
+  // artwork button) and its artwork is the spotlight-thumbnails.json image where the map supplies a
+  // plain local assets/ path.
+  const gamesById = new Map(GAMES.map(game => [game.id, game]));
+  const unlabelled = browse.ordinaryArt.filter(card => { const game = gamesById.get(card.id); return !game || !card.label.includes(game.title); });
+  assert.equal(unlabelled.length, 0, `every ordinary shelf card is labelled with its game name (${unlabelled.map(card => card.id).join(', ') || 'none'})`);
+  const mapped = browse.ordinaryArt.filter(card => { const entry = THUMBS[card.id]; return entry && isLocalAsset(entry.image); });
+  assert(mapped.length > 0, 'spotlight-thumbnails.json supplies landscape artwork for the shelves');
+  const wrongSrc = mapped.filter(card => card.src !== THUMBS[card.id].image);
+  assert.equal(wrongSrc.length, 0, `every mapped ordinary card paints its spotlight-thumbnails.json image (${wrongSrc.map(card => `${card.id}:${card.src}`).join(', ') || 'none'})`);
+  assert(browse.ordinaryArt.every(card => isLocalAsset(card.src)), `every ordinary card paints a local assets/ image, never an external URL (offenders ${browse.ordinaryArt.filter(card => !isLocalAsset(card.src)).map(card => card.id).join(', ') || 'none'})`);
   assert(browse.scrollbar.every(value => value === 'none'), 'every shelf row hides its scrollbar (scrollbar-width: none)');
   assert.equal(browse.rows, browse.shelves.length, 'each shelf renders exactly one row (no nested scroller)');
 
@@ -234,11 +268,12 @@ try {
   assert.equal(await page.evaluate(() => localStorage.getItem('gameflex:recent')), null, 'the demo shelf is never persisted as history');
   pass('the Continue playing demo is a direct-launch shelf: five #play/<id> anchors with data-play and no aria-haspopup or detail panel, a green launch glyph and a thin Sample rail, nothing persisted');
 
-  /* ------------------------------------ shelf headings: glyph, title span, left alignment */
-  // APPROVED: each heading opens with a 16px stroke-only cyberpunk glyph in its own gutter, sitting
-  // BESIDE the h3 + subtitle block (inside .sd-shelf-title, outside the h3) and vertically centred
-  // on that block. The shelf title lives in a .sd-title-text span and the subtitle is left-aligned
-  // with the actual title text. Glyphs are shuffled per load but stay stable across a re-render.
+  /* ------------------------------------ shelf headings: glyph, title span, first-card alignment */
+  // APPROVED: the glyph is taken OUT of the heading text and parked in the page's left gutter,
+  // sitting LEFT of the h3 + subtitle block and vertically centred across it. The title + subtitle
+  // keep the first card's left edge, so the heading column lines up with the row beneath it. The
+  // shelf title lives in a .sd-title-text span. Glyphs are shuffled per load but stay stable across
+  // a re-render.
   const headings = await page.evaluate(() => [...document.querySelectorAll('#shelves .sd-shelf')].map(shelf => {
     const titleBlock = shelf.querySelector('.sd-shelf-title');
     const heading = titleBlock?.querySelector('h3');
@@ -246,11 +281,12 @@ try {
     const svg = glyph?.querySelector('svg');
     const titleText = heading?.querySelector('.sd-title-text');
     const subtitle = titleBlock?.querySelector('.shelf-subtitle');
+    const firstCard = shelf.querySelector('.sd-row .sd-card');
     const rect = node => { const box = node?.getBoundingClientRect(); return box ? { left: box.left, right: box.right, top: box.top, bottom: box.bottom, width: box.width, height: box.height } : null; };
     const svgStyle = svg ? getComputedStyle(svg) : null;
     return {
       kind: shelf.dataset.sdShelf || '',
-      glyphBox: rect(glyph), blockBox: rect(titleBlock), titleBox: rect(titleText), subBox: rect(subtitle),
+      glyphBox: rect(glyph), blockBox: rect(titleBlock), titleBox: rect(titleText), subBox: rect(subtitle), firstCardBox: rect(firstCard),
       glyphInH3: Boolean(heading && glyph && heading.contains(glyph)),
       titleText: titleText?.textContent?.trim() || '',
       // Identity token: the glyph's own name attribute when present, else its markup signature.
@@ -265,10 +301,13 @@ try {
   assert(headings.every(entry => entry.titleText.length > 1), 'every heading wraps its title in a .sd-title-text span');
   assert(headings.every(entry => entry.glyphBox && entry.titleBox && entry.blockBox), 'every heading carries a glyph, a title span and its title block');
   assert(headings.every(entry => entry.glyphInH3 === false), 'every heading glyph sits OUTSIDE the h3, beside the h3 + subtitle block');
-  // The glyph is a 16px mark in its own gutter: the title text starts after it, so every heading
-  // title is left-aligned in the same column.
+  // The glyph is a 16px mark parked LEFT of the heading text: its right edge stops before the title
+  // text begins, so the title keeps the first card's left edge instead of being pushed in by the mark.
   assert(headings.every(entry => Math.abs(entry.glyphBox.width - 16) <= 2 && Math.abs(entry.glyphBox.height - 16) <= 2), `every heading glyph is a 16px mark (widths ${headings.map(entry => Math.round(entry.glyphBox.width)).join(', ')}px)`);
-  assert(headings.every(entry => entry.titleBox.left >= entry.glyphBox.right - 1), 'every heading title starts after the glyph gutter, left-aligned across shelves');
+  assert(headings.every(entry => entry.glyphBox.left < entry.titleBox.left && entry.glyphBox.right <= entry.titleBox.left + 1), `every heading glyph sits LEFT of the heading text (glyph right ${headings.map(entry => Math.round(entry.glyphBox.right)).join(', ')} vs title left ${headings.map(entry => Math.round(entry.titleBox.left)).join(', ')})`);
+  // The title + subtitle keep the first card's left edge, so the heading column lines up with the row.
+  assert(headings.every(entry => entry.firstCardBox), 'every heading has a first card to align against');
+  assert(headings.every(entry => Math.abs(entry.titleBox.left - entry.firstCardBox.left) <= 1), `every heading title is left-aligned with the first card in its row (offsets ${headings.map(entry => Math.round(entry.titleBox.left - entry.firstCardBox.left)).join(', ')}px)`);
   // The glyph centres on the h3 + subtitle block, and the subtitle is left-aligned with the actual
   // heading title text (no per-shelf padding fudge).
   assert(headings.every(entry => Math.abs((entry.glyphBox.top + entry.glyphBox.height / 2) - (entry.blockBox.top + entry.blockBox.height / 2)) <= 3), `every glyph is vertically centred across its h3 + subtitle block (offsets ${headings.map(entry => Math.round((entry.glyphBox.top + entry.glyphBox.height / 2) - (entry.blockBox.top + entry.blockBox.height / 2))).join(', ')}px)`);
@@ -307,7 +346,7 @@ try {
   const afterRerender = await glyphMap();
   assert(Object.keys(beforeRerender).length >= 6, 'the re-render check saw the full shelf set');
   assert.deepEqual(afterRerender, beforeRerender, 'the shelf glyphs are stable across a re-render — a filter/search does not reshuffle them');
-  pass(`shelf headings: a 16px stroke-only glyph centred on the h3 + subtitle block, the title in a .sd-title-text span, subtitles left-aligned with the title text, ${glyphSet.size} distinct glyphs shuffled per load and stable across a re-render`);
+  pass(`shelf headings: a 16px stroke-only glyph parked LEFT of the heading text, vertically centred on the h3 + subtitle block, the title in a .sd-title-text span aligned with the first card, subtitles left-aligned with the title text, ${glyphSet.size} distinct glyphs shuffled per load and stable across a re-render`);
   const decoded = await page.locator('#catalogue').scrollIntoViewIfNeeded().then(async () => {
     await page.evaluate(() => [...document.querySelectorAll('#shelves .sd-shelf')].slice(0, 2).forEach(shelf => shelf.querySelectorAll('img').forEach(image => image.loading = 'eager')));
     await page.waitForFunction(() => [...document.querySelectorAll('#shelves .sd-shelf')].slice(0, 2).every(shelf => [...shelf.querySelectorAll('img')].every(image => image.complete && image.naturalWidth > 0)), { timeout: 10000 });
@@ -452,7 +491,7 @@ try {
   assert.equal(rankedLabels.length, 10, 'every ranked card exposes one accessible label');
   assert(rankedLabels.every((label, index) => new RegExp(`^Rank ${index + 1}, show details for .+,`).test(label)), `every ranked card's label names its rank then its game (${rankedLabels[0]} … ${rankedLabels[9]})`);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'the spotlight browse has no horizontal overflow');
-  pass(`default browse: ${GAMES.length} curated games, unique ids, a ranked Top games of ten as portrait 2:3 covers (all ten with decoded posters) and a large neon-green rank numeral, glowing and bottom-aligned to each poster, behind it, ${curatedShelves.length} curated rows of at most 8, names below the artwork, hidden scrollbars, decoded images, no overflow`);
+  pass(`default browse: ${GAMES.length} curated games, unique ids, a ranked Top games of ten as portrait 2:3 covers (all ten with decoded posters) and a large neon-green rank numeral, glowing and bottom-aligned to each poster, behind it, ${curatedShelves.length} curated rows of at most 8, ordinary cards captionless with labelled local artwork and only the Continue playing cards named, hidden scrollbars, decoded images, no overflow`);
 
   /* --------------------------------------- six whole cards per row at 1440px */
   const fit = await page.evaluate(() => {
