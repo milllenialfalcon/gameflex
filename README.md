@@ -1,10 +1,10 @@
 # gameflex
 
-A private, curated browser-game directory. Charcoal, electric lime, a lowercase pixel wordmark, and artwork-led shelves. Search the collection, filter by genre, save favourites locally, and open games in a new tab.
+A private, curated browser-game directory. Charcoal, electric lime, a capital-case pixel GAMEFLEX wordmark, and artwork-led shelves. Search the collection, filter by genre, save favourites locally, and open games in a new tab. Shelf buttons and Left/Right keyboard controls advance one game at a time.
 
 ## Run
 
-Requires Node.js 22+.
+Requires Node.js 22.13+ (Node.js 24 recommended for the local SQLite research tools).
 
 ```sh
 npm run dev
@@ -49,4 +49,10 @@ The profile stores its provider credential outside the repository. Do not commit
 
 ## Artwork
 
-Publisher artwork comes from Steam's public store CDN; destination artwork comes from the linked ports' public preview assets. These are contextual catalogue illustrations, not screenshots certifying the browser port's fidelity. See `docs/artwork.json`. Game names and artwork remain owned by their respective rights holders. Pixelify Sans and Space Grotesk are self-hosted; their OFL licence files are in `dist/assets/`.
+Publisher artwork comes from Steam's public store CDN; destination artwork comes from the linked ports' public preview assets. These are contextual catalogue illustrations, not screenshots certifying the browser port's fidelity. See `docs/artwork.json`. Game names and artwork remain owned by their respective rights holders. Silkscreen and Space Grotesk are self-hosted; their OFL licence files are in `dist/assets/`.
+
+## Discovery queue
+
+The separate Hermes `gameflexresearch` profile installs Agent Reach and researches new candidates. It uses the same project folder and OpenCode Go / DeepSeek V4.1 Flash model. Discoveries remain outside the deployed `dist/` directory.
+
+See `research/README.md`, `research/review-queue.md` and `research/candidates.csv`. The canonical JSON is tracked in Git; `node scripts/research-db.mjs build` regenerates the local SQLite database. Both assistant verification and explicit human verification are required before an entry becomes eligible for a separate catalogue change. No automatic publication or recurring research schedule is configured.

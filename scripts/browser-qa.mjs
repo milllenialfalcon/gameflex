@@ -30,6 +30,13 @@ async function checkShelfStep() {
   await page.waitForFunction(p=>Math.abs(document.querySelector('#row-shooters').scrollLeft-p)<3,pitch);
   await page.keyboard.press('ArrowLeft');
   await page.waitForFunction(()=>document.querySelector('#row-shooters').scrollLeft<3);
+  const firstArt=row.locator('.game-art').nth(0), nextArt=row.locator('.game-art').nth(1);
+  await firstArt.focus();await page.keyboard.press('ArrowRight');
+  assert(await nextArt.evaluate(el=>el===document.activeElement),'Keyboard movement keeps focus on the newly shown game');
+  await page.waitForFunction(p=>Math.abs(document.querySelector('#row-shooters').scrollLeft-p)<3,pitch);
+  await page.keyboard.press('ArrowLeft');
+  assert(await firstArt.evaluate(el=>el===document.activeElement));
+  await page.waitForFunction(()=>document.querySelector('#row-shooters').scrollLeft<3);
 }
 await checkShelfStep();
 await page.locator('[data-favourite="halo"]').first().click();
