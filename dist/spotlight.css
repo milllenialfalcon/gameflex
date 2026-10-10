@@ -18,21 +18,41 @@
   .page-spotlight .site-header nav{gap:clamp(16px,2.2vw,26px)}
   .page-spotlight .wordmark{font-size:27px}
   .page-spotlight .nav-link{font-size:14px;padding:12px 0}
-  /* The shared active underline is positioned for the 94px homepage bar; at 75px it fell below
-     the header edge. Tuck it up so the underline sits inside the compact bar. */
-  .page-spotlight .nav-link.active:after{bottom:-15px}
   .page-spotlight .search-box{max-width:264px;width:23%;padding:9px 11px}
   .page-spotlight{scroll-padding-top:84px}
 }
+/* Nav: an explicit 2px lime underline, inside the button just under the text — never a pill, never
+   a rounded background, and never a bar parked at the header's bottom edge. It is centred on the
+   label and identical at desktop and mobile, so the header height is untouched. */
+.page-spotlight .nav-link{position:relative}
+.page-spotlight .nav-link.active:after,
+.page-spotlight .nav-link:focus-visible:after{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:3px;width:24px;height:2px;background:var(--lime)}
 @media(max-width:720px){
   .page-spotlight .wordmark{font-size:27px}
   .page-spotlight .nav-link{display:inline-flex;align-items:center;min-height:44px;padding:0}
+  .page-spotlight .nav-link.active:after,
+  .page-spotlight .nav-link:focus-visible:after{bottom:3px;width:24px;height:2px}
   .page-spotlight .header-icon{width:44px;height:44px}
+  .page-spotlight .site-header .wordmark .wordmark-logo{width:140px;height:28px}
 }
 
-.hero-spotlight{height:auto;min-height:min(86vh,820px);display:flex;flex-direction:column;justify-content:flex-end;padding:56px 4.6% 118px;background:#0c0f0c}
+/* The header and the footer carry the same curve wordmark asset the shared pages use, at the two
+   sizes the Spotlight bar expects: ~158x32 in the header, ~180x36 in the footer. The anchor keeps
+   class .wordmark and its accessible "GAMEFLEX home" name; the image is the wordmark, so it keeps
+   alt="GAMEFLEX". */
+.page-spotlight .wordmark .wordmark-logo{display:block}
+.page-spotlight .site-header .wordmark .wordmark-logo{width:158px;height:32px}
+.page-spotlight .footer-logo .wordmark-logo{width:180px;height:36px}
+
+/* Spotlight runs a darker page than the homepage: --bg drops to #0b0d0b on <html>, body inherits
+   it, and the header, hero fade and footer pick up the same value so nothing seams. */
+html.page-spotlight{--bg:#0b0d0b;background:var(--bg)}
+.page-spotlight .site-header{background:#0b0d0bfa}
+.page-spotlight footer{border-top:1px solid var(--border)}
+
+.hero-spotlight{height:auto;min-height:min(86vh,820px);display:flex;flex-direction:column;justify-content:flex-end;padding:56px 4.6% 118px;background:#0b0d0b}
 .hero-spotlight .hero-image{background-position:center 40%;background-size:cover;filter:saturate(.95) brightness(.8);transform:none}
-.hero-spotlight .hero-shade{background:linear-gradient(90deg,#0a0d0af7 0%,#0a0d0ad9 32%,#0a0d0a70 58%,#0a0d0a1f 82%),linear-gradient(0deg,#101210 0%,#101210eb 15%,#10121000 58%),radial-gradient(72% 62% at 86% 6%,#c4fa5317,transparent 72%)}
+.hero-spotlight .hero-shade{background:linear-gradient(90deg,#090b09f7 0%,#090b09d9 32%,#090b0970 58%,#090b091f 82%),linear-gradient(0deg,#0b0d0b 0%,#0b0d0beb 15%,#0b0d0b00 58%),radial-gradient(72% 62% at 86% 6%,#c4fa5317,transparent 72%)}
 .hero-spotlight .hero-image.hero-fade{animation:hero-fade .6s ease-out}
 .hero-spotlight .hero-image.hero-image-empty{background-color:#141a15}
 

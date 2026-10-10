@@ -112,8 +112,13 @@ try {
   const stored = () => page.evaluate(key => { try { return JSON.parse(localStorage.getItem(key) ?? 'null'); } catch { return 'unparsable'; } }, RECENT_KEY);
   const shelfIds = () => page.evaluate(() => [...document.querySelectorAll('[data-sd-shelf="recent"] .sd-card')].map(card => card.dataset.game));
   // The fresh-browser placeholder lives in its own kind (`demo`); real launches use `recent`.
+  // APPROVED: the demo shelf carries NO "Preview" badge; its own copy invites the visitor to
+  // "Start a game", and it holds exactly five cards (not six). The old Preview-flag is gone.
   const demo = page.locator('[data-sd-shelf="demo"]');
-  const demoFlagged = async () => (await demo.count()) === 1 && /preview/i.test(await demo.innerText());
+  const demoIsSet = async () => (await demo.count()) === 1 && /start a game/i.test(await demo.innerText());
+  const demoNoBadge = async () => (await demo.count()) === 1
+    && (await demo.locator('.sd-preview-tag').count()) === 0
+    && !/preview/i.test(await demo.innerText());
   const writeStored = value => page.evaluate(({ key, raw }) => localStorage.setItem(key, raw), { key: RECENT_KEY, raw: value });
   // Open the player for an id: search-filtered card → detail panel → Play/View action.
   // Waits for the stage to leave 'idle'; the caller then checks ready vs blocked.
@@ -131,10 +136,12 @@ try {
 
   /* -------------------------------------------------- fresh visitor: demo preview */
   await reload();
-  assert.equal(await demo.count(), 1, 'a fresh visitor sees the Continue playing preview shelf');
-  assert(await demoFlagged(), 'the fresh shelf is clearly flagged as a preview');
+  assert.equal(await demo.count(), 1, 'a fresh visitor sees the Continue playing shelf');
+  assert(await demoNoBadge(), 'the fresh shelf carries no "Preview" badge and never uses preview wording');
+  assert(await demoIsSet(), 'the fresh shelf invites the visitor to "Start a game" instead of flagging a preview');
+  assert.equal(await demo.locator('.sd-card').count(), 5, `the Continue playing demo holds exactly five cards, not six (found ${await demo.locator('.sd-card').count()})`);
   assert.equal(await stored(), null, 'no history is written by ordinary browsing');
-  pass('a fresh visitor sees a Preview-flagged Continue playing shelf and no stored launch history');
+  pass('a fresh visitor sees a Continue playing demo of five cards that says "Start a game" — no Preview badge — and no stored launch history');
 
   /* ----------------------------------- opening the ready player records nothing */
   await openReady(READY.id);
@@ -145,7 +152,7 @@ try {
   assert.equal(await stored(), null, 'opening the ready player alone records no launch');
   await closePlayer();
   assert.equal(await stored(), null, 'closing the untouched ready player still records no launch');
-  assert(await demoFlagged(), 'closing the untouched ready player leaves the preview shelf in place');
+  assert(await demoIsSet(), 'closing the untouched ready player leaves the Continue playing demo in place');
   pass('opening the ready player (hash set, no frame, no Start) records nothing');
 
   /* ------------------------------------------ a blocked / pending game records nothing */
@@ -154,7 +161,7 @@ try {
   assert.equal(await page.locator('iframe.player-frame').count(), 0, 'the blocked path creates no frame');
   assert.equal(await stored(), null, 'a blocked launch records nothing');
   await closePlayer();
-  assert(await demoFlagged(), 'a blocked launch leaves the preview shelf in place');
+  assert(await demoIsSet(), 'a blocked launch leaves the Continue playing demo in place');
   pass('a sandbox-pending game in the blocked state records nothing and shows no real shelf');
 
   /* -------------------------------- pressing the player's own Start records the id */
@@ -169,8 +176,8 @@ try {
   assert.equal(await page.locator('#player [class*="progress"]').count(), 0, 'the player has no progress widget');
   await closePlayer();
   await page.locator('[data-sd-shelf="recent"]').waitFor({ timeout: 3000 });
-  assert.deepEqual(await shelfIds(), [READY.id], 'after a real launch, the real history overrides the preview shelf and shows the launched game');
-  assert.equal(await demo.count(), 0, 'the preview shelf is dropped once a real launch exists');
+  assert.deepEqual(await shelfIds(), [READY.id], 'after a real launch, the real history overrides the demo shelf and shows the launched game');
+  assert.equal(await demo.count(), 0, 'the demo shelf is dropped once a real launch exists');
   await page.screenshot({ path: 'artifacts/qa/spotlight-library-recent.png', fullPage: false });
   pass('pressing the player Start creates the sandboxed frame, records the allowed id and repaints the shelf');
 
@@ -193,18 +200,43 @@ try {
   assert.deepEqual(await stored(), [READY.id, READY_SECOND.id], 'the stored list is deduplicated too');
   pass('repeat launches deduplicate and keep the newest game first in storage and on the shelf');
 
+  /* ----------------------------- real recent shows five whole cards; other shelves six */
+  // APPROVED: once there is real history, the Continue playing row shows exactly five whole
+  // cards at desktop width when it holds enough; every other shelf still shows six. Visibility
+  // is measured against the row box, not a hard-coded card pixel width.
+  const sixIds = GAMES
+    .filter(game => !game.availability && CONFIG.games?.[game.id]?.mode === 'iframe')
+    .slice(0, 6)
+    .map(game => game.id);
+  assert.equal(sixIds.length, 6, 'the catalogue supplies six launchable games for the visibility check');
+  await writeStored(JSON.stringify(sixIds));
+  await reload();
+  const visibleWhole = row => row.evaluate(node => {
+    const box = node.getBoundingClientRect();
+    const cards = [...node.querySelectorAll('.sd-card')];
+    return { total: cards.length, visible: cards.filter(card => card.getBoundingClientRect().right <= box.right + 1).length };
+  });
+  const recentRow = page.locator('[data-sd-shelf="recent"] .sd-row').first();
+  await recentRow.waitFor({ timeout: 3000 });
+  const recentFit = await visibleWhole(recentRow);
+  assert.equal(recentFit.total, 6, 'all six remembered games stay in the recent row');
+  assert.equal(recentFit.visible, 5, `the real recent row shows exactly five whole cards at 1440px (visible ${recentFit.visible} of ${recentFit.total})`);
+  const otherFit = await visibleWhole(page.locator('[data-sd-shelf="curated"] .sd-row').first());
+  assert.equal(otherFit.visible, Math.min(6, otherFit.total), `every other shelf still shows six whole cards at 1440px, or all of them when a row holds fewer (visible ${otherFit.visible} of ${otherFit.total})`);
+  pass(`the real recent row shows five whole cards at 1440px while other shelves show six (recent ${recentFit.visible}/${recentFit.total}, curated ${otherFit.visible})`);
+
   /* ------------------------------------- malformed and junk stored ids degrade quietly */
   await writeStored('not json{');
   await reload();
-  assert(await demoFlagged(), 'malformed JSON degrades to the preview shelf instead of an error');
+  assert(await demoIsSet(), 'malformed JSON degrades to the Continue playing demo instead of an error');
   assert.equal(await page.locator('#shelves [data-sd-shelf="curated"]').count() > 0, true, 'the curated shelves still render');
   await writeStored(JSON.stringify(['ghost-game', 'halo', 'halo', '', 42, { x: 1 }, 'not a real id!']));
   await reload();
   assert.deepEqual(await shelfIds(), ['halo'], 'unknown, non-string, blank, malformed and duplicate ids are dropped, valid catalogue ids kept');
-  assert.equal(await demo.count(), 0, 'real history replaces the preview shelf');
+  assert.equal(await demo.count(), 0, 'real history replaces the Continue playing demo');
   await writeStored('[]');
   await reload();
-  assert.equal(await demo.count(), 1, 'an empty list brings the preview shelf back');
+  assert.equal(await demo.count(), 1, 'an empty list brings the Continue playing demo back');
   const shelvesText = await page.locator('#shelves').innerText();
   assert(!/\d+\s?%/.test(shelvesText), 'the shelves never print a fabricated progress percentage');
   pass('malformed JSON and unknown/duplicate stored ids degrade to the preview or filtered shelf, no percentage shown');

@@ -224,6 +224,59 @@ try {
     } else {
       assert(Math.abs(navHeight - NAVBAR_HEIGHT) <= NAVBAR_TOLERANCE, `spotlight: the nav bar is the compact ~${NAVBAR_HEIGHT}px design (measured ${Math.round(navHeight)}px)`);
     }
+    // APPROVED: on the spotlight page BOTH the header and footer wordmark are the local SVG asset
+    // gameflex-curve.svg, and each anchor's accessible name is GAMEFLEX. Its textContent is empty
+    // now (the logo is an image with alt="GAMEFLEX"), so the old text assertion must read the
+    // accessible label, not textContent. The homepage keeps its original text wordmark, unchanged.
+    const wordmarks = page.locator('.site-header .wordmark, footer .wordmark');
+    assert.equal(await wordmarks.count(), 2, `${label}: a header and a footer wordmark are present`);
+    for (const [slot, place] of [[0, 'header'], [1, 'footer']]) {
+      const wm = wordmarks.nth(slot);
+      const textContent = ((await wm.textContent()) || '').trim();
+      const ariaLabel = ((await wm.getAttribute('aria-label')) || '').trim();
+      const img = wm.locator('img');
+      if (label === 'spotlight') {
+        const alt = ((await img.getAttribute('alt')) || '').trim();
+        const accessible = ariaLabel || alt;
+        assert(/GAMEFLEX/.test(accessible), `${label}: the spotlight ${place} wordmark's accessible name is GAMEFLEX ("${accessible}")`);
+        assert.equal(alt, 'GAMEFLEX', `${label}: the spotlight ${place} wordmark image alt is GAMEFLEX`);
+        assert.equal(await img.count(), 1, `${label}: the spotlight ${place} wordmark uses an image asset`);
+        const src = await img.getAttribute('src');
+        assert(/gameflex-curve\.svg$/.test(src || ''), `${label}: the spotlight ${place} wordmark paints the local gameflex-curve.svg asset (${src})`);
+        assert.equal(textContent, '', `${label}: the spotlight ${place} wordmark anchor carries no stray text — the logo is the image`);
+      } else {
+        // UNCHANGED: the homepage keeps the original text wordmark and no curve asset.
+        assert(/gameflex/i.test(textContent), `${label}: the homepage ${place} wordmark still shows its original text ("${textContent}")`);
+        assert.equal(await img.count(), 0, `${label}: the homepage ${place} wordmark is not replaced by an image`);
+      }
+    }
+    // APPROVED: the active nav item keeps its underline, but the rule now sits INSIDE the button
+    // beneath the label — never a pill or a background enclosure. The header keeps its height.
+    const activeNav = page.locator('.site-header nav .nav-link.active');
+    assert.equal(await activeNav.count(), 1, `${label}: exactly one nav item is active`);
+    const nav = await activeNav.evaluate(el => {
+      const box = el.getBoundingClientRect();
+      const after = getComputedStyle(el, '::after');
+      return {
+        width: box.width,
+        content: after.content,
+        afterHeight: parseFloat(after.height) || 0,
+        afterWidth: parseFloat(after.width) || 0,
+        afterBg: after.backgroundColor,
+        afterBottom: after.bottom,
+        background: getComputedStyle(el).backgroundColor,
+      };
+    });
+    assert(nav.content && nav.content !== 'none', `${label}: the active nav item keeps an ::after underline`);
+    if (label === 'spotlight') {
+      // The inside-the-button rule is the approved Spotlight change; the homepage keeps its own.
+      assert(nav.afterHeight > 0 && nav.afterHeight <= 6, `${label}: the underline is a thin rule (${nav.afterHeight}px)`);
+      assert(nav.afterBg && !/rgba?\(0, 0, 0, 0\)/.test(nav.afterBg), `${label}: the underline is painted (${nav.afterBg})`);
+      const afterBottom = parseFloat(nav.afterBottom);
+      assert(Number.isFinite(afterBottom) && afterBottom >= 0, `${label}: the underline sits INSIDE the button, not below it (::after bottom ${nav.afterBottom})`);
+      assert(/rgba?\(0, 0, 0, 0\)|transparent/.test(nav.background), `${label}: the active nav item has no pill or background enclosure (${nav.background})`);
+      assert(nav.afterWidth <= nav.width + 1, `${label}: the underline stays within the button width`);
+    }
     const search = await page.locator('.search-box').boundingBox();
     const menu = await page.locator('#menu-button').boundingBox();
     assert(menu.x >= search.x + search.width - 2, `${label}: the pages menu sits to the right of search`);
@@ -265,6 +318,22 @@ try {
     await page.locator('[data-category="all"]').click();
   }
   pass(`the spotlight page carries the new title "${BROWSER_TITLE}" and the compact ~${NAVBAR_HEIGHT}px nav bar, while the homepage keeps its original title "${HOME_TITLE_EXPECTED}" and ~${HOME_NAVBAR_HEIGHT}px header; menu sits immediately right of search on both and links both pages; account popover is coming-soon only; Sports filter renamed`);
+
+  /* ------------------------------------------------------------------ page ground colour */
+  // APPROVED: the spotlight ground is the darker #0b0d0b, a shade below the homepage #101210.
+  const groundOf = async url => {
+    await page.goto(url);
+    await page.locator('.game-card').first().waitFor();
+    return page.evaluate(() => ({ body: getComputedStyle(document.body).backgroundColor, html: getComputedStyle(document.documentElement).backgroundColor }));
+  };
+  const homeGround = await groundOf(HOME);
+  const spotGround = await groundOf(SPOTLIGHT);
+  const bgChannels = value => (value.match(/\d+/g) || []).slice(0, 3).map(Number);
+  const bgSum = value => bgChannels(value).reduce((total, channel) => total + channel, 0);
+  assert(/16, 18, 16/.test(homeGround.body), `the homepage ground stays #101210 (${homeGround.body})`);
+  assert(/11, 13, 11/.test(spotGround.body), `the spotlight ground is the darker #0b0d0b (${spotGround.body})`);
+  assert(bgSum(spotGround.body) < bgSum(homeGround.body), `the spotlight ground is darker than the homepage (${spotGround.body} vs ${homeGround.body})`);
+  pass('the spotlight page ground is #0b0d0b, a darker shade than the homepage #101210');
 
   /* --------------------------------------- spotlight hero: curated games + promo slides */
   await page.goto(SPOTLIGHT);

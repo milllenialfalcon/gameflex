@@ -8,13 +8,14 @@
  * already running, otherwise by a private static server over dist/.
  *
  * What it checks (all against the real DOM, no source inspection):
- *   - default browse: a Continue playing preview shelf on a fresh browser (clearly flagged
- *     Preview, writing no launch history), a ranked Top games of exactly ten unique games
+ *   - default browse: a Continue playing demo shelf of exactly five cards that says "Start a game"
+ *     (no Preview badge, writing no launch history), a ranked Top games of exactly ten unique games
  *     (1..10, editorial subtitle) shown as portrait 2:3 covers — ALL TEN carrying a decoded
- *     portrait poster — with a tall lime rank numeral. The lime requirement is the rank GLYPH
- *     only; the shelf heading and subtitle colour is merely reported. Curated rows hold all 54
- *     catalogue ids uniquely at most 8 per row. Resting cards put the game name below the
- *     artwork, every shelf carries a subtitle and a zero-padded count, scrollbars stay hidden
+ *     portrait poster — with a large grey-outlined rank numeral layered behind each smaller
+ *     portrait. The shelf heading glyphs are stroke-only marks in their own gutter; the heading
+ *     title sits in a .sd-title-text span and the subtitle is left-aligned with it. Curated rows
+ *     hold all 54 catalogue ids uniquely at most 8 per row. Resting cards put the game name below
+ *     the artwork, every shelf carries a subtitle and a zero-padded count, scrollbars stay hidden
  *     and the first rows decode real images;
  *   - at 1440px exactly six whole cards fit a row (the sixth ends inside the row, the seventh
  *     does not) and the card width matches the computed (100% − 5·gap) ⁄ 6 formula;
@@ -159,9 +160,12 @@ try {
   const curatedShelves = browse.shelves.filter(shelf => shelf.kind === 'curated');
   const topShelf = browse.shelves.find(shelf => shelf.kind === 'top');
   const previewShelf = page.locator('[data-sd-shelf="demo"]');
-  assert.equal(await previewShelf.count(), 1, 'a fresh visitor sees the Continue playing preview shelf');
-  assert(/preview/i.test(await previewShelf.innerText()), 'the fresh Continue playing shelf is clearly flagged as a preview');
-  assert.equal(await page.evaluate(() => localStorage.getItem('gameflex:recent')), null, 'the preview shelf writes no launch history to localStorage');
+  assert.equal(await previewShelf.count(), 1, 'a fresh visitor sees the Continue playing demo shelf');
+  assert.equal(await previewShelf.locator('.sd-preview-tag').count(), 0, 'the demo shelf carries no "Preview" badge');
+  assert(!/preview/i.test(await previewShelf.innerText()), 'the demo shelf never uses preview wording');
+  assert(/start a game/i.test(await previewShelf.innerText()), 'the demo shelf invites the visitor to "Start a game"');
+  assert.equal(await previewShelf.locator('.sd-card').count(), 5, `the Continue playing demo holds exactly five cards, not six (found ${await previewShelf.locator('.sd-card').count()})`);
+  assert.equal(await page.evaluate(() => localStorage.getItem('gameflex:recent')), null, 'the demo shelf writes no launch history to localStorage');
   assert.equal(browse.curatedIds.length, GAMES.length, `every one of the ${GAMES.length} catalogue games sits in the curated rows (found ${browse.curatedIds.length})`);
   assert.equal(new Set(browse.curatedIds).size, GAMES.length, 'every game id is unique across the curated rows — no duplicate or missing game');
   assert(curatedShelves.length >= 4, `the browse layer is split into curated rows (${curatedShelves.length}), not one mega-row`);
@@ -177,6 +181,75 @@ try {
   assert.equal(browse.captions, 0, 'no meta, tag chip or heart control sits beneath a resting card');
   assert(browse.scrollbar.every(value => value === 'none'), 'every shelf row hides its scrollbar (scrollbar-width: none)');
   assert.equal(browse.rows, browse.shelves.length, 'each shelf renders exactly one row (no nested scroller)');
+
+  /* ------------------------------------ shelf headings: glyph, title span, left alignment */
+  // APPROVED: each heading opens with a stroke-only cyberpunk glyph in its OWN 22px gutter, the
+  // shelf title lives in a .sd-title-text span, and the subtitle is left-aligned with that title
+  // text. Glyphs are shuffled per load but must stay stable across a re-render (search and back).
+  const headings = await page.evaluate(() => [...document.querySelectorAll('#shelves .sd-shelf')].map(shelf => {
+    const heading = shelf.querySelector('.shelf-heading h3');
+    const glyph = heading?.querySelector('.sd-glyph');
+    const svg = glyph?.querySelector('svg');
+    const titleText = heading?.querySelector('.sd-title-text');
+    const subtitle = shelf.querySelector('.shelf-subtitle');
+    const rect = node => { const box = node?.getBoundingClientRect(); return box ? { left: box.left, right: box.right, width: box.width } : null; };
+    const svgStyle = svg ? getComputedStyle(svg) : null;
+    return {
+      kind: shelf.dataset.sdShelf || '',
+      headingBox: rect(heading), glyphBox: rect(glyph), titleBox: rect(titleText), subBox: rect(subtitle),
+      subPad: subtitle ? parseFloat(getComputedStyle(subtitle).paddingLeft) || 0 : 0,
+      titleText: titleText?.textContent?.trim() || '',
+      // Identity token: the glyph's own name attribute when present, else its markup signature.
+      // This is never compared to a hard-coded path — only used to tell the marks apart.
+      glyphName: (svg?.getAttribute('data-sd-glyph') || svg?.innerHTML || '').trim(),
+      glyphFill: svgStyle ? svgStyle.fill : '',
+      glyphStroke: svgStyle ? svgStyle.stroke : '',
+      glyphStrokeWidth: svgStyle ? parseFloat(svgStyle.strokeWidth) || 0 : 0,
+    };
+  }));
+  assert(headings.length >= 6, `the browse layer renders the shelf headings (${headings.length})`);
+  assert(headings.every(entry => entry.titleText.length > 1), 'every heading wraps its title in a .sd-title-text span');
+  assert(headings.every(entry => entry.glyphBox && entry.titleBox && entry.headingBox), 'every heading carries a glyph, a title span and a heading box');
+  // The glyph owns its own ~22px gutter: the glyph box is ~22px wide and the title text starts
+  // after it, so every heading title is left-aligned in the same column.
+  assert(headings.every(entry => Math.abs(entry.glyphBox.width - 22) <= 4), `every heading glyph owns a ~22px gutter of its own (widths ${headings.map(entry => Math.round(entry.glyphBox.width)).join(', ')}px)`);
+  assert(headings.every(entry => entry.titleBox.left >= entry.glyphBox.right - 1), 'every heading title starts after the glyph gutter, left-aligned across shelves');
+  assert(headings.every(entry => entry.subBox && Math.abs((entry.subBox.left + entry.subPad) - entry.titleBox.left) <= 2), `every subtitle is left-aligned with its heading title (offsets ${headings.map(entry => Math.round((entry.subBox.left + entry.subPad) - entry.titleBox.left)).join(', ')}px)`);
+  // Stroke-only marks: no filled glyph survives (the old lime sparkle was fill:currentColor).
+  const isNone = value => !value || value === 'none' || /rgba?\(0, 0, 0, 0\)/.test(value);
+  assert(headings.every(entry => isNone(entry.glyphFill)), `every shelf glyph is stroke-only — no filled mark (fills ${headings.map(entry => entry.glyphFill).join(', ')})`);
+  assert(headings.every(entry => !isNone(entry.glyphStroke) && entry.glyphStrokeWidth > 0), 'every shelf glyph is drawn with a visible stroke');
+  assert(headings.every(entry => !/sparkle/i.test(entry.glyphName)), 'no shelf glyph identifies itself as the old sparkle');
+  // Shuffled per load: gather the glyph set over several loads and require at least twelve marks.
+  const glyphSet = new Set(headings.map(entry => entry.glyphName).filter(Boolean));
+  for (let load = 0; load < 4; load += 1) {
+    await reload();
+    const names = await page.evaluate(() => [...document.querySelectorAll('#shelves .sd-shelf')].map(shelf => {
+      const svg = shelf.querySelector('.sd-glyph svg');
+      return ((svg?.getAttribute('data-sd-glyph') || svg?.innerHTML || '')).trim();
+    }));
+    names.forEach(name => { if (name) glyphSet.add(name); });
+  }
+  assert(glyphSet.size >= 12, `the shelf glyph set holds at least twelve distinct marks (found ${glyphSet.size})`);
+  // Stable across a re-render: a search that swaps in the results grid and a clear back to browse
+  // must NOT reshuffle the glyphs already assigned to each shelf id.
+  // Keyed by the shelf title, not by data-sd-shelf: the curated kind repeats across the curated
+  // rows, so a kind-only key would silently collapse them and the keys assert below could pass on a
+  // handful of entries. The title text is unique per shelf.
+  const glyphMap = () => page.evaluate(() => Object.fromEntries([...document.querySelectorAll('#shelves .sd-shelf')].map(shelf => {
+    const svg = shelf.querySelector('.sd-glyph svg');
+    const key = shelf.querySelector('.sd-title-text')?.textContent?.trim() || '';
+    return [key, ((svg?.getAttribute('data-sd-glyph') || svg?.innerHTML || '')).trim()];
+  })));
+  const beforeRerender = await glyphMap();
+  await page.locator('#search').fill('quake');
+  await page.waitForTimeout(200);
+  await page.locator('#search').fill('');
+  await page.waitForTimeout(300);
+  const afterRerender = await glyphMap();
+  assert(Object.keys(beforeRerender).length >= 6, 'the re-render check saw the full shelf set');
+  assert.deepEqual(afterRerender, beforeRerender, 'the shelf glyphs are stable across a re-render — a filter/search does not reshuffle them');
+  pass(`shelf headings: a stroke-only glyph in its own 22px gutter, the title in a .sd-title-text span, subtitles left-aligned, ${glyphSet.size} distinct glyphs shuffled per load and stable across a re-render`);
   const decoded = await page.locator('#catalogue').scrollIntoViewIfNeeded().then(async () => {
     await page.evaluate(() => [...document.querySelectorAll('#shelves .sd-shelf')].slice(0, 2).forEach(shelf => shelf.querySelectorAll('img').forEach(image => image.loading = 'eager')));
     await page.waitForFunction(() => [...document.querySelectorAll('#shelves .sd-shelf')].slice(0, 2).every(shelf => [...shelf.querySelectorAll('img')].every(image => image.complete && image.naturalWidth > 0)), { timeout: 10000 });
@@ -206,9 +279,13 @@ try {
     return {
       artW: artBox.width, artH: artBox.height,
       rankH: rankBox ? rankBox.height : 0, rankFont: rankStyle ? parseFloat(rankStyle.fontSize) : 0,
-      rankColor: rankStyle ? (rankStyle.webkitTextStrokeColor && rankStyle.webkitTextStrokeColor !== 'rgb(0, 0, 0)' ? rankStyle.webkitTextStrokeColor : rankStyle.color) : '',
-      // The user's approved colour change is the glyph itself. The heading/subtitle colour is
-      // reported for diagnosis but NOT required to be lime (the earlier requirement over-reached).
+      // APPROVED: the numeral is a grey outline with a dark fill (was lime), layered BEHIND the
+      // portrait. Capture stroke, fill and both stacking orders.
+      rankStroke: rankStyle ? rankStyle.webkitTextStrokeColor : '',
+      rankFill: rankStyle ? rankStyle.color : '',
+      rankZ: rankNode ? (Number(getComputedStyle(rankNode).zIndex) || 0) : 0,
+      artZ: Number(getComputedStyle(card.querySelector('.sd-art')).zIndex) || 0,
+      // APPROVED: the Top games heading is warm white; its count and subtitle are muted.
       titleColor: heading ? getComputedStyle(heading).color : '',
       countColor: count ? getComputedStyle(count).color : '',
       subColor: subtitle ? getComputedStyle(subtitle).color : '',
@@ -228,11 +305,24 @@ try {
     };
   });
   const LIME = /196,\s*250,\s*83/;
+  const channels = value => (String(value).match(/\d+/g) || []).slice(0, 3).map(Number);
+  const isNeutral = value => { const [r, g, b] = channels(value); return [r, g, b].every(Number.isFinite) && Math.max(r, g, b) - Math.min(r, g, b) <= 26; };
   assert(Math.abs(top.artW / top.artH - 2 / 3) <= 0.04, `Top games covers are portrait 2:3 (${top.artW.toFixed(0)}×${top.artH.toFixed(0)})`);
-  assert(top.rankFont >= 56 && top.rankH >= top.artH * 0.6, `the Top games rank numeral is tall (${top.rankFont}px font, ${Math.round(top.rankH)}px vs cover ${Math.round(top.artH)}px)`);
-  assert(LIME.test(top.rankColor), `the rank glyph is lime (${top.rankColor})`);
-  // The approved colour change is the glyph only; the heading/subtitle colour is reported, not required.
-  console.log(`   note — Top games heading/count/subtitle colours: ${top.titleColor} / ${top.countColor} / ${top.subColor}`);
+  // APPROVED: the numeral is large — its em-size is at least as big as the portrait it sits behind
+  // (no tiny hard-coded font-size floor carried over from the previous layout; the rank glyph uses
+  // line-height:.9, so its measured box is a little shorter than its em-size — the font size is the
+  // honest size signal).
+  assert(top.rankFont >= top.artH * 0.9, `the Top games rank numeral is as large as its portrait (${Math.round(top.rankFont)}px numeral vs ${Math.round(top.artH)}px cover)`);
+  assert(isNeutral(top.rankStroke) && !LIME.test(top.rankStroke), `the rank numeral is outlined in grey, not lime (${top.rankStroke})`);
+  const [fr, fg, fb] = channels(top.rankFill);
+  assert(!LIME.test(top.rankFill) && (fr + fg + fb) < 300, `the rank numeral fill is dark, not lime (${top.rankFill})`);
+  // APPROVED: the numeral sits BEHIND the portrait — the portrait paints in front of it.
+  assert(top.artZ > top.rankZ, `the portrait paints in front of the rank numeral (art z-index ${top.artZ} > rank z-index ${top.rankZ})`);
+  // APPROVED: the Top games heading is warm white; the count and subtitle are muted.
+  const topHeading = channels(top.titleColor), topCount = channels(top.countColor), topSub = channels(top.subColor);
+  assert(topHeading.length === 3 && topHeading.every(channel => channel >= 200) && Math.max(...topHeading) - Math.min(...topHeading) <= 26, `the Top games heading is warm white (${top.titleColor})`);
+  assert(topCount.length === 3 && Math.max(...topCount) < 200, `the Top games count is muted, not warm white (${top.countColor})`);
+  assert(topSub.length === 3 && Math.max(...topSub) < 200, `the Top games subtitle is muted, not warm white (${top.subColor})`);
   // Every Top card shows a real portrait poster: an image src, a 2:3 box, decoded pixels.
   assert.equal(top.cards.length, 10, 'all ten Top cards are present');
   assert.equal(top.cards.every(card => card.img.length > 0), true, `every Top card paints an image, not the fallback swatch (missing: ${top.cards.filter(card => !card.img).map(card => card.id).join(', ') || 'none'})`);
@@ -244,9 +334,9 @@ try {
   });
   assert.equal(topDecoded.length, 10, 'ten Top card images are present');
   assert.equal(topDecoded.every(entry => entry.src && entry.complete && entry.width > 0), true, `every Top card poster decodes from a real file (${topDecoded.map(entry => entry.width).join(', ')})`);
-  // Approved Netflix-style top posters: the poster fills the card width less only the rank gutter,
-  // the rank numeral overlaps the poster's left edge (never asserted to stay outside it), every rank
-  // 1..10 stays readable, and no card's rank spills into the NEXT card. Rank/art overlap is expected.
+  // APPROVED: the portrait is smaller than an oversized grey-outlined numeral that sits BEHIND it
+  // (Netflix style) and never covers the poster. Every rank 1..10 stays inside its own card, and
+  // no hard-coded tiny font-size / inset floor from the previous layout is assumed.
   const rankedGeom = await page.evaluate(() => {
     const shelf = document.querySelector('[data-sd-shelf="top"]');
     const cards = [...shelf.querySelectorAll('.sd-card')].slice(0, 10);
@@ -259,25 +349,33 @@ try {
       const next = cards[index + 1] ? cards[index + 1].getBoundingClientRect() : null;
       return {
         text: rankNode?.textContent?.trim() || '',
-        cardLeft: card.left, cardRight: card.right,
-        artLeft: art.left, artRight: art.right,
+        cardLeft: card.left, cardRight: card.right, cardWidth: card.width,
+        artLeft: art.left, artRight: art.right, artHeight: art.height,
         // The card is inset a small gutter so the numeral can overlap the poster's left edge.
         artInset: art.left - card.left,
         artRatio: art.height ? art.width / art.height : 0,
+        rankLeft: rank ? rank.left : 0,
         rankRight: rank ? rank.right : 0,
         rankHeight: rank ? rank.height : 0,
         rankFont: style ? parseFloat(style.fontSize) : 0,
+        rankZ: style ? (Number(style.zIndex) || 0) : 0,
+        artZ: Number(getComputedStyle(node.querySelector('.sd-art')).zIndex) || 0,
         nextLeft: next ? next.left : Infinity,
       };
     });
   });
   assert.equal(rankedGeom.length, 10, 'the ranked row holds ten cards for the overlap check');
   assert(rankedGeom.every(card => card.text === String(rankedGeom.indexOf(card) + 1)), `every card carries its own rank 1..10 (${rankedGeom.map(card => card.text).join(', ')})`);
-  assert(rankedGeom.every(card => card.artInset >= 0 && card.artInset <= 40 && card.artRight >= card.cardRight - 40), `each top poster spans the card width bar the rank gutter (inset ${rankedGeom.map(card => Math.round(card.artInset)).join(', ')}px)`);
-  assert(rankedGeom.every(card => card.rankFont >= 56 && card.rankHeight >= card.rankFont * 0.7), `every rank 1..10 is readable (fonts ${rankedGeom.map(card => Math.round(card.rankFont)).join(', ')}px, glyph heights ${rankedGeom.map(card => Math.round(card.rankHeight)).join(', ')}px)`);
-  // No adjacent-card clip: each rank ends before the next card begins, and inside its own card.
-  assert(rankedGeom.every(card => card.rankRight <= card.cardRight + 1 && card.rankRight <= card.nextLeft + 1), `no card's rank numeral clips into the next card (${rankedGeom.map(card => `${card.text}@${Math.round(card.rankRight)}`).join(' ')} / next card starts ${Math.round(rankedGeom[1]?.nextLeft ?? 0)})`);
-  pass(`default browse: ${GAMES.length} curated games, unique ids, a ranked Top games of ten as portrait 2:3 covers (all ten with decoded posters) and a tall lime rank glyph, ${curatedShelves.length} curated rows of at most 8, names below the artwork, hidden scrollbars, decoded images`);
+  // The numeral is large relative to its card, and every rank stays fully inside its own card.
+  assert(rankedGeom.every(card => card.rankFont >= card.cardWidth * 0.7), `every rank numeral is large relative to its card (font/card ${rankedGeom.map(card => `${Math.round(card.rankFont)}/${Math.round(card.cardWidth)}`).join(', ')})`);
+  assert(rankedGeom.every(card => card.rankFont >= card.artHeight * 0.9), `every rank numeral is at least as tall as its smaller portrait (font/cover ${rankedGeom.map(card => `${Math.round(card.rankFont)}/${Math.round(card.artHeight)}`).join(', ')})`);
+  assert(rankedGeom.every(card => card.rankLeft >= card.cardLeft - 1 && card.rankRight <= card.cardRight + 1), `every rank numeral stays inside its own card width (${rankedGeom.map(card => `${card.text}@${Math.round(card.rankLeft)}–${Math.round(card.rankRight)}`).join(' ')})`);
+  // Not covering the poster: the numeral is layered BEHIND the portrait on every card.
+  assert(rankedGeom.every(card => card.artZ > card.rankZ), 'the portrait paints in front of the numeral on every card (z-index art > rank)');
+  // The compressed pair must remain visible before the portrait, with both digits present.
+  const rankTen = rankedGeom[9];
+  assert(rankTen.text === '10' && rankTen.rankRight > rankTen.rankLeft && rankTen.rankRight <= rankTen.artLeft + 1, 'rank 10 is fully visible before the poster');
+  pass(`default browse: ${GAMES.length} curated games, unique ids, a ranked Top games of ten as portrait 2:3 covers (all ten with decoded posters) and a large grey-outlined rank numeral behind each portrait, ${curatedShelves.length} curated rows of at most 8, names below the artwork, hidden scrollbars, decoded images`);
 
   /* --------------------------------------- six whole cards per row at 1440px */
   const fit = await page.evaluate(() => {
@@ -317,9 +415,11 @@ try {
   await page.screenshot({ path: 'artifacts/qa/spotlight-library-overlay.png' });
   pass('hovering a card opens a floating panel with title, description, status and an action, and it survives the pointer crossing into it');
 
-  // The right-edge card of the first shelf. The first shelf ("Start here") holds six games, so its
-  // last card is global nth(5) — the last card fully inside the row at 1440px (a 7th card would sit
-  // past the row edge, one arrow-step away, and could not be hovered without scrolling the row).
+  // The right-edge card of the first shelf. The first shelf is the Continue playing demo — on a fresh
+  // browser it holds five launchable games (not the six-card curated rows, and not six) — so its last
+  // card is the fifth and last card fully inside the row at 1440px (the demo row is sized so those
+  // five wider cards fill the viewport; a sixth would sit past the row edge, one arrow-step away, and
+  // could not be hovered without scrolling the row).
   const edgeCard = page.locator('#shelves .sd-shelf').first().locator('.sd-card').last();
   await page.mouse.move(2, 2); await page.waitForTimeout(300);
   await edgeCard.locator('.sd-art').hover();
@@ -343,11 +443,8 @@ try {
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
-  // The three panel actions (Play / Favourite / Info) sit between the card and its neighbour in the
-  // tab order, so the fourth Tab lands on the card after the first shelf's last one — global nth(6)
-  // with a six-card first shelf. The intent is that focus leaves the panel for the next card, never
-  // gets trapped inside it.
-  const followingCard = page.locator('#shelves .sd-art').nth(6);
+  // Three panel actions precede the first card in the next shelf in tab order.
+  const followingCard = page.locator('#shelves .sd-shelf').nth(1).locator('.sd-art').first();
   assert(await followingCard.evaluate(el => el === document.activeElement), 'Tab leaves the last card panel for the next card instead of trapping focus');
   await panel().waitFor();
   await page.keyboard.press('Escape');
