@@ -12,8 +12,8 @@
  * The interval lives in spotlight.css (--spot-autoplay) so this module, the timer and the
  * progress fill all read one number.
  *
- * The spotlight page shows the *next three* games as small cover thumbnails in place of the
- * unnumbered progress pills. This module replaces the contents of #hero-dots with three
+ * The spotlight page shows the *next five* games as small cover thumbnails in place of the
+ * unnumbered progress pills. This module replaces the contents of #hero-dots with five
  * stable <button class="hero-thumb"> nodes at init and rewrites their data-hero-index,
  * artwork, label and tooltip on every hero change, so the existing app.js click delegate
  * ([data-hero-index]) and its arrow-key handler keep working untouched. A thin standalone
@@ -24,7 +24,7 @@
  * expose that getter the strip is left as the plain pills app.js built — nothing breaks.
  */
 const FALLBACK_INTERVAL_MS = 7000;
-const THUMB_COUNT = 3;
+const THUMB_COUNT = 5;
 
 /** The next `count` slide indexes after `current`, wrapping once and never repeating. */
 function upcomingIndexes(current, total, count) {

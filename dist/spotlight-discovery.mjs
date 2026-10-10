@@ -5,58 +5,126 @@
  * delegate the #shelves markup to render() here. The homepage keeps its own shelves and its
  * existing behaviour untouched.
  *
- * Two shapes:
- *   - Browse  → short curated shelves grouped by genre or intent, at most MAX_ROW games per
- *               row, no provider mega-row and no 30+ item scroller. Every catalogue game is
- *               placed at least once (leftovers are chunked into "More classics").
+ * Shelf shapes, in order:
+ *   - Continue playing → up to 20 locally remembered launches, newest first, shown only once
+ *     this browser has one. Recorded when an in-site launch really creates its frame (below),
+ *     never from opening the ready player or from browsing.
+ *   - Top games → ten unique editorial picks with a large outlined 1..10 rank beside/behind
+ *     the artwork. Curated, not a play-count or popularity claim.
+ *   - Curated shelves → short rows (at most MAX_ROW games) grouped by genre or intent. Every
+ *     catalogue game appears at least once here; leftovers are chunked into "More classics".
  *   - Filtered / search / favourites → one responsive grid of every matching game.
  *
- * Resting cards are artwork only: no captions, titles, meta, tag chips or heart buttons under
- * the image. A game that cannot launch here carries one small, unobtrusive overlay.
+ * Resting cards keep the game name inside the artwork over the bottom gradient, clamped to two
+ * lines: no title, meta, tag chip or heart control sits under the image. A game that cannot
+ * launch here carries one small status chip in the artwork's top-left corner, clear of the name.
+ *
+ * Launch history (local only; no backend and no cross-origin save state):
+ *   - Stored under `gameflex:recent`, at most 20 ids, newest first, deduplicated.
+ *   - Written only when #player-stage actually holds a player frame AND the current #play/<id>
+ *     hash names a catalogue game whose configured mode is iframe. Starting that frame is an
+ *     honest record of an attempted launch; it is not evidence of gameplay, compatibility or
+ *     saved progress.
+ *   - Malformed storage, unknown ids and unavailable storage degrade to a missing shelf.
+ *   - After the player closes, the shelves repaint from the last render() args so the shelf is
+ *     current: focus returns to the same game in the same shelf row it was in (the new Continue
+ *     playing shelf holds a duplicate, which is not preferred), every row keeps its horizontal
+ *     scroll, and the focus restore is suppressed so it never opens the detail card. The shared
+ *     player is untouched.
  *
  * A floating detail card opens above the page (portal on <body>, position: fixed, so it never
  * reflows content or gets clipped by a row's overflow) after a short hover, on keyboard focus
  * or on an explicit tap of the card's details affordance. The card holds a larger landscape
- * image, the title, genre, a brief description, an honest availability note, and Play/View,
- * Favourite and Info controls that reuse the existing data-play / data-favourite / data-details
- * handlers in app.js. Escape or an outside click closes it. On touch the first tap opens the
- * card; only the card's own Play control opens the existing player.
+ * image, the title, genre, a brief description, an honest availability note, and Play Now/View
+ * status, Favourite and Info controls that reuse the existing data-play / data-favourite /
+ * data-details handlers in app.js. Escape or an outside click closes it. On touch the first tap
+ * opens the card; only the card's own play control opens the existing player.
  */
 const MAX_ROW = 8;
+const TOP_LIMIT = 10;
+const RECENT_LIMIT = 20;
+const RECENT_KEY = 'gameflex:recent';
 const HOVER_DELAY = 200;
 const CLOSE_DELAY = 140;
 const BRIEF_LENGTH = 150;
+const ID_PATTERN = /^[a-z0-9-]{1,40}$/i;
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
 
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ESCAPES[c]);
 
-/** Shelf plan: ordered predicates, each game claimed by the first row that matches. */
-function shelfPlan(games, isPlayable) {
-  const defs = [
-    { id: 'ready-shooters', title: 'Start here', match: g => isPlayable(g) && g.category === 'shooters' },
-    { id: 'ready-more', title: 'Change the pace', match: g => isPlayable(g) && g.category !== 'shooters' },
-    { id: 'shooter-legends', title: 'Shooter legends', match: g => g.provider === 'dos-zone' && g.category === 'shooters' },
-    { id: 'empires', title: 'Build an empire', match: g => g.category === 'strategy' && !/artillery|chess|management/i.test(g.genre || '') },
-    { id: 'think', title: 'Think it through', match: g => ['puzzle', 'strategy'].includes(g.category) || g.id === 'wasmarcade' },
-    { id: 'platformers', title: 'Jump and run', match: g => g.category === 'platformers' },
-    { id: 'adventures', title: 'Stories and adventures', match: g => ['adventure', 'rpg'].includes(g.category) },
-    { id: 'cities', title: 'Build a city', match: g => g.category === 'simulation' },
-    { id: 'fight-race', title: 'Fight and race', match: g => ['fighting', 'racing'].includes(g.category) },
-  ];
+/** CSS.escape where the browser has it; catalogue and row ids are already [A-Za-z0-9-], so the
+ *  raw value is a safe selector fallback and never allows an injected selector. */
+const CSS_ESCAPE = value => (window.CSS?.escape ? CSS.escape(String(value)) : String(value));
+
+/** Curated shelf plan: ordered predicates, each game claimed by the first row that matches.
+ *  Subtitles describe the shelf's contents only — a configured iframe mode proves nothing about
+ *  gameplay, so no shelf claims a game is verified, tested or working. */
+const SHELF_DEFS = [
+  { id: 'ready-shooters', title: 'Start here', subtitle: 'Shooters to start with.', match: g => g.category === 'shooters', playable: true },
+  { id: 'ready-more', title: 'Change the pace', subtitle: 'Zombies, sport and a few surprises.', match: () => true, playable: true },
+  { id: 'shooter-legends', title: 'Shooter legends', subtitle: 'Doom, Duke and the classics.', match: g => g.provider === 'dos-zone' && g.category === 'shooters' },
+  { id: 'empires', title: 'Build an empire', subtitle: 'Plan, build and conquer.', match: g => g.category === 'strategy' && !/artillery|chess|management/i.test(g.genre || '') },
+  { id: 'think', title: 'Think it through', subtitle: 'Puzzles, tactics and board games.', match: g => ['puzzle', 'strategy'].includes(g.category) || g.id === 'wasmarcade' },
+  { id: 'platformers', title: 'Jump and run', subtitle: 'Timed jumps. Secret routes.', match: g => g.category === 'platformers' },
+  { id: 'adventures', title: 'Stories and adventures', subtitle: 'Explore worlds and follow the story.', match: g => ['adventure', 'rpg'].includes(g.category) },
+  { id: 'cities', title: 'Build a city', subtitle: 'Build it. Keep it running.', match: g => g.category === 'simulation' },
+  { id: 'fight-race', title: 'Fight and race', subtitle: 'Fast laps and close fights.', match: g => ['fighting', 'racing'].includes(g.category) },
+];
+const MORE_SUBTITLE = 'More picks from the collection.';
+/** Top games — explicit editorial order. Entries missing from the catalogue, or not launchable in
+ *  this player, are skipped; the fallback fill below tops the row back up to ten unique games. */
+const TOP_ORDER = ['halo', 'bo1', 'quake3', 'diablo', 'webxash', 'vicecity', 'skate', 'simpsons', 'pes6', 'quake'];
+
+function curatedRows(games, isPlayable) {
   const claimed = new Set();
   const rows = [];
-  for (const def of defs) {
-    const items = games.filter(g => !claimed.has(g.id) && def.match(g)).slice(0, MAX_ROW);
+  for (const def of SHELF_DEFS) {
+    const pool = def.playable ? games.filter(game => isPlayable(game)) : games;
+    const items = pool.filter(game => !claimed.has(game.id) && def.match(game)).slice(0, MAX_ROW);
     if (!items.length) continue;
-    items.forEach(g => claimed.add(g.id));
-    rows.push({ id: def.id, title: def.title, games: items });
+    items.forEach(game => claimed.add(game.id));
+    rows.push({ kind: 'curated', id: def.id, title: def.title, subtitle: def.subtitle, games: items });
   }
-  const rest = games.filter(g => !claimed.has(g.id));
+  const rest = games.filter(game => !claimed.has(game.id));
   for (let i = 0; i < rest.length; i += MAX_ROW) {
-    rows.push({ id: `more-${i / MAX_ROW + 1}`, title: 'More classics', games: rest.slice(i, i + MAX_ROW) });
+    rows.push({ kind: 'curated', id: `more-${i / MAX_ROW + 1}`, title: 'More classics', subtitle: MORE_SUBTITLE, games: rest.slice(i, i + MAX_ROW) });
   }
   return rows;
+}
+
+/** Ten unique editorial picks, spanning genres. The explicit TOP_ORDER goes first but only where
+ *  the game is launchable here; the launchable-first, then whole-catalogue fill reaches ten unique
+ *  entries when an ordered pick is gone or no longer launchable. Curated, not a popularity claim. */
+function topGames(games, isPlayable) {
+  const byId = new Map(games.map(game => [game.id, game]));
+  const seen = new Set(), picked = [];
+  const take = game => {
+    if (!game || picked.length >= TOP_LIMIT || seen.has(game.id)) return;
+    seen.add(game.id);
+    picked.push(game);
+  };
+  for (const id of TOP_ORDER) {
+    const game = byId.get(id);
+    if (game && isPlayable(game)) take(game);
+  }
+  const fill = pool => { for (const game of pool) { if (picked.length >= TOP_LIMIT) return; take(game); } };
+  fill(games.filter(game => isPlayable(game)));
+  fill(games);
+  return picked;
+}
+
+/** Only ids that still exist in the catalogue are kept, so a stale or junk entry is inert. */
+function validIds(values, byId) {
+  if (!Array.isArray(values)) return [];
+  const seen = new Set(), out = [];
+  for (const value of values) {
+    if (typeof value !== 'string' || !ID_PATTERN.test(value) || seen.has(value) || !byId.has(value)) continue;
+    seen.add(value);
+    out.push(value);
+    if (out.length >= RECENT_LIMIT) break;
+  }
+  return out;
 }
 
 const brief = value => {
@@ -73,32 +141,65 @@ function artMarkup(game, className) {
 }
 
 export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => false, syncHearts = () => {} } = {}) {
-  const byId = new Map(games.map(game => [game.id, game]));
-  const isPlayable = game => (mode?.(game.id)?.mode) === 'iframe';
+  const list = Array.isArray(games) ? games.filter(game => game && typeof game.id === 'string' && ID_PATTERN.test(game.id)) : [];
+  const byId = new Map(list.map(game => [game.id, game]));
+  // Availability always comes from the player's own config through app.js, never guessed here.
+  const isPlayable = game => Boolean(game) && mode?.(game.id)?.mode === 'iframe';
 
+  const readRecent = () => {
+    try { return validIds(JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]'), byId); }
+    catch { return []; } // Malformed or unavailable storage: browse without history.
+  };
+  const writeRecent = ids => {
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(ids)); return true; }
+    catch { return false; } // Private mode or a full quota: the shelf still works for this visit.
+  };
+
+  let recent = readRecent();
+  let lastArgs = null;
+  let repaintPending = false;
   let panel = null, activeCard = null, openTimer = 0, closeTimer = 0, frame = 0, suppressFocus = false, touchFocus = false;
 
-  const cardMarkup = game => {
+  const recentRow = () => {
+    const items = recent.map(id => byId.get(id)).filter(Boolean).slice(0, RECENT_LIMIT);
+    if (!items.length) return null;
+    return { kind: 'recent', id: 'continue', title: 'Continue playing', subtitle: 'Reopen your recent launches.', games: items };
+  };
+  const topRow = () => {
+    const items = topGames(list, isPlayable);
+    if (!items.length) return null;
+    return { kind: 'top', id: 'top-games', title: 'Top games', subtitle: 'Ten editorial picks.', games: items, ranked: true };
+  };
+  const browseRows = () => [recentRow(), topRow(), ...curatedRows(list, isPlayable)].filter(Boolean);
+  const browseMarkup = () => browseRows().map(shelfMarkup).join('');
+
+  const cardMarkup = (game, rank = 0) => {
     const id = escape(game.id), title = escape(game.title);
     const status = isPlayable(game) ? '' : `<span class="sd-badge">${game.availability === 'sandbox-pending' ? 'Pending' : 'Unavailable'}</span>`;
-    return `<article class="game-card sd-card" data-game="${id}">`
-      + `<button class="game-art sd-art" type="button" data-sd-open="${id}" aria-haspopup="dialog" aria-expanded="false" aria-label="Show details for ${title}, ${escape(game.genre)}">`
+    const rankMark = rank ? `<span class="sd-rank" aria-hidden="true">${rank}</span>` : '';
+    const label = `${rank ? `Rank ${rank}, ` : ''}show details for ${title}, ${escape(game.genre)}`;
+    return `<article class="game-card sd-card${rank ? ' sd-ranked' : ''}" data-game="${id}">`
+      + rankMark
+      + `<button class="game-art sd-art" type="button" data-sd-open="${id}" aria-haspopup="dialog" aria-expanded="false" aria-label="${label}">`
       + artMarkup(game, 'sd-img') + status
+      + `<span class="sd-name">${title}</span>`
       + '</button></article>';
   };
 
   function shelfMarkup(row) {
     const heading = `sd-h-${row.id}`, label = escape(row.title);
-    return `<section class="shelf sd-shelf" aria-labelledby="${heading}">`
-      + `<div class="shelf-heading"><h3 id="${heading}">${label}</h3>`
-      + `<div class="shelf-controls"><button class="shelf-arrow" type="button" data-scroll="${row.id}" data-direction="-1" aria-label="Scroll ${label} left by one game">‹</button>`
+    const count = String(row.games.length).padStart(2, '0');
+    return `<section class="shelf sd-shelf" data-sd-shelf="${row.kind}" aria-labelledby="${heading}">`
+      + `<div class="shelf-heading"><div class="sd-shelf-title"><h3 id="${heading}">${label} <small>${count}</small></h3>`
+      + (row.subtitle ? `<p class="shelf-subtitle">${escape(row.subtitle)}</p>` : '')
+      + `</div><div class="shelf-controls"><button class="shelf-arrow" type="button" data-scroll="${row.id}" data-direction="-1" aria-label="Scroll ${label} left by one game">‹</button>`
       + `<button class="shelf-arrow" type="button" data-scroll="${row.id}" data-direction="1" aria-label="Scroll ${label} right by one game">›</button></div></div>`
-      + `<div class="game-row sd-row" id="row-${row.id}" tabindex="0" role="region" aria-labelledby="${heading}">${row.games.map(cardMarkup).join('')}</div>`
+      + `<div class="game-row sd-row" id="row-${row.id}" tabindex="0" role="region" aria-labelledby="${heading}">${row.games.map((game, index) => cardMarkup(game, row.ranked ? index + 1 : 0)).join('')}</div>`
       + '</section>';
   }
 
-  function gridMarkup(list, label) {
-    return `<section class="sd-results" aria-label="${escape(label)}"><div class="sd-grid">${list.map(cardMarkup).join('')}</div></section>`;
+  function gridMarkup(items, label) {
+    return `<section class="sd-results" aria-label="${escape(label)}"><div class="sd-grid">${items.map(game => cardMarkup(game)).join('')}</div></section>`;
   }
 
   function availabilityText(game) {
@@ -113,10 +214,10 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
     const playable = isPlayable(game);
     const saved = isFavourite(game.id);
     const primary = playable
-      ? `<a class="button lime sd-action" href="#play/${id}" data-play="${id}">Play in gameflex</a>`
+      ? `<a class="button lime sd-action" href="#play/${id}" data-play="${id}">Play Now</a>`
       : `<button class="button lime sd-action" type="button" data-play="${id}">View status</button>`;
     const meta = [game.genre, game.platform || 'Desktop'].filter(Boolean).map(escape).join(' · ');
-    return `<div class="sd-panel" role="dialog" aria-modal="false" aria-label="${title}" tabindex="-1">`
+    return `<div class="sd-panel" role="dialog" aria-modal="false" aria-label="${escape(game.title)}" tabindex="-1">`
       + `<div class="sd-panel-art">${artMarkup(game, 'sd-panel-img')}</div>`
       + `<div class="sd-panel-body">`
       + `<h3 class="sd-panel-title">${title}</h3>`
@@ -251,6 +352,86 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
     if (panel && !event.target.closest?.('.sd-panel') && !event.target.closest?.('.sd-card')) closePanel();
   };
 
+  /* ------------------------------------------------------- local launch history */
+
+  const shelfHost = () => document.getElementById('shelves');
+  const hashId = () => {
+    const match = /^#play\/(.*)$/.exec(location.hash || '');
+    return match && ID_PATTERN.test(match[1]) ? match[1] : '';
+  };
+
+  /**
+   * Records a launch only when the shared player has actually put a frame in #player-stage for
+   * a configured in-site game. Opening the ready panel, blocked or pending entries, unknown ids
+   * and plain browsing are all ignored. Returns true when the list changed.
+   */
+  function rememberLaunch() {
+    const stage = document.getElementById('player-stage');
+    if (!stage?.querySelector('iframe.player-frame')) return false;
+    const id = hashId();
+    const game = id ? byId.get(id) : null;
+    if (!game || !isPlayable(game)) return false;
+    const next = [id, ...recent.filter(value => value !== id)].slice(0, RECENT_LIMIT);
+    const changed = next.length !== recent.length || next.some((value, index) => value !== recent[index]);
+    recent = next;
+    writeRecent(next); // A storage failure keeps the in-session shelf rather than faking one.
+    return changed;
+  }
+
+  /**
+   * Re-renders the shelves after a launch, keeping focus on the same card of the same row.
+   *
+   * The repaint prepends a new "Continue playing" shelf, so the launched game's id now appears
+   * outside the row the visitor was in as well. The row id is captured with the card, so focus
+   * returns to the copy in its original row (matched by data-game) first and only falls back to
+   * a whole-page match when that row no longer holds the game. Each row's horizontal scroll is
+   * captured before the swap and re-applied after, so no row jumps back to its start. Restoring
+   * focus is wrapped in suppressFocus: the focusin handler opens the detail panel, and a plain
+   * focus() during a repaint would pop that panel open under a hovering pointer.
+   */
+  function repaint() {
+    const host = shelfHost();
+    if (!host || !lastArgs?.isBrowse) return;
+    const active = document.activeElement;
+    const focusedCard = active instanceof Element ? active.closest('.sd-card') : null;
+    const insideHost = focusedCard ? host.contains(focusedCard) : false;
+    const focusId = insideHost ? focusedCard.dataset.game || '' : '';
+    const focusRow = insideHost ? focusedCard.closest('.sd-row')?.id || '' : '';
+    const scrolls = rowScrolls(host);
+    const html = browseMarkup();
+    if (!html) return;
+    host.innerHTML = html;
+    restoreFocus(host, focusRow, focusId);
+    restoreRowScrolls(host, scrolls);
+    // app.js owns the arrow enabled/disabled state; a resize notification refreshes it without
+    // touching focus, the player or the row scroll positions.
+    try { window.dispatchEvent(new Event('resize')); } catch { /* Arrows keep their last state. */ }
+  }
+
+  /** Horizontal offset per row id, read before the shelves are replaced. */
+  const rowScrolls = host => [...host.querySelectorAll('.sd-row')].map(row => [row.id, row.scrollLeft]);
+
+  /** Puts every row back where it was; a row that no longer exists is simply skipped. */
+  function restoreRowScrolls(host, scrolls) {
+    for (const [id, left] of scrolls) {
+      if (!id || !left) continue;
+      const row = host.querySelector(`#${CSS_ESCAPE(id)}`);
+      if (row) row.scrollLeft = left; // preventScroll focus keeps this manual position.
+    }
+  }
+
+  /** Same row first, then any row: the original row's copy of the game wins over a newer duplicate. */
+  function restoreFocus(host, rowId, gameId) {
+    if (!gameId) return;
+    const selector = `.sd-card[data-game="${CSS_ESCAPE(gameId)}"] .sd-art`;
+    const row = rowId ? host.querySelector(`#${CSS_ESCAPE(rowId)}`) : null;
+    const trigger = row?.querySelector(selector) || host.querySelector(selector);
+    if (!trigger) return;
+    suppressFocus = true;
+    trigger.focus({ preventScroll: true });
+    suppressFocus = false;
+  }
+
   document.addEventListener('pointerover', onPointerOver, { passive: true });
   document.addEventListener('pointerout', onPointerOut, { passive: true });
   document.addEventListener('click', onClick);
@@ -260,16 +441,30 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
   window.addEventListener('scroll', reposition, { passive: true, capture: true });
   window.addEventListener('resize', reposition);
   if ('MutationObserver' in window) {
-    new MutationObserver(() => { if (document.documentElement.classList.contains('player-open')) closePanel(); })
-      .observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    // A player frame only ever appears inside #player-stage, so this is the one honest signal
+    // that a configured launch really started.
+    const stage = document.getElementById('player-stage');
+    if (stage) new MutationObserver(() => { if (rememberLaunch()) repaintPending = true; }).observe(stage, { childList: true, subtree: true });
+    let playerWasOpen = document.documentElement.classList.contains('player-open');
+    new MutationObserver(() => {
+      const playerOpen = document.documentElement.classList.contains('player-open');
+      if (playerOpen) closePanel();
+      else if (playerWasOpen && repaintPending) { repaintPending = false; requestAnimationFrame(repaint); }
+      playerWasOpen = playerOpen;
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
   }
 
   return {
     /** Renders the catalogue region. isBrowse → curated shelves, otherwise one grid. */
-    render({ isBrowse, filtered, view, category }) {
+    render(args = {}) {
       closePanel();
-      if (!filtered?.length) return '';
-      if (isBrowse) return shelfPlan(games, isPlayable).map(shelfMarkup).join('');
+      const view = typeof args?.view === 'string' ? args.view : 'discover';
+      const category = typeof args?.category === 'string' ? args.category : 'all';
+      const filtered = Array.isArray(args?.filtered) ? args.filtered : [];
+      // Kept so a finished launch can refresh the shelves without app.js re-rendering them.
+      lastArgs = { isBrowse: Boolean(args?.isBrowse), view, category };
+      if (!filtered.length) return '';
+      if (lastArgs.isBrowse) return browseMarkup();
       const label = view === 'favourites' ? 'Saved games' : category && category !== 'all' ? 'Filtered games' : 'Search results';
       return gridMarkup(filtered, label);
     },
