@@ -24,20 +24,34 @@
   </header>
   <main>
     <section class="hero" id="hero" aria-labelledby="hero-heading">
-      <div class="hero-image" aria-hidden="true"></div><div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-image" id="hero-image" aria-hidden="true"></div><div class="hero-shade" aria-hidden="true"></div>
       <div class="hero-content">
         <div class="eyebrow"><span class="live-dot"></span> THE BROWSER IS YOUR CONSOLE</div>
-        <h1 id="hero-heading">Old favourites.<br><span>New tab.</span></h1>
+        <h1 id="hero-heading">Old favourites.<br><span>One place.</span></h1>
         <p>The games you grew up on. A few you missed.<br>No installs. Just pick one and jump in.</p>
-        <div class="hero-actions"><button class="button lime" id="hero-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>Let's play <span aria-hidden="true">↗</span></button><a class="button ghost" href="#catalogue">Explore the collection <span aria-hidden="true">↓</span></a></div>
+        <div class="hero-actions"><button class="button lime" id="hero-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>View game</button><a class="button ghost" href="#catalogue">Explore the collection <span aria-hidden="true">↓</span></a></div>
         <span class="hero-note">Some ports need your original game files.</span>
       </div>
-      <div class="featured-caption"><span class="eyebrow">IN THE SPOTLIGHT</span><strong id="spotlight-name">Halo: Combat Evolved</strong><span id="spotlight-genre">An old-school classic, back in your browser.</span></div>
-      <div class="hero-index" aria-hidden="true"><span>01</span> / 01 <i></i></div>
+      <div class="hero-slider" id="hero-slider" role="group" aria-roledescription="carousel" aria-label="Spotlight games">
+        <div class="hero-slide">
+          <span class="eyebrow">IN THE SPOTLIGHT</span>
+          <strong id="spotlight-name">Halo: Combat Evolved</strong>
+          <span class="hero-slide-meta" id="spotlight-genre">Sci-fi shooter</span>
+          <p class="hero-slide-copy" id="spotlight-description">An old-school classic, back in your browser.</p>
+          <p class="hero-slide-req" id="spotlight-requirements"></p>
+        </div>
+        <div class="hero-slider-controls">
+          <button class="hero-arrow" id="hero-prev" type="button" aria-label="Previous spotlight game">‹</button>
+          <div class="hero-dots" id="hero-dots" role="group" aria-label="Spotlight slides"></div>
+          <button class="hero-arrow" id="hero-next" type="button" aria-label="Next spotlight game">›</button>
+          <span class="hero-index" aria-hidden="true"><span id="hero-index-current">01</span> / <span id="hero-index-total">01</span> <i></i></span>
+        </div>
+        <p class="hero-status" id="hero-status" role="status" aria-live="polite"></p>
+      </div>
     </section>
     <section class="catalogue" id="catalogue" aria-labelledby="catalogue-heading">
       <div class="catalogue-intro"><div><span class="eyebrow muted">LESS SCROLLING. MORE PLAYING.</span><h2 id="catalogue-heading">Find your kind of fun<span class="lime-text">.</span></h2></div><span id="collection-count" class="collection-count"></span></div>
-      <div class="browse-tools"><div class="filters" role="group" aria-label="Filter by genre"><button class="filter active" data-category="all" aria-pressed="true">All games</button><button class="filter" data-category="shooters" aria-pressed="false">Shooters</button><button class="filter" data-category="zombies" aria-pressed="false">Zombies</button><button class="filter" data-category="sports" aria-pressed="false">Skate & sports</button><button class="filter" data-category="adventure" aria-pressed="false">Adventure</button><button class="filter" data-category="strategy" aria-pressed="false">Strategy</button></div><button id="surprise" class="surprise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c5 0 7-12 12-12h3m-4-4 4 4-4 4"/></svg>Pick for me</button></div>
+      <div class="browse-tools"><div class="filters" role="group" aria-label="Filter by genre"><button class="filter active" data-category="all" aria-pressed="true">All games</button><button class="filter" data-category="shooters" aria-pressed="false">Shooters</button><button class="filter" data-category="zombies" aria-pressed="false">Zombies</button><button class="filter" data-category="sports" aria-pressed="false">Skate & sports</button><button class="filter" data-category="adventure" aria-pressed="false">Adventure</button><button class="filter" data-category="strategy" aria-pressed="false">Strategy</button><button class="filter" data-category="racing" aria-pressed="false">Racing</button><button class="filter" data-category="platformers" aria-pressed="false">Platformers</button><button class="filter" data-category="puzzle" aria-pressed="false">Puzzle</button><button class="filter" data-category="fighting" aria-pressed="false">Fighting</button><button class="filter" data-category="rpg" aria-pressed="false">RPG</button><button class="filter" data-category="simulation" aria-pressed="false">Simulation</button></div><button id="surprise" class="surprise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c5 0 7-12 12-12h3m-4-4 4 4-4 4"/></svg>Pick for me</button></div>
       <div id="results" aria-live="polite" class="sr-only"></div><div id="shelves"></div>
       <div id="empty-state" class="empty-state" hidden><span class="pixel-decoration" aria-hidden="true">+ +</span><h3 id="empty-heading">Nothing here. Yet.</h3><p id="empty-copy"></p><button class="button lime" id="reset">Explore all games</button></div>
       <aside class="small-print"><span class="pixel-decoration" aria-hidden="true">i</span><div><strong>One tab. A whole lot of nostalgia.</strong><p>Games open on independent websites. We check the launch pages; availability and performance can change. Look for the “Own files” label before you play.</p></div><button id="about-button">How it works <span aria-hidden="true">↗</span></button></aside>

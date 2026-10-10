@@ -1,6 +1,8 @@
 # gameflex
 
-A private, curated browser-game directory. Charcoal, electric lime, a capital-case pixel GAMEFLEX wordmark, and artwork-led shelves. Search the collection, filter by genre, save favourites locally, and open games in a new tab. Shelf buttons and Left/Right keyboard controls advance one game at a time.
+A private, curated browser-game directory with 37 listings. Charcoal, electric lime, a capital-case pixel GAMEFLEX wordmark, and artwork-led shelves. Search, genre filters, local favourites and an 11-slide manual spotlight carousel. Shelf buttons and Left/Right keyboard controls advance one game at a time.
+
+This catalogue branch stays separate from the active player feature. The 21 DOS Zone additions are labelled sandbox pending and open internal details only, because the host blocks Gameflex framing. The original 16 destinations retain their existing behaviour until the separate player implementation is integrated. No new DOS outbound-play fallback is introduced.
 
 ## Run
 
@@ -23,8 +25,8 @@ Browser QA uses an installed Microsoft Edge browser. Change the Playwright launc
 ## Catalogue and evidence
 
 - `docs/link-audit.json` and `.md`: audit of the 25 supplied destinations, checked 2026-10-10. Sixteen included, nine excluded. Launch interfaces and asset paths inspected; no full gameplay certification.
-- `scripts/create-catalog.mjs`: curated descriptions and metadata, filtered strictly by audit inclusion. Run after changing the audit to regenerate `dist/games.json`.
-- `scripts/check-catalog.mjs`: unique IDs, HTTPS destinations, required metadata, local artwork, and audit coverage.
+- `scripts/create-catalog.mjs`: original catalogue generator. For this batch use `scripts/add-dos-catalogue.mjs` to add/update the selected DOS records without replacing the original entries or their artwork.
+- `scripts/check-catalog.mjs`: IDs, HTTPS destinations, metadata, artwork and audit coverage. Exact user-approved disabled DOS listings may enter the catalogue; enabling new games still requires both verification records. See `docs/dos-catalogue-integration.md`.
 - `scripts/probe-links.mjs` and `inspect-launchers.mjs`: HTTP evidence helpers. Their output stays in ignored `artifacts/`; exclude any downloaded HTML that exposes visitor metadata from Git history.
 - `scripts/browser-qa.mjs`: search, filters, favourites persistence, dialogs, external links, keyboard shortcuts, and mobile overflow checks. External navigation is intercepted in QA; this tests the directory, not third-party games.
 
@@ -50,6 +52,10 @@ The profile stores its provider credential outside the repository. Do not commit
 ## Artwork
 
 Publisher artwork comes from Steam's public store CDN; destination artwork comes from the linked ports' public preview assets. These are contextual catalogue illustrations, not screenshots certifying the browser port's fidelity. See `docs/artwork.json`. Game names and artwork remain owned by their respective rights holders. Silkscreen and Space Grotesk are self-hosted; their OFL licence files are in `dist/assets/`.
+
+DOS Zone artwork receipts: `docs/dos-zone-artwork.json`. Missing-cover receipts: `docs/catalogue-artwork.json`, `docs/additional-artwork.json`, `docs/pes6-artwork.json`. All 37 entries have local artwork. Original-title cover illustrations identify the fan ports; they do not claim to show those builds in action.
+
+Additional checks: `npm run test:catalogue-gate` and `npm run test:catalogue`. Set `GAMEFLEX_PREVIEW` to the active local URL and `PORT` to choose an isolated preview port.
 
 ## Discovery queue
 
