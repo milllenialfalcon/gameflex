@@ -1,0 +1,339 @@
+{
+  "task": "Ranked spotlight portrait artwork (2:3 ideal) for ten ranked IDs",
+  "generatedAt": "2026-10-10",
+  "updatedAt": "2026-10-10",
+  "revision": "2 — weight optimisation of three heavy assets, primary visual review recorded, two caveat corrections",
+  "scope": "Writes limited to dist/assets/portraits/*, dist/spotlight-portraits.json and this receipt. No git, no code, no other assets, no research/review decisions changed.",
+  "method": "Direct download of official publisher art (Steam store CDN library_600x900_2x) for Steam titles, then exact-title box art for non-Steam titles: Internet Archive retail box scan (Diablo), LibRetro Thumbnails database box art (Halo CE, PES6), LaunchBox Games Database box-front scans (Skate 3, Simpsons Hit & Run). No upscaling, stretching, cropping, or AI generation: every file was the source bytes copied as-is; the only later operation on any of them is the proportional downscale recorded under derivatives. Dimensions were read with ffprobe (SOF/IHDR) at sourcing time and re-read with Pillow at optimisation time; sha256 is over the exact stored bytes. HTTP 200 alone was not treated as evidence of title match; identity is asserted from the source's own title metadata (Steam app id, IA file name, LibRetro file name, LaunchBox labeled box-front) plus the label's declared dimensions.",
+  "reviewDriver": {
+    "note": "The primary agent performed a visual review of the final on-disk cover files and accepted them. The verdicts in this section are the primary's; the optimisations and receipt corrections below were directed by the primary in the same review and implemented by the gameflexart worker, which ran no vision capability.",
+    "performedBy": "primary agent — visual inspection of all ten final portrait cover files on disk",
+    "reviewedFiles": [
+      "assets/portraits/halo.png",
+      "assets/portraits/bo1.jpg",
+      "assets/portraits/quake3.jpg",
+      "assets/portraits/diablo.png (the pre-optimisation original; its derivative diablo.jpg preserves the same cover at reduced size)",
+      "assets/portraits/webxash.jpg",
+      "assets/portraits/vicecity.jpg",
+      "assets/portraits/skate.jpg (re-fetched source; the on-disk derivative is derived from the same bytes)",
+      "assets/portraits/simpsons.jpg (re-fetched source; the on-disk derivative is derived from the same bytes)",
+      "assets/portraits/pes6.png",
+      "assets/portraits/quake.jpg"
+    ],
+    "verdict": "All ten ranked portrait covers were viewed by the primary agent and accepted. No wrong-title, wrong-edition or unusable image was found. Identity claims below remain grounded in the cited source metadata; the visual review adds the primary's confirmation that each frame shows a genuine cover for the stated title.",
+    "correctionsDirected": [
+      "The PES 6 source file is named '(Europe)' in the LibRetro database, but the image itself displays the Australia region packaging with a G rating. The actual visual region is Australia, so this receipt records Australia rather than repeating the filename's region (see the pes6 entry).",
+      "Do not assert that the Skate 3 fan project streams from a user's own copy beyond what the published catalogue already states (see the skate entry).",
+      "The Simpsons composite is normal asset preparation rather than fabrication: the portrait front cover was already available, so no panel crop was needed (see the simpsons entry).",
+      "The three oversized files (diablo, skate, simpsons) are far too heavy for 180px cards; each was reduced to a max-900px-height JPEG derivative, aspect preserved, high quality, with the source's dimensions/hash/bytes preserved alongside the derivative's recorded values."
+    ]
+  },
+  "derivatives": {
+    "reason": "The ranked cards render these covers at roughly 180px wide. The retained originals were 6.4MB/4352x5513 (diablo), 1.57MB/1517x2116 (skate) and 495629 bytes/1544x2156 (simpsons) — far more data than the card can display. Each was reduced once to a max-900px-height JPEG: aspect preserved, no crop, no stretch, no upscale, no AI.",
+    "processing": {
+      "tool": "Pillow 12.3.0 via the bundled Python at C:/Users/avizo/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+      "operation": "open → convert('RGB') → resize to target height 900 with LANCZOS (width rounded from the source aspect ratio) → save JPEG quality 88, optimize, progressive, chroma subsampling 4:2:2; the source ICC profile is carried through when the source had one",
+      "targetHeightPx": 900,
+      "quality": 88,
+      "aspectRule": "derivative width = round(source width × 900 ÷ source height); the pixel rounding is the only aspect deviation",
+      "originalsPreserved": "no original bytes were mutated in place; each original's dimensions, sha256 and byte count are recorded alongside its derivative's values in the entries below",
+      "obsoleteFileRemoved": "assets/portraits/diablo.png was deleted only after assets/portraits/diablo.jpg existed and had been verified in the portrait directory. It was an untracked (never committed) asset created by this same task, so removing it takes nothing out of history; the receipt's record of its bytes and hash is kept."
+    },
+    "items": [
+      {
+        "id": "diablo",
+        "derivative": "assets/portraits/diablo.jpg",
+        "derivativeWidth": 710,
+        "derivativeHeight": 900,
+        "derivativeBytes": 81975,
+        "derivativeSha256": "3a20ca05052166962353bc5062e890fbbb8d484a78f632e7a522e63670416df2",
+        "aspectSource": 0.789407,
+        "aspectDerivative": 0.788889,
+        "originalSource": {
+          "file": "assets/portraits/diablo.png",
+          "format": "png",
+          "width": 4352,
+          "height": 5513,
+          "bytes": 6434325,
+          "sha256": "e34d8e96315b28c5dfdd091d9caf8470f9fd2ffc6ae10fb4fd57eb9aed7ee561",
+          "retainedOnDisk": false,
+          "retentionNote": "Deleted once the derivative was in place and verified, per the review direction to remove the obsolete untracked original. The dimensions, byte count and sha256 are the values recorded before deletion and are preserved here."
+        },
+        "reduction": "6434325 → 81975 bytes (−98.7%); 4352x5513 → 710x900"
+      },
+      {
+        "id": "skate",
+        "derivative": "assets/portraits/skate.jpg",
+        "derivativeWidth": 645,
+        "derivativeHeight": 900,
+        "derivativeBytes": 167920,
+        "derivativeSha256": "70650ed77f90cd085e91701c59d68d8a952c52d38f0131cae4cbe3b43cd9e126",
+        "aspectSource": 0.716919,
+        "aspectDerivative": 0.716667,
+        "originalSource": {
+          "format": "jpeg",
+          "width": 1517,
+          "height": 2116,
+          "bytes": 1569206,
+          "sha256": "50b7d03d5e51f33a55ffa2ea9b8f5451187179b2c1735fec2797ade87d06e723",
+          "retainedOnDisk": false,
+          "retentionNote": "The file at this path is now the derivative. The source JPEG was byte-identical to the publisher's own serving file and remains re-fetchable from sourceUrl; its dimensions, byte count and sha256 are preserved here."
+        },
+        "reduction": "1569206 → 167920 bytes (−89.3%); 1517x2116 → 645x900"
+      },
+      {
+        "id": "simpsons",
+        "derivative": "assets/portraits/simpsons.jpg",
+        "derivativeWidth": 645,
+        "derivativeHeight": 900,
+        "derivativeBytes": 178369,
+        "derivativeSha256": "17732c7ab01842ef276c82cefc7db659ece62f7fb4c456b78cb82f8430eba9f6",
+        "aspectSource": 0.716141,
+        "aspectDerivative": 0.716667,
+        "originalSource": {
+          "format": "jpeg",
+          "width": 1544,
+          "height": 2156,
+          "bytes": 495629,
+          "sha256": "e766b385e4728c3aa004a458dd03b902b19b2f4963da8e85eb1e38ea59bb7908",
+          "retainedOnDisk": false,
+          "retentionNote": "The file at this path is now the derivative. As with skate, the source is byte-identical to the publisher's serving file and re-fetchable from sourceUrl; its values are preserved here."
+        },
+        "reduction": "495629 → 178369 bytes (−64.0%); 1544x2156 → 645x900"
+      }
+    ],
+    "untouched": [
+      {
+        "file": "assets/portraits/halo.png",
+        "width": 512,
+        "height": 735,
+        "bytes": 646241,
+        "sha256": "bde0c34b0f5fe217aa5c40483d0770e99b08f78263cdc6a8f4b597b4b97f5c35",
+        "note": "Already at modest pixel dimensions; not heavy for the card size, left byte-identical."
+      },
+      {
+        "file": "assets/portraits/pes6.png",
+        "width": 512,
+        "height": 724,
+        "bytes": 597925,
+        "sha256": "b362292fdfd4ee22f7c75267d9829dd912ad41e63e157cab2c4a24d4e009649d",
+        "note": "Already at modest pixel dimensions; not heavy for the card size, left byte-identical."
+      }
+    ],
+    "notOptimisedByDesign": "The five 600x900 JPEGs (bo1, quake3, webxash, vicecity, quake) are already small files at or near the display size; re-encoding them would spend a generation of quality for no useful saving, so they remain byte-identical to the sourced originals.",
+    "checksPerformed": [
+      "Each derivative was reopened after writing and its decoded dimensions and format verified against the target (JPEG, height 900, width as derived)",
+      "sha256 of every on-disk portrait file re-read after the writes and after the diablo.png removal",
+      "Aspect ratio compared before and after: the only change is the pixel rounding (0.789407→0.788889, 0.716919→0.716667, 0.716141→0.716667)",
+      "No resample above 1.0× was applied: every derivative is smaller than its source"
+    ],
+    "limits": "The re-encoded images were not inspected visually by this worker (it ran no vision capability). The metric used is the standard one — Lanczos downscale to a 900px height at quality 88 — and the primary's view of the pre-optimisation originals accepted the same covers."
+  },
+  "files": [
+    {
+      "id": "halo",
+      "game": "Halo: Combat Evolved",
+      "catalogueTitle": "Halo: Combat Evolved",
+      "titleUsed": "Halo - Combat Evolved (USA) (Xbox, 2001) box art",
+      "source": "LibRetro Thumbnails (github.com/libretro-thumbnails/Microsoft_-_Xbox)",
+      "sourceUrl": "https://raw.githubusercontent.com/libretro-thumbnails/Microsoft_-_Xbox/master/Named_Boxarts/Halo%20-%20Combat%20Evolved%20(USA).png",
+      "localFile": "assets/portraits/halo.png",
+      "imageUrlInterpreted": "Halo - Combat Evolved (USA).png",
+      "format": "png",
+      "width": 512,
+      "height": 735,
+      "ratio": 0.696,
+      "sha256": "bde0c34b0f5fe217aa5c40483d0770e99b08f78263cdc6a8f4b597b4b97f5c35",
+      "bytes": 646241,
+      "caveat": "Original 2001 Xbox box art (exact title). The Gameflex entry is a browser adaptation/remaster of Combat Evolved; this cover is the 2001 original, not the CE Anniversary re-release. Portrait but not exactly 2:3 (0.696)."
+    },
+    {
+      "id": "bo1",
+      "game": "Black Ops Zombies",
+      "catalogueTitle": "Black Ops Zombies",
+      "titleUsed": "Call of Duty: Black Ops (2010)",
+      "source": "Steam store CDN (app 42700)",
+      "sourceUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/42700/library_600x900_2x.jpg",
+      "localFile": "assets/portraits/bo1.jpg",
+      "format": "jpeg",
+      "width": 600,
+      "height": 900,
+      "ratio": 0.667,
+      "sha256": "789f563986e5f13422104de75d3b4aef69a6858c4c6c1cbb500694d81b0a0c15",
+      "bytes": 151786,
+      "caveat": "Entry is the zombies mode of Call of Duty: Black Ops (2010); the official Steam library art for that 2010 title is used."
+    },
+    {
+      "id": "quake3",
+      "game": "Quake III Arena",
+      "catalogueTitle": "Quake III Arena",
+      "titleUsed": "Quake III Arena (1999)",
+      "source": "Steam store CDN (app 2200)",
+      "sourceUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/2200/library_600x900_2x.jpg",
+      "localFile": "assets/portraits/quake3.jpg",
+      "format": "jpeg",
+      "width": 600,
+      "height": 900,
+      "ratio": 0.667,
+      "sha256": "e60869945cd224aa7c6aee2801cb12035ea0fdb36a939ce2f84182d433234f44",
+      "bytes": 278872,
+      "caveat": "Exact-title official Steam library art for Quake III Arena."
+    },
+    {
+      "id": "diablo",
+      "game": "Diablo",
+      "catalogueTitle": "Diablo",
+      "titleUsed": "Diablo 1 [WIN] retail box front (1996)",
+      "source": "Internet Archive item diablo-1-v-1.00-1996-en-windows-95-dx-3.-7z",
+      "sourceUrl": "https://archive.org/download/diablo-1-v-1.00-1996-en-windows-95-dx-3.-7z/Diablo%201%20%5BWIN%5D%20-%20Cover%20BOX%20Front.png",
+      "localFile": "assets/portraits/diablo.jpg",
+      "format": "jpeg",
+      "width": 710,
+      "height": 900,
+      "ratio": 0.789,
+      "sha256": "3a20ca05052166962353bc5062e890fbbb8d484a78f632e7a522e63670416df2",
+      "bytes": 81975,
+      "derivative": true,
+      "originalSource": {
+        "format": "png",
+        "width": 4352,
+        "height": 5513,
+        "bytes": 6434325,
+        "sha256": "e34d8e96315b28c5dfdd091d9caf8470f9fd2ffc6ae10fb4fd57eb9aed7ee561",
+        "retainedOnDisk": false
+      },
+      "caveat": "Authentic 1996 Windows retail box front. Full box-front aspect (0.789), not a 2:3 poster; no crop was applied to make the portrait — only the proportional downscale to a 900px-height JPEG recorded under derivatives. The Gameflex entry uses the shareware demo / user-supplied DIABDAT.MPQ, so this original 1996 box art is the exact title."
+    },
+    {
+      "id": "webxash",
+      "game": "Half-Life / Counter-Strike 1.6",
+      "catalogueTitle": "Half-Life / Counter-Strike 1.6",
+      "titleUsed": "Half-Life (original) cover",
+      "source": "Steam store CDN (app 70)",
+      "sourceUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/70/library_600x900_2x.jpg",
+      "localFile": "assets/portraits/webxash.jpg",
+      "format": "jpeg",
+      "width": 600,
+      "height": 900,
+      "ratio": 0.667,
+      "sha256": "76a88453547323984668d22b45fb77183bb3fe301ba3088b014149778689005e",
+      "bytes": 331911,
+      "caveat": "Entry is a WebXash launcher for Half-Life and CS 1.6. Per the brief, the exact original Half-Life cover is used rather than a mixed launcher graphic. Half-Life is the first-listed and primary title of the entry."
+    },
+    {
+      "id": "vicecity",
+      "game": "GTA: Vice City",
+      "catalogueTitle": "GTA: Vice City",
+      "titleUsed": "Grand Theft Auto: Vice City",
+      "source": "Steam store CDN (app 12110)",
+      "sourceUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/12110/library_600x900_2x.jpg",
+      "localFile": "assets/portraits/vicecity.jpg",
+      "format": "jpeg",
+      "width": 600,
+      "height": 900,
+      "ratio": 0.667,
+      "sha256": "76b021b0d5e66dab55ad762b5e511d7346ace028c0aec26e49c2ffc3ea75438a",
+      "bytes": 224251,
+      "caveat": "Exact-title official Steam library art for Grand Theft Auto: Vice City."
+    },
+    {
+      "id": "skate",
+      "game": "Skate 3 — Fan Game",
+      "catalogueTitle": "Skate 3 — Fan Game",
+      "titleUsed": "Skate 3 (Xbox 360, 2010) box front (North America)",
+      "source": "LaunchBox Games Database (gamesdb.launchbox-app.com), labelled 'Box - Front (North America) - 1517 x 2116'",
+      "sourceUrl": "https://images.launchbox-app.com/698d7162-7656-4f70-a399-b2d247640928.jpg",
+      "localFile": "assets/portraits/skate.jpg",
+      "format": "jpeg",
+      "width": 645,
+      "height": 900,
+      "ratio": 0.717,
+      "sha256": "70650ed77f90cd085e91701c59d68d8a952c52d38f0131cae4cbe3b43cd9e126",
+      "bytes": 167920,
+      "derivative": true,
+      "originalSource": {
+        "format": "jpeg",
+        "width": 1517,
+        "height": 2116,
+        "bytes": 1569206,
+        "sha256": "50b7d03d5e51f33a55ffa2ea9b8f5451187179b2c1735fec2797ade87d06e723",
+        "retainedOnDisk": false
+      },
+      "caveat": "This is the 2010 Skate 3 (EA Black Box) North American box front, deliberately NOT the 2025 'skate.' reboot, as directed. The Gameflex catalogue entry describes a fan browser project for that game and already states its own prerequisites; this receipt goes no further than the catalogue and makes no claim about what that project streams or where its data comes from. Source is a community box-art database (labelled box-front, dimension-matched to the label); it is not a first-party publisher CDN. Only the proportional 900px-height downscale was applied (see derivatives)."
+    },
+    {
+      "id": "simpsons",
+      "game": "The Simpsons: Hit & Run",
+      "catalogueTitle": "The Simpsons: Hit & Run",
+      "titleUsed": "The Simpsons: Hit & Run (2003) box front (North America)",
+      "source": "LaunchBox Games Database (gamesdb.launchbox-app.com), labelled 'Box - Front (North America) - 1544 x 2156'",
+      "sourceUrl": "https://images.launchbox-app.com/1bbb7d22-b337-439e-95e3-763fb939e40b.jpg",
+      "localFile": "assets/portraits/simpsons.jpg",
+      "format": "jpeg",
+      "width": 645,
+      "height": 900,
+      "ratio": 0.717,
+      "sha256": "17732c7ab01842ef276c82cefc7db659ece62f7fb4c456b78cb82f8430eba9f6",
+      "bytes": 178369,
+      "derivative": true,
+      "originalSource": {
+        "format": "jpeg",
+        "width": 1544,
+        "height": 2156,
+        "bytes": 495629,
+        "sha256": "e766b385e4728c3aa004a458dd03b902b19b2f4963da8e85eb1e38ea59bb7908",
+        "retainedOnDisk": false
+      },
+      "caveat": "Exact-title 2003 box front. A 1200dpi Internet Archive scan of the same game exists but is a landscape multi-panel composite (6410x4296), which is why it was not used. This community box-front portrait is the ordinary asset-preparation choice: the portrait front cover was already available, so no panel was cut out of any composite and nothing was fabricated. Composite cropping is normal asset prep, not fabrication; it simply was not needed here. Only the proportional 900px-height downscale was applied (see derivatives)."
+    },
+    {
+      "id": "pes6",
+      "game": "PES 6",
+      "catalogueTitle": "PES 6",
+      "titleUsed": "Pro Evolution Soccer 6 (PlayStation 2) box art",
+      "source": "LibRetro Thumbnails (github.com/libretro-thumbnails/Sony_-_PlayStation_2)",
+      "sourceUrl": "https://raw.githubusercontent.com/libretro-thumbnails/Sony_-_PlayStation_2/master/Named_Boxarts/Pro%20Evolution%20Soccer%206%20(Europe).png",
+      "localFile": "assets/portraits/pes6.png",
+      "format": "png",
+      "width": 512,
+      "height": 724,
+      "ratio": 0.707,
+      "sha256": "b362292fdfd4ee22f7c75267d9829dd912ad41e63e157cab2c4a24d4e009649d",
+      "bytes": 597925,
+      "filenameRegion": "Europe",
+      "visualRegion": "Australia",
+      "visualRating": "G",
+      "caveat": "Exact title Pro Evolution Soccer 6. The source database file is named '(Europe)', but the image as viewed displays Australia region packaging with a G rating, so the actual visual region is recorded as Australia rather than repeating the filename's region. The region is a packaging detail only; the title shown is exact. The Gameflex entry is described as the PSP edition recompiled to the browser; regional/console edition art differs but the title is exact."
+    },
+    {
+      "id": "quake",
+      "game": "Quake",
+      "catalogueTitle": "Quake",
+      "titleUsed": "Quake (1996 original)",
+      "source": "Steam store CDN (app 2310, Quake re-release listing)",
+      "sourceUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/2310/library_600x900_2x.jpg",
+      "localFile": "assets/portraits/quake.jpg",
+      "format": "jpeg",
+      "width": 600,
+      "height": 900,
+      "ratio": 0.667,
+      "sha256": "a979ab3cc7666b69059fd195fa38d762fcc41923f70865ef5aae0086b42772f0",
+      "bytes": 179447,
+      "caveat": "Fetched from the Steam Quake (app 2310) listing; that store art carries the original 1996 Quake key art. The Gameflex entry is the original Quake (QuakeWorld) browser port."
+    }
+  ],
+  "summary": {
+    "requested": 10,
+    "sourced": 10,
+    "missing": 0,
+    "optimised": 3,
+    "notes": "All ten ranked IDs resolved to authentic exact-title portrait covers. No fallbacks to unrelated titles were required. The three heavy assets were reduced to max-900px-height JPEG derivatives, with every original's dimensions, hash and byte count preserved in this receipt."
+  },
+  "implementerNotification": {
+    "consumer": "Player/spotlight implementer",
+    "mappingFile": "dist/spotlight-portraits.json",
+    "portraitDir": "dist/assets/portraits/",
+    "message": "All 10 ranked spotlight portraits are sourced and stored. dist/spotlight-portraits.json maps each id to {src, sourceUrl, width, height}. Mixed formats: png for halo, pes6; jpeg for the rest. Consumers should set object-fit: cover; ratios range 0.667 (Steam 2:3) to 0.789 (Diablo full box front). diablo, skate and simpsons are stored as 900px-height JPEG derivatives, so no portrait file exceeds 646KB and the card-size render cost is bounded.",
+    "status": "complete"
+  }
+}
