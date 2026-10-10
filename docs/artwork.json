@@ -1,0 +1,23 @@
+{
+  "source": "Steam store publisher artwork",
+  "hero": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/976730/ss_ce40a85f9f7f3fa0f620a87f8919f3212ab8e46e.1920x1080.jpg?t=1791569963",
+  "covers": {
+    "halo": 976730,
+    "bo1": 42700,
+    "quake": 2310,
+    "quake2": 2320,
+    "quake3": 2200,
+    "rtcw": 9010,
+    "cs": 10
+  },
+  "destinationPreviews": {
+    "surf": "https://surfd.net/social/surfd-card-v2.png",
+    "vicecity": "https://joncodeofficial.github.io/gta-vice-city-wasm/cover.png",
+    "diablo": "https://johnimril.github.io/diablo_web/og-image.png",
+    "zombies": "https://vel.gg/bo1z/art/og-mapselect.png"
+  },
+  "fonts": {
+    "pixel": "Pixelify Sans (OFL)",
+    "body": "Space Grotesk (OFL)"
+  }
+}
