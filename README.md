@@ -42,7 +42,7 @@ Favourites use `localStorage` under `gameflex:favourites`. No analytics, cookies
 
 ## Hermes worker
 
-Profiles `gameflex`, `gameflexresearch` and `gameflexqa` use provider `opencode-go`, model `deepseek-v4.1-flash`, and the Gameflex project folder `D:\AI\Gameflex`. Implementation, research/backend and QA workers receive non-overlapping file assignments. Simple time-consuming work is delegated to Hermes; the primary agent reviews and integrates.
+Profiles `gameflex`, `gameflexresearch` and `gameflexqa` use provider `opencode-go`, model `deepseek-v4.1-flash`, and the Gameflex project folder `D:\AI\Gameflex`. Implementation, research/backend and QA workers receive non-overlapping file assignments. Hermes implements the assigned work and performs the routine QA; the primary agent plans and scopes the work, reviews the results, and owns Git, Trello and publication. Do not substitute a ChatGPT/other-model worker for a requested Hermes worker.
 
 ```powershell
 hermes -p gameflex --in D:\AI\Gameflex --provider opencode-go -m deepseek-v4.1-flash -t terminal,file -z 'Your bounded task here. Read AGENTS.md first.'
@@ -64,4 +64,4 @@ The separate Hermes `gameflexresearch` profile installs Agent Reach and research
 
 See `research/README.md`, `research/review-queue.md` and `research/candidates.csv`. The canonical JSON is tracked in Git; `node scripts/research-db.mjs build` regenerates the local SQLite database. Both assistant verification and explicit human verification are required before an entry becomes eligible for a separate catalogue change. No automatic publication or recurring research schedule is configured.
 
-Spotlight discovery: short shelves, artwork-only resting cards, expanded hover/focus/tap details, and grids for filters/search/favourites. See docs/spotlight-discovery.md. Run npm run test:discovery and npm run test:hero for the Spotlight checks.
+Spotlight discovery: five upcoming previews over eight quality-curated shuffled hero games; seven desktop cards; title overlays inside the artwork; headings with subtitles and counts; an editorial Top 10; local recent launches first; Play Now; filter and search grids remain. See docs/spotlight-discovery.md. Run npm run test:discovery, npm run test:hero and npm run test:library for the Spotlight checks.
