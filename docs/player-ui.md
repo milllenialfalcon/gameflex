@@ -35,6 +35,7 @@ Honesty rules the UI follows:
 - Framing permission is not inferred from a missing `X-Frame-Options`. `dist/player-config.json` is the decision record.
 - Games the player cannot host keep their catalogue entry and explain themselves in place: `wasmarcade` is `unavailable` because that host's terms expressly prohibit embedding ("WASM Arcade's own terms prohibit embedding their pages, so gameflex can't load it in this player"). No off-site link is offered for it.
 - The other 15 games are `iframe` mode: the user asked for iframe previews, and iframe compatibility is **not** verified gameplay. Several may still fail to run inside a frame.
+- The combined release preserves the separately published 21 DOS listings and 11-slide carousel. `availability: sandbox-pending` overrides the player config and opens an internal blocked explanation. Listing approval cannot enable an iframe or remote session. The carousel CTA follows the selected slide.
 
 ## player-config.json
 
@@ -72,7 +73,8 @@ Real-host observations are recorded separately in `iframe-audit.md`: 15 iframe d
 
 ## Release checks
 
-- `npm run check` syntax-checks both frontend modules and validates all 16 catalogue entries.
+- `npm run check` syntax-checks both frontend modules and validates all 37 catalogue entries.
 - `npm run test:research` verifies both review gates and confirms the live catalogue remains unchanged.
 - The local preview server serves JavaScript modules and PNG/WebP artwork with their correct MIME types.
 - `artifacts/qa/` holds the run report and desktop/mobile screenshots.
+- `npm run test:catalogue` verifies the combined 37-listing catalogue, 11 slides, pending DOS flows, covers and responsive layout. `npm run test:catalogue-gate` confirms listing approval cannot enable gameplay.

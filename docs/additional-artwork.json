@@ -1,0 +1,81 @@
+{
+  "generatedAt": "2026-10-10T08:17:02Z",
+  "scope": "Original-title artwork identifying the Simpsons: Hit & Run browser port and Skate 3 fan browser port.",
+  "selectionNote": "The user requested relevant missing thumbnails. The primary agent selected exact original-title artwork as contextual identification. These are not screenshots of the browser ports, and the user did not provide separate image licences or a specific Wikipedia sourcing instruction.",
+  "verificationLimits": [
+    "Source file descriptions, format, dimensions and checksums were checked by the worker. The primary agent visually inspected both downloaded covers.",
+    "Source attribution is recorded below. No hosting, game redistribution, streaming or monetisation permission is inferred from artwork availability."
+  ],
+  "entries": [
+    {
+      "id": "simpsons",
+      "title": "The Simpsons: Hit & Run",
+      "destination": "https://shar-wasm.cjoseph.workers.dev/?skipmovie",
+      "status": "downloaded",
+      "art": "assets/simpsons-cover.png",
+      "localAssetPath": "dist/assets/simpsons-cover.png",
+      "sourceKind": "wikipedia-original-title-cover",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/en/5/5f/The_Simpsons_Hit_and_Run_cover.png",
+      "sourcePage": "https://en.wikipedia.org/wiki/The_Simpsons:_Hit_%26_Run",
+      "fileDescriptionPage": "https://en.wikipedia.org/wiki/File:The_Simpsons_Hit_and_Run_cover.png",
+      "subjectIdentified": "Box art of The Simpsons: Hit & Run (Roxor/Radical Entertainment, published by Vivendi Universal Games, 2003). Original game, not the fan port.",
+      "credits": "The Simpsons: Hit & Run cover art, (c) 2003 Vivendi Universal Games / Radical Entertainment; The Simpsons (c) Twentieth Century Fox. Wikipedia file page credits https://www.ericheintzimaging.com/the-simpsons-hit-and-run ; file uploaded by Wikipedia user TBMNY, 2018-08-16.",
+      "licenseStatus": "Wikipedia non-free file (LicenseShortName 'Fair use', NonFree=true, Copyrighted=true, categories 'PlayStation 2 game covers|GameCube game covers|Windows game covers|Xbox game covers|All non-free media'). Used here contextually to identify the title. No licence granted, no permission inferred, no notice removed.",
+      "httpStatus": 200,
+      "finalUrl": "https://upload.wikimedia.org/wikipedia/en/5/5f/The_Simpsons_Hit_and_Run_cover.png",
+      "contentType": "image/png",
+      "detectedType": "png",
+      "bytes": 165378,
+      "width": 277,
+      "height": 360,
+      "aspect": 0.77,
+      "sha256": "26106b6f38f118a3b112d0eea8b43f80c7c7c797e46c289ebe0eca1bbfba22c1",
+      "caveats": [
+        "Portrait 277x360 (aspect 0.77) against a roughly 460x245 (aspect 1.88) card window, so the card centre-crops it to approximately the middle band of the cover. The raw bytes were left untouched; any cropping is CSS presentation, not a re-encoded asset.",
+        "Low resolution for a 460x245 card. This is the only file on the article for this title; no larger publisher-hosted copy was found in this run."
+      ]
+    },
+    {
+      "id": "skate",
+      "title": "Skate 3 — Fan Game",
+      "destination": "https://skate.aaddpp.lol/",
+      "status": "downloaded",
+      "art": "assets/skate-cover.jpg",
+      "localAssetPath": "dist/assets/skate-cover.jpg",
+      "sourceKind": "wikipedia-original-title-box-art",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/en/8/84/Skate-3-Boxart.jpg",
+      "sourcePage": "https://en.wikipedia.org/wiki/Skate_3",
+      "fileDescriptionPage": "https://en.wikipedia.org/wiki/File:Skate-3-Boxart.jpg",
+      "subjectIdentified": "Box art of Skate 3 (EA Black Box, published by Electronic Arts, 2010) — the exact underlying title this fan browser port streams user-supplied data for. NOT the fan build at skate.aaddpp.lol, and NOT skate. (2007) or any later series entry.",
+      "credits": "Skate 3 box art, (c) Electronic Arts Inc. (2010). This is the infobox image of the Wikipedia article 'Skate 3' (file uploaded by a Wikipedia user, 2010-04-18); the Wikipedia file page credits Joystiq / Engadget, 'Skate 3 cover revealed, plus new dev diary and screens', 2010-02-25: https://www.engadget.com/2010/02/25/skate-3-cover-revealed-plus-new-dev-diary-and-screens/",
+      "licenseStatus": "Wikipedia non-free file (LicenseShortName 'Fair use', NonFree=true, Copyrighted=true, categories 'PlayStation 3 game covers|Xbox 360 game covers|All non-free media'). Used here contextually to identify the original title that the fan port runs. No licence granted, no permission inferred, no notice removed.",
+      "httpStatus": 200,
+      "finalUrl": "https://upload.wikimedia.org/wikipedia/en/8/84/Skate-3-Boxart.jpg",
+      "contentType": "image/jpeg",
+      "detectedType": "jpeg",
+      "bytes": 14964,
+      "width": 270,
+      "height": 284,
+      "aspect": 0.95,
+      "sha256": "cb507f1e93295ac4bb25487af366f49dd75f7d6583d2a8cb4f9ba78ba01abc6a",
+      "caveats": [
+        "This is original-game artwork identifying a fan browser port. It is not a screenshot of the fan build, and the fan host publishes no artwork of its own (its 9,785-byte HTML has no <img>, no og:image/twitter:image, no favicon link; /og.png, /cover.png, /assets/*.png etc. all returned 404 in the earlier audit).",
+        "Anomalous proportions: 270x284 (aspect 0.95) is close to square, whereas PS3/Xbox 360 box art is normally portrait. This is exactly what the Wikipedia article publishes as its box art; the image was not altered. Identity is asserted from that article's file description page, not from visual inspection (this worker had no image-viewing capability). If a portrait or higher-resolution EA press/store copy is wanted, source it separately.",
+        "Low resolution for a 460x245 card, and near-square against a 1.88 card window, so the card centre-crops it.",
+        "The fan port's own rights in the underlying Skate 3 game and data are unverified; nothing here implies the host or the user may legally run, stream or distribute it."
+      ],
+      "documentedAlternative": {
+        "title": "Skate 3 logo (Electronic Arts)",
+        "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/2/22/Skate_3_logo.png",
+        "fileDescriptionPage": "https://commons.wikimedia.org/wiki/File:Skate_3_logo.png",
+        "repository": "Wikimedia Commons (not en.wikipedia)",
+        "width": 497,
+        "height": 105,
+        "aspect": 4.73,
+        "licenseStatus": "Public domain (PD-textlogo), Copyrighted=false, Artist=Electronic Arts, Restrictions=trademarked. Trademark rights are not affected by the PD status of the file.",
+        "notUsedBecause": "The user's instruction for this entry was the original cover. Recorded as a legitimate free-licensed fallback (a 497x105 wordmark would fill a 1.88 card window horizontally without cropping, but is tiny vertically, and a wordmark identifies the title less completely than the cover).",
+        "notDownloaded": true
+      }
+    }
+  ]
+}

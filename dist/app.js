@@ -10,6 +10,7 @@ let favourites = new Set();
 try { const stored = JSON.parse(localStorage.getItem('gameflex:favourites') || '[]'); if (Array.isArray(stored)) favourites = new Set(stored.filter(id => typeof id === 'string')); } catch { /* Browsing still works when storage is unavailable. */ }
 const sections = [
   { id:'top', title:'Straight to the good stuff', subtitle:'A few classics to get you started.', match:g => g.featured },
+  { id:'dos-zone', title:'DOS Zone', subtitle:'Original classics. Sandbox integration is on the way.', match:g => g.provider === 'dos-zone' },
   { id:'zombies', title:'One more round', subtitle:'Board up. Gear up. Try to make it to morning.', match:g => g.category === 'zombies' },
   { id:'shooters', title:'The classics hit different', subtitle:'Arena legends, alien invasions, and the original headshots.', match:g => g.category === 'shooters' },
   { id:'other', title:'Change the pace', subtitle:'Step away from the crosshair for a minute.', match:g => !['shooters','zombies'].includes(g.category) },
@@ -34,12 +35,12 @@ function toggleFavourite(id) {
   syncHearts();
 }
 function art(game, className = '') {
-  return game.art ? `<img class="${className}" src="${escape(game.art)}" alt="" loading="lazy" width="460" height="215">` : `<div class="art-fallback ${className}" style="--cover:${escape(game.color || '#37452b')}"><span class="fallback-icon" aria-hidden="true">${escape(game.symbol || '+')}</span><span class="fallback-title">${escape(game.title)}</span></div>`;
+  return game.art ? `<img class="${className} ${game.artFit === 'contain' ? 'cover-contain' : ''}" src="${escape(game.art)}" alt="" loading="lazy" width="460" height="215">` : `<div class="art-fallback ${className}" style="--cover:${escape(game.color || '#37452b')}"><span class="fallback-icon" aria-hidden="true">${escape(game.symbol || '+')}</span><span class="fallback-title">${escape(game.title)}</span></div>`;
 }
 function card(game) {
   const title = escape(game.title), id = escape(game.id), href = `#play/${id}`;
   const playable = gameMode(game.id).mode === 'iframe';
-  return `<article class="game-card"><a class="game-art" href="${href}" data-play="${id}" aria-label="${playable ? `Play ${title} in the gameflex player` : `Open ${title} — not playable in the gameflex player`}">${art(game)}<span class="card-tag">${escape(game.tag)}</span><span class="play-hover"><span>${playable ? 'Play in gameflex' : 'Not playable here'}</span></span></a><button class="heart" data-favourite="${id}" aria-pressed="false" aria-label="Save ${title} to favourites">${icons.heart}</button><div class="card-title-row"><a href="${href}" data-play="${id}">${title}</a><button class="info-button" data-details="${id}" aria-label="Details for ${title}">ⓘ</button></div><p class="card-meta"><span>${escape(game.genre)}</span><span class="dot"></span><span>${escape(game.platform || 'Desktop')}</span>${game.ownFiles ? '<span class="dot"></span><span class="file-tag">Own files</span>' : ''}</p></article>`;
+  return `<article class="game-card"><a class="game-art" href="${href}" data-play="${id}" aria-label="${playable ? `Play ${title} in the gameflex player` : `Open ${title} — not playable in the gameflex player`}">${art(game)}<span class="card-tag">${escape(game.tag)}</span><span class="play-hover"><span>${playable ? 'Play in gameflex' : 'Not playable here'}</span></span></a><button class="heart" data-favourite="${id}" aria-pressed="false" aria-label="Save ${title} to favourites">${icons.heart}</button><div class="card-title-row"><a href="${href}" data-play="${id}">${title}</a><button class="info-button" data-details="${id}" aria-label="Details for ${title}">ⓘ</button></div><p class="card-meta"><span>${escape(game.genre)}</span><span class="dot"></span><span>${escape(game.platform || 'Desktop')}</span>${game.ownFiles ? '<span class="dot"></span><span class="file-tag">Own files</span>' : ''}</p>${game.availability === 'sandbox-pending' ? '<p class="pending-label">Sandbox pending</p>' : ''}</article>`;
 }
 function shelf(section, items) {
   return `<section class="shelf" aria-labelledby="heading-${section.id}"><div class="shelf-heading"><div><h3 id="heading-${section.id}">${escape(section.title)} <small>${items.length.toString().padStart(2,'0')}</small></h3>${section.subtitle ? `<p class="shelf-subtitle">${escape(section.subtitle)}</p>` : ''}</div><div class="shelf-controls"><button class="shelf-arrow" data-scroll="${section.id}" data-direction="-1" aria-label="Scroll ${escape(section.title)} left by one game">‹</button><button class="shelf-arrow" data-scroll="${section.id}" data-direction="1" aria-label="Scroll ${escape(section.title)} right by one game">›</button></div></div><div class="game-row" id="row-${section.id}" tabindex="0" role="region" aria-labelledby="heading-${section.id}">${items.map(card).join('')}</div></section>`;
@@ -80,6 +81,65 @@ function stepShelf(row, direction) {
   shelfTargets.set(row, state);
   row.scrollTo({ left: target, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
 }
+// Hero carousel. Slides are the games the catalogue marks as spotlight or featured, in
+// catalogue order. Artwork prefers an optional heroArt (wide crop) and falls back to art.
+const hero = { slides: [], index: 0 };
+const heroPad = value => String(value).padStart(2, '0');
+const heroArtOf = game => game.heroArt || game.art || '';
+function heroAnnounce() {
+  const game = hero.slides[hero.index];
+  $('#hero-status').textContent = game ? `Spotlight ${hero.index + 1} of ${hero.slides.length}: ${game.title}` : '';
+}
+function paintHero() {
+  const game = hero.slides[hero.index];
+  if (!game) return;
+  const art = heroArtOf(game), image = $('#hero-image');
+  image.style.backgroundImage = art ? `url("${art.replace(/["\\]/g, '\\$&')}")` : 'none';
+  image.classList.toggle('hero-image-empty', !art);
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    image.classList.remove('hero-fade');
+    void image.offsetWidth;
+    image.classList.add('hero-fade');
+  }
+  $('#spotlight-name').textContent = game.title;
+  $('#spotlight-genre').textContent = [game.genre, game.availability === 'sandbox-pending' ? 'Sandbox pending' : (game.platform || 'Desktop')].filter(Boolean).join(' · ');
+  $('#spotlight-description').textContent = game.description || '';
+  $('#spotlight-requirements').textContent = game.requirements || '';
+  document.querySelectorAll('[data-hero-index]').forEach((dot, index) => {
+    const active = index === hero.index;
+    dot.classList.toggle('active', active);
+    if (active) dot.setAttribute('aria-current', 'true'); else dot.removeAttribute('aria-current');
+    dot.tabIndex = active ? 0 : -1;
+  });
+  $('#hero-index-current').textContent = heroPad(hero.index + 1);
+  $('#hero-index-total').textContent = heroPad(hero.slides.length);
+  const single = hero.slides.length < 2;
+  $('#hero-prev').disabled = single; $('#hero-next').disabled = single;
+  $('#hero-play').disabled = false;
+  $('#hero-play').setAttribute('aria-label', `Open ${game.title} in the Gameflex player`);
+  $('#hero-play').lastChild.textContent = game.availability === 'sandbox-pending' ? 'View game' : "Let's play";
+  const activeDot = document.querySelector(`[data-hero-index="${hero.index}"]`);
+  if (activeDot) {
+    const dots = activeDot.parentElement;
+    dots.scrollLeft = Math.max(0, activeDot.offsetLeft - dots.offsetLeft - dots.clientWidth / 2 + activeDot.clientWidth / 2);
+  }
+  heroAnnounce();
+}
+function goHero(index) {
+  const total = hero.slides.length;
+  if (!total) return;
+  hero.index = ((index % total) + total) % total;
+  paintHero();
+}
+function buildHero() {
+  hero.slides = games.filter(g => g.spotlight || g.featured);
+  hero.index = 0;
+  const total = hero.slides.length;
+  $('#hero-dots').innerHTML = hero.slides.map((game, index) => `<button class="hero-dot" type="button" data-hero-index="${index}" aria-label="Show spotlight ${index + 1} of ${total}: ${escape(game.title)}">${heroPad(index + 1)}</button>`).join('');
+  $('#hero-slider').hidden = total === 0;
+  if (!total) { $('#hero-play').disabled = true; heroAnnounce(); return; }
+  paintHero();
+}
 function details(id) {
   const game = games.find(g => g.id === id); if (!game) return;
   const host = new URL(game.url).hostname;
@@ -103,10 +163,13 @@ document.addEventListener('click', event => {
   if (event.target.closest('#player')) return;
   const play = event.target.closest('[data-play]'); if (play) { event.preventDefault(); return openPlayer(play.dataset.play); }
   const favourite = event.target.closest('[data-favourite]'); if (favourite) return toggleFavourite(favourite.dataset.favourite);
-  const info = event.target.closest('[data-details]'); if (info) return details(info.dataset.details);
+  const info = event.target.closest('[data-details]'); if (info) { event.preventDefault(); return details(info.dataset.details); }
   const categoryButton = event.target.closest('[data-category]'); if (categoryButton) { category = categoryButton.dataset.category; syncNav(); return render(); }
   const viewButton = event.target.closest('[data-view]'); if (viewButton) { view = viewButton.dataset.view; category = 'all'; search = ''; $('#search').value = ''; syncNav(); return render(); }
   const arrow = event.target.closest('[data-scroll]'); if (arrow) stepShelf(document.getElementById(`row-${arrow.dataset.scroll}`), Number(arrow.dataset.direction));
+  const dot = event.target.closest('[data-hero-index]'); if (dot) return goHero(Number(dot.dataset.heroIndex));
+  if (event.target.closest('#hero-prev')) return goHero(hero.index - 1);
+  if (event.target.closest('#hero-next')) return goHero(hero.index + 1);
   if (event.target.closest('.dialog-close')) event.target.closest('dialog').close();
   if (event.target.matches('dialog')) { const rect = event.target.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) event.target.close(); }
   if (event.target.closest('.wordmark')) reset();
@@ -114,12 +177,19 @@ document.addEventListener('click', event => {
 $('#search').addEventListener('input', event => { search = event.target.value.trim(); render(); });
 $('#reset').addEventListener('click', reset);
 $('#surprise').addEventListener('click', () => { const filtered = filteredGames(); if (filtered.length) openPlayer(filtered[Math.floor(Math.random()*filtered.length)].id); });
-$('#hero-play').addEventListener('click', () => { const game = games.find(g => g.spotlight) || games[0]; if (game) openPlayer(game.id); });
+$('#hero-play').addEventListener('click', () => { const game = hero.slides[hero.index]; if (game) openPlayer(game.id); });
 $('#about-button').addEventListener('click', () => $('#about').showModal());
 document.addEventListener('keydown', event => {
   if (isPlayerOpen()) return;
   if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName) || document.querySelector('dialog[open]') || event.altKey || event.ctrlKey || event.metaKey) return;
   if (event.key === '/') { event.preventDefault(); $('#search').focus(); return; }
+  if (event.target.closest('#hero-slider')) {
+    if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+    event.preventDefault();
+    goHero(event.key === 'Home' ? 0 : event.key === 'End' ? hero.slides.length - 1 : hero.index + (event.key === 'ArrowRight' ? 1 : -1));
+    document.querySelector(`[data-hero-index="${hero.index}"]`)?.focus({preventScroll:true});
+    return;
+  }
   if (!['ArrowLeft','ArrowRight'].includes(event.key)) return;
   const shelf = event.target.closest('.shelf');
   if (!shelf) return;
@@ -138,9 +208,7 @@ window.addEventListener('storage',event => { if (event.key !== 'gameflex:favouri
 let catalogueLoaded = false;
 try {
   const response = await fetch('games.json'); if (!response.ok) throw new Error('catalogue unavailable'); games = await response.json();
-  const spotlight = games.find(g=>g.spotlight) || games[0];
-  if (spotlight) { $('#spotlight-name').textContent = spotlight.title; $('#spotlight-genre').textContent = spotlight.genre; }
-  else $('#hero-play').disabled = true;
+  buildHero();
   document.querySelectorAll('[data-category]').forEach(button => { if(button.dataset.category !== 'all') button.hidden = !games.some(g => g.category === button.dataset.category); });
   catalogueLoaded = true;
 } catch {

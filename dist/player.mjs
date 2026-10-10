@@ -57,6 +57,7 @@ const byId = (id) => host.games().find(game => game.id === id) || null;
 function entryFor(id) {
   const game = byId(id);
   if (!game) return { mode: 'unavailable', reason: 'That game is not in this collection.' };
+  if (game.availability === 'sandbox-pending') return { mode: 'unavailable', reason: 'Sandbox pending. This port is listed for review and is not playable in Gameflex yet.' };
   if (configError) return { mode: 'unavailable', reason: 'The player could not start. Reload the page to try again.' };
   const entry = config?.games?.[id];
   if (!entry || !entry.mode) return { mode: 'unavailable', reason: 'This game is not ready to play here yet.' };

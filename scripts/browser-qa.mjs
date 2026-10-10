@@ -1,7 +1,11 @@
 /**
  * gameflex browser QA.
  *
- * Catalogue regression plus in-site player coverage.
+ * Combined-catalogue regression (37 listings: 16 reviewed games plus 21 DOS
+ * listings marked sandbox-pending) plus in-site player coverage.
+ *
+ * Expected counts are derived from dist/games.json, read locally, so the
+ * assertions track the shipped catalogue instead of a hardcoded number.
  *
  * Fixtures: every non-loopback request (artwork, fonts and game hosts are the
  * only external ones) is answered with a deterministic local fixture page, so
@@ -26,6 +30,12 @@ import path from 'node:path';
 const { chromium } = await import(process.env.GAMEFLEX_PLAYWRIGHT || 'playwright');
 
 const DIST = path.resolve('dist');
+const GAMES = JSON.parse(await readFile(path.resolve('dist/games.json'), 'utf8'));
+const LISTINGS = GAMES.length;
+const CATALOGUE_IDS = GAMES.map(game => game.id).sort();
+const DOS_LISTINGS = GAMES.filter(game => game.provider === 'dos-zone');
+const PENDING_LISTINGS = GAMES.filter(game => game.availability === 'sandbox-pending');
+const countFor = (predicate) => GAMES.filter(predicate).length;
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf' };
 const FIXTURE_HTML = '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>GAMEFLEX QA FIXTURE</title></head><body data-gameflex-fixture="1"><h1>Deterministic QA fixture — not real gameplay</h1><p>This local page stands in for the game host during automated checks.</p></body></html>';
 // A real 1×1 JPEG, so the remote mock streams something the browser can decode.
@@ -107,9 +117,16 @@ await page.locator('.game-card').first().waitFor();
 await page.evaluate(() => document.fonts.ready);
 await page.screenshot({ path: 'artifacts/qa/desktop.png', fullPage: true });
 const count = await page.locator('.game-card').count();
-const uniqueGames = await page.locator('.game-card a[data-play]').evaluateAll(els => new Set(els.map(a => a.getAttribute('href'))).size);
-assert.equal(uniqueGames, 16, 'catalogue still lists the 16 reviewed games');
-assert(count >= 16, 'shelves still render cards');
+const launchHrefs = await page.locator('.game-card a[data-play]').evaluateAll(els => els.map(a => a.getAttribute('href')));
+const uniqueGames = new Set(launchHrefs).size;
+assert.equal(LISTINGS, 37, 'the combined catalogue stays 16 reviewed plus 21 DOS listings');
+assert.equal(DOS_LISTINGS.length, 21, 'the catalogue keeps its 21 DOS listings');
+assert.equal(PENDING_LISTINGS.length, DOS_LISTINGS.length, 'every DOS listing is still marked sandbox-pending');
+assert.equal(uniqueGames, LISTINGS, `catalogue lists all ${LISTINGS} reviewed games`);
+assert.equal(countFor(g => !g.provider), 16, 'the catalogue keeps its 16 reviewed games');
+assert(count >= LISTINGS, 'shelves still render cards');
+const renderedIds = [...new Set(launchHrefs.map(href => href.replace('#play/', '')))].sort();
+assert.deepEqual(renderedIds, CATALOGUE_IDS, 'every catalogue listing is reachable from a rendered card');
 assert.equal((await page.locator('.site-header .wordmark').textContent()).trim(), 'GAMEFLEX');
 for (const selector of ['.card-meta', '.card-tag', '.shelf-subtitle', '.collection-count', '.hero-note', 'footer']) {
   assert(await page.locator(selector).first().evaluate(el => parseFloat(getComputedStyle(el).fontSize) >= 12), `${selector} readable text size`);
@@ -118,7 +135,7 @@ const bodyCopy = await page.evaluate(() => document.body.innerText.toLowerCase()
 for (const banned of ['new tab', 'opens in a new tab', 'one tab away']) {
   assert(!bodyCopy.includes(banned), `catalogue copy must not advertise "${banned}"`);
 }
-pass('desktop catalogue renders 16 games, pixel wordmark, readable supporting text, in-site copy only');
+pass(`desktop catalogue renders all ${LISTINGS} games (16 reviewed + 21 DOS), pixel wordmark, readable supporting text, in-site copy only`);
 
 async function checkShelfStep() {
   const row = page.locator('#row-shooters');
@@ -147,16 +164,17 @@ assert.equal(await page.locator('.game-card').count(), 1);
 await page.locator('[data-favourite="halo"]').click();
 assert(await page.locator('#empty-state').isVisible());
 await page.locator('#reset').click();
+const matches = (game, needle) => `${game.title} ${game.genre} ${game.description} ${(game.tags || []).join(' ')}`.toLowerCase().includes(needle.toLowerCase());
 await page.locator('#search').fill('quAke');
-assert.equal(await page.locator('.game-card').count(), 3, 'case-insensitive search');
+assert.equal(await page.locator('.game-card').count(), countFor(g => matches(g, 'quAke')), 'case-insensitive search');
 await page.locator('#search').fill('zzzz-not-a-game');
 assert(await page.locator('#empty-state').isVisible());
 await page.locator('#reset').click();
 await page.locator('[data-category="sports"]').click();
-assert.equal(await page.locator('.game-card').count(), 3);
-assert(!(await page.locator('[data-category="strategy"]').isVisible()));
+assert.equal(await page.locator('.game-card').count(), countFor(g => g.category === 'sports'), 'the sports filter shows exactly the catalogue sports titles');
+assert(await page.locator('[data-category="strategy"]').isVisible(), 'the strategy filter is now visible because the catalogue has strategy titles');
 await page.locator('[data-view="discover"]').click();
-pass('favourites add/remove/persist, favourites empty state, search and filters unchanged');
+pass('favourites add/remove/persist, favourites empty state, search and filters match the catalogue, strategy filter visible');
 
 await page.locator('[data-details="halo"]').first().click();
 assert(await page.locator('#details').isVisible());
@@ -168,11 +186,14 @@ assert(!(await page.locator('#details').isVisible()));
 pass('details dialog keeps its requirements and now offers an in-site action only');
 
 const launchLinks = await page.locator('.game-card a[data-play]').evaluateAll(els => els.map(a => ({ href: a.getAttribute('href'), target: a.getAttribute('target') })));
-assert(launchLinks.length >= 16, 'every card is a launch path');
+assert(launchLinks.length >= LISTINGS, 'every card is a launch path');
 assert(launchLinks.every(link => /^#play\/[a-z0-9_-]+$/.test(link.href) && link.target === null), 'every tile and title launches through #play/<id>');
+const launchIds = [...new Set(launchLinks.map(link => link.href.slice('#play/'.length)))];
+assert.equal(launchIds.length, LISTINGS, `all ${LISTINGS} catalogue launch links are internal`);
+assert.deepEqual(launchIds.sort(), CATALOGUE_IDS, 'the internal launch links cover exactly the catalogue');
 assert.equal(await page.locator('a[target]').count(), 0, 'no target attributes anywhere in the catalogue');
 assert.equal(await page.locator('a[href^="http"]').count(), 0, 'no external anchors in the catalogue');
-pass('tile and title launch paths are internal #play/<id> hashes, with no external anchors');
+pass(`all ${LISTINGS} catalogue launch links are internal #play/<id> hashes, with no external anchors`);
 
 /* ------------------------------------------------------- player: open state */
 await page.evaluate(() => { window.__GAMEFLEX_PLAYER_TIMEOUT_MS = 6000; });
@@ -653,6 +674,13 @@ pass('no popups, no dialogs and no console errors across the whole run');
 const report = {
   passed: true,
   base,
+  catalogue: {
+    listings: LISTINGS,
+    reviewed: countFor(g => !g.provider),
+    dos: DOS_LISTINGS.length,
+    sandboxPending: PENDING_LISTINGS.length,
+    source: 'dist/games.json (read locally)',
+  },
   fixtures: {
     mode: 'deterministic local fixture page for every non-loopback request',
     fixtureTitle: 'GAMEFLEX QA FIXTURE',
