@@ -1,0 +1,361 @@
+{
+  "generatedAt": "2026-10-10T10:16:37.745Z",
+  "updatedAt": "2026-10-10T10:26:04Z",
+  "scope": "Spotlight/featured hero media for the featured entries in dist/games.json. Files owned here: dist/assets/spotlight-v2/*, dist/spotlight-media.json, this receipt, plus optional contact artefacts. No change to catalogue, app.js, hero/discovery/CSS, Git, Trello or Sites.",
+  "method": "Official publisher / Steam store API media only (Steam store appdetails screenshots, Steam library_hero art, GOG store key art, EA publisher asset CDN). Each candidate is fetched from its publisher/store CDN, validated (HTTP status, JPEG magic bytes, SOF header dimensions, byte count, sha256) and then reduced to 96x54 RGB with ffmpeg for computational composition analysis. The background-position value is derived from that pixel data. Nothing is generated, upscaled or re-encoded from a lower-resolution source: every file is the publisher CDN bytes as-is.",
+  "reviewDriver": {
+    "note": "This revision applies a primary visual review that required corrections. Verdicts below are the primary agent's, quoted in substance; they are not this worker's own observations.",
+    "acceptedByReview": [
+      "halo.jpg — recognizable Combat Evolved remaster scene, remaster to be documented (already documented here)",
+      "dos-doom-dec-1993.jpg — native gameplay of the 1993 title",
+      "dos-fallout.jpg — authentic original-title GOG banner 1600x740",
+      "dos-theme-hospital.jpg — authentic original-title GOG banner 1600x740"
+    ],
+    "conditionallyAcceptedByReview": "quake3.jpg as a Quake Live visual for the Q3 entry only if clearly documented as the related edition; the review also directed that if the source is a differently named game, use exact Quake III Arena art instead (Steam app 2200 screenshot, 1280 acceptable, or the prior native-1920 Q3 art) rather than unrelated art.",
+    "rejectedByReview": [
+      "diablo.jpg — read as Diablo II: Resurrected, wrong title",
+      "dos-the-need-for-speed-sep-1995.jpg — explicit NFS Unbound LOCKDOWN art, wrong title",
+      "surf.jpg — empty town frame is not compelling surf/game art"
+    ],
+    "directedReplacements": [
+      "diablo → the exact original-title GOG banner the primary probed: https://images.gog-statics.com/2a351ec2315d2b082c120a1499434480758e56603d2cf21a93e544300c0f3829.jpg (native 1600x740)",
+      "surf → official Counter-Strike 1.6/Source character/action art (Steam app 10 or 240 library_hero), not an empty town",
+      "quake3 → exact Quake III Arena provenance (Steam app 2200) or the prior native-1920 Q3 art",
+      "dos-the-need-for-speed-sep-1995 → OMIT the entry if no authentic good large image exists, rather than substituting later-game art"
+    ]
+  },
+  "primaryReview": {
+    "performedBy": "primary agent — visual inspection of the final on-disk files",
+    "reviewedFiles": [
+      "halo.jpg",
+      "quake3.jpg",
+      "surf.jpg",
+      "diablo.jpg",
+      "dos-doom-dec-1993.jpg",
+      "dos-fallout.jpg",
+      "dos-theme-hospital.jpg",
+      "bo1 (unchanged, previously reviewed)"
+    ],
+    "acceptedIds": [
+      "halo",
+      "quake3",
+      "surf",
+      "diablo",
+      "dos-doom-dec-1993",
+      "dos-fallout",
+      "dos-theme-hospital",
+      "bo1"
+    ],
+    "manifestVerdict": "The 8-entry dist/spotlight-media.json manifest is accepted as-is.",
+    "rejectedEarlierSources": [
+      {
+        "id": "diablo",
+        "source": "Diablo II: Resurrected store screenshot",
+        "reason": "wrong title"
+      },
+      {
+        "id": "dos-the-need-for-speed-sep-1995",
+        "source": "NFS Unbound LOCKDOWN art",
+        "reason": "wrong title"
+      },
+      {
+        "id": "surf",
+        "source": "Counter-Strike 2 empty-town screenshot",
+        "reason": "not compelling surf/game art"
+      },
+      {
+        "id": "quake3",
+        "source": "Quake Live (app 282440) screenshot",
+        "reason": "differently named successor build for the 1999 entry"
+      }
+    ],
+    "facts": [
+      "diablo.jpg — same-title original Diablo GOG key art; the Hellfire banner shown alongside it in the store listing is contextual key art for an expansion of the same title, not a wrong-title source.",
+      "halo.jpg — Halo: Combat Evolved Anniversary remaster representative scene, accepted as representative; it is not proof of browser/frame fidelity for the 2001 original or of how anything renders inside the player.",
+      "quake3.jpg and surf.jpg are the same bytes (identical sha256) as the existing exact-title publisher art already in dist/assets (refresh-quake3-hero.jpg, refresh-surf-hero.jpg) — they are not new imagery and are not counted as new.",
+      "The omissions (dos-prince-of-persia-1990, dos-civilization, dos-the-need-for-speed-sep-1995) stay catalogue-only; none is a hero/spotlight entry."
+    ],
+    "note": "This receipt implements the primary agent's visual verdict; the worker ran no vision capability."
+  },
+  "corrections": [
+    {
+      "id": "quake3",
+      "action": "replaced",
+      "was": "assets/spotlight-v2/quake3.jpg — Steam app 282440 (Quake Live) store screenshot, 1920x1080, sha256 e63714f5279a2962902c6da897bafe893bb3eb53587985def796f3866dff9b13",
+      "now": "assets/spotlight-v2/quake3.jpg — Steam app 2200 (Quake III Arena) library hero art, 1920x620, 124959 bytes, sha256 5adf605cab4d4957b5f2cc4bb585c3b06e7f379538367aa9d07a0c9c31b323c6",
+      "why": "Quake Live is a differently named successor build; the review requires exact same-title provenance. Steam app 2200 gives the exact 1999 title.",
+      "sourceUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2200/library_hero.jpg",
+      "sourcePage": "https://store.steampowered.com/app/2200/",
+      "sourceKind": "steam-library-hero",
+      "nativeWidth": 1920,
+      "nativeHeight": 620,
+      "searchNote": "The app 2200 store screenshots advertised as .1920x1080.jpg are in fact 640x480 — confirmed by parsing the JPEG SOF header of two of them (0000000284, 0000000286). 640 < the 1280 hard floor, so no native gameplay screenshot of Quake III Arena meeting the floor is available from that listing; the official 1920x620 library art was used instead.",
+      "provenanceNote": "Byte-identical (same sha256) to dist/assets/refresh-quake3-hero.jpg already in this tree — the same publisher file, independently re-fetched from the CDN in this pass."
+    },
+    {
+      "id": "surf",
+      "action": "replaced",
+      "was": "assets/spotlight-v2/surf.jpg — Steam app 730 (Counter-Strike 2) store screenshot, 1920x1080, sha256 a09a94fbc4509ec85f515f7cecd829ac3317a3b767a3f98ecb013763cc494e6d",
+      "now": "assets/spotlight-v2/surf.jpg — Steam app 10 (Counter-Strike 1.6) library hero art, 1920x620, 144822 bytes, sha256 7d156e76de884f264df68c911ab120c308f513ebac41222fbe916e8c5af5efdc",
+      "why": "Review rejected the CS2 empty-town frame and directed official Counter-Strike 1.6/Source library_hero art instead.",
+      "sourceUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/10/library_hero.jpg",
+      "sourcePage": "https://store.steampowered.com/app/10/",
+      "sourceKind": "steam-library-hero",
+      "nativeWidth": 1920,
+      "nativeHeight": 620,
+      "provenanceNote": "Byte-identical (same sha256) to dist/assets/refresh-surf-hero.jpg already in this tree. It is the Counter-Strike 1.6 store library image — title branding art, not a screenshot of a surf map; the surf mode itself is a community mode of that game.",
+      "editionNote": "Counter-Strike 1.6 (2003) store art for the Counter-Strike family the surf entry belongs to. This is not the surfd.net build and is not surf-map imagery."
+    },
+    {
+      "id": "diablo",
+      "action": "replaced",
+      "was": "assets/spotlight-v2/diablo.jpg — Steam app 2536520 (Diablo II: Resurrected – Infernal Edition) store screenshot, 1920x1080, sha256 ceb7f0048bebae5a634f435a38b1a10e50b8823441eb59b9bd7128f379ada649",
+      "now": "assets/spotlight-v2/diablo.jpg — GOG original-title key art, 1600x740, 224747 bytes, sha256 c89dbb9a71f7410ad90e26e84bd0eb1b811fc066da3639542bcd9e18b8e7ea19",
+      "why": "Review rejected the Resurrected (wrong-title) art and named the exact GOG original-title banner to use instead.",
+      "sourceUrl": "https://images.gog-statics.com/2a351ec2315d2b082c120a1499434480758e56603d2cf21a93e544300c0f3829.jpg",
+      "sourcePage": "https://www.gog.com/en/game/diablo",
+      "sourceKind": "gog-store-key-art",
+      "nativeWidth": 1600,
+      "nativeHeight": 740,
+      "editionNote": "Publisher key art served from the GOG store CDN for the original Diablo listing. 1600x740, below the 1920 target width (same class as the accepted Fallout and Theme Hospital banners)."
+    },
+    {
+      "id": "dos-the-need-for-speed-sep-1995",
+      "action": "deleted-and-entry-omitted",
+      "was": "assets/spotlight-v2/dos-the-need-for-speed-sep-1995.jpg — EA NFS franchise hero art from drop-assets.ea.com, 1920x1080, sha256 c3c98c662ee6f00b126cfc6be80a5d42fab3945f1a47c7ffaa228ea9ea84bc9b",
+      "now": "file deleted from dist/assets/spotlight-v2/ and the key dropped from dist/spotlight-media.json",
+      "why": "Review: explicit NFS Unbound LOCKDOWN art, wrong title; omit the entry rather than substitute later-game art. No authentic wide 1995-title source was located within this pass's budget, so the entry is omitted and the catalogue art (dist/assets/dos-the-need-for-speed-sep-1995.webp) is left untouched.",
+      "deletionScope": "Only these three exact files were removed/replaced: diablo.jpg (replaced at the same path), surf.jpg (replaced at the same path), dos-the-need-for-speed-sep-1995.jpg (deleted). No recursive deletes, no other file touched."
+    }
+  ],
+  "accepted": [
+    {
+      "id": "halo",
+      "status": "unchanged-accepted",
+      "asset": "assets/spotlight-v2/halo.jpg",
+      "src": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1064221/ss_5b9465f7aa2cb4de67f724ef2bff98407f545a7c.1920x1080.jpg?t=1634231276",
+      "sourcePage": "https://store.steampowered.com/app/1064221/",
+      "sourceKind": "steam-store-screenshot",
+      "app": "1064221 (Halo: Combat Evolved Anniversary — MCC add-on)",
+      "nativeWidth": 1920,
+      "nativeHeight": 1080,
+      "bytes": 600716,
+      "sha256": "0958298ef09ed5c5df6431639ec71622be9d580c566421816e6f52722ed94c3f",
+      "position": "65% 32%",
+      "editionNote": "Halo: Combat Evolved Anniversary (2011 remaster) store screenshot as published under Halo: The Master Chief Collection. Depicts the remastered Halo CE, not the 2001 Xbox original. Accepted by the primary review as a recognizable CE remaster scene, with the remaster documented."
+    },
+    {
+      "id": "quake3",
+      "status": "replaced-exact-title",
+      "asset": "assets/spotlight-v2/quake3.jpg",
+      "src": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2200/library_hero.jpg",
+      "sourcePage": "https://store.steampowered.com/app/2200/",
+      "sourceKind": "steam-library-hero",
+      "app": "2200 (Quake III Arena)",
+      "nativeWidth": 1920,
+      "nativeHeight": 620,
+      "bytes": 124959,
+      "sha256": "5adf605cab4d4957b5f2cc4bb585c3b06e7f379538367aa9d07a0c9c31b323c6",
+      "position": "center 40%",
+      "validation": "HTTP 200, JPEG magic bytes, SOF header dimensions 1920x620 parsed, bytes and sha256 recorded",
+      "editionNote": "Official Steam library art for the exact 1999 title (app 2200, Quake III Arena). No remaster, sequel or successor edition involved."
+    },
+    {
+      "id": "surf",
+      "status": "replaced-exact-family-title",
+      "asset": "assets/spotlight-v2/surf.jpg",
+      "src": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/10/library_hero.jpg",
+      "sourcePage": "https://store.steampowered.com/app/10/",
+      "sourceKind": "steam-library-hero",
+      "app": "10 (Counter-Strike 1.6)",
+      "nativeWidth": 1920,
+      "nativeHeight": 620,
+      "bytes": 144822,
+      "sha256": "7d156e76de884f264df68c911ab120c308f513ebac41222fbe916e8c5af5efdc",
+      "position": "65% 40%",
+      "validation": "HTTP 200, JPEG magic bytes, SOF header dimensions 1920x620 parsed, bytes and sha256 recorded",
+      "editionNote": "Official Steam library art for Counter-Strike 1.6. Title branding art, not a screenshot of a surf map; the review accepted app 10 or 240 library_hero as the source class."
+    },
+    {
+      "id": "diablo",
+      "status": "replaced-exact-title",
+      "asset": "assets/spotlight-v2/diablo.jpg",
+      "src": "https://images.gog-statics.com/2a351ec2315d2b082c120a1499434480758e56603d2cf21a93e544300c0f3829.jpg",
+      "sourcePage": "https://www.gog.com/en/game/diablo",
+      "sourceKind": "gog-store-key-art",
+      "app": null,
+      "nativeWidth": 1600,
+      "nativeHeight": 740,
+      "bytes": 224747,
+      "sha256": "c89dbb9a71f7410ad90e26e84bd0eb1b811fc066da3639542bcd9e18b8e7ea19",
+      "position": "center 38%",
+      "validation": "HTTP 200, JPEG magic bytes, SOF header dimensions 1600x740 parsed, bytes and sha256 recorded",
+      "editionNote": "GOG store key art for the original Diablo listing, not a remaster screenshot. 1600x740, below the 1920 target width."
+    },
+    {
+      "id": "dos-doom-dec-1993",
+      "status": "unchanged-accepted",
+      "asset": "assets/spotlight-v2/dos-doom-dec-1993.jpg",
+      "src": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2280/ss_e89a593007f181c3aa0209e3e4c2a63c9cbfc34a.1920x1080.jpg?t=1790284857",
+      "sourcePage": "https://store.steampowered.com/app/2280/",
+      "sourceKind": "steam-store-screenshot",
+      "app": "2280 (DOOM + DOOM II)",
+      "nativeWidth": 1920,
+      "nativeHeight": 1080,
+      "bytes": 698893,
+      "sha256": "ac55c1f06fa31371cfb84355e39991b7f9b31a0e978e8ae68c97e14160617679",
+      "position": "center 44%",
+      "editionNote": "DOOM (1993) gameplay screenshot as shipped in the 2024 Nightdive re-release (original 1993 game data, native 16:9 render). Accepted by the primary review as native gameplay of the 1993 title."
+    },
+    {
+      "id": "dos-fallout",
+      "status": "unchanged-accepted",
+      "asset": "assets/spotlight-v2/dos-fallout.jpg",
+      "src": "https://images.gog-statics.com/6fc6210c7392910ddf30d026b5216e67a7dcdb53e07dd9670d028aa4da1244d3.jpg",
+      "sourcePage": "https://www.gog.com/en/game/fallout",
+      "sourceKind": "gog-store-key-art",
+      "app": null,
+      "nativeWidth": 1600,
+      "nativeHeight": 740,
+      "bytes": 779904,
+      "sha256": "9f2c63144e1544a5073428cb61726e9d1123c54427c80121c7422c9afee90ca8",
+      "position": "center 36%",
+      "editionNote": "GOG.com official store key art for Fallout (1997, Interplay/Black Isle). Publisher key art, not a screenshot; 1600x740, below the 1920 target width. Accepted by the primary review as an authentic original-title GOG banner."
+    },
+    {
+      "id": "dos-theme-hospital",
+      "status": "unchanged-accepted",
+      "asset": "assets/spotlight-v2/dos-theme-hospital.jpg",
+      "src": "https://images.gog-statics.com/e179e3bc09e944c3d148c439b4d4af579ed24d4b3a7fbd16c1be108c8450a0af.jpg",
+      "sourcePage": "https://www.gog.com/en/game/theme_hospital",
+      "sourceKind": "gog-store-key-art",
+      "app": null,
+      "nativeWidth": 1600,
+      "nativeHeight": 740,
+      "bytes": 211097,
+      "sha256": "dc5fd72684186f5c294d51c4643f79294995887bd365a05cd1119c432b1683ad",
+      "position": "center 32%",
+      "editionNote": "GOG.com official store key art for Theme Hospital (1997, Bullfrog/EA). Accepted by the primary review as an authentic original-title GOG banner. Same artwork as the asset already in dist/assets; re-fetched at the same 1600x740 size, so it is not a fidelity upgrade."
+    },
+    {
+      "id": "bo1",
+      "status": "unchanged-existing",
+      "asset": "assets/refresh-bo1-hero.jpg",
+      "src": "https://cdn.cloudflare.steamstatic.com/steam/apps/42700/library_hero.jpg",
+      "sourcePage": "https://store.steampowered.com/app/42700/",
+      "sourceKind": "steam-library-hero",
+      "app": "42700 (Call of Duty: Black Ops)",
+      "nativeWidth": 1920,
+      "nativeHeight": 620,
+      "bytes": 258409,
+      "sha256": "3609a650f5bbe826a4e273c45952df5304a8a6082a83adbbd39b75362f8af6fe",
+      "position": "center 40%",
+      "editionNote": "Retained on user instruction. Steam library hero art for Call of Duty: Black Ops (the 2010 title the zombie maps come from)."
+    }
+  ],
+  "manifestSummary": {
+    "file": "dist/spotlight-media.json",
+    "shape": "object keyed by game id, each value {src, position, sourceUrl, width, height}",
+    "entryCount": 8,
+    "ids": [
+      "halo",
+      "quake3",
+      "surf",
+      "diablo",
+      "dos-doom-dec-1993",
+      "dos-fallout",
+      "dos-theme-hospital",
+      "bo1"
+    ],
+    "note": "All eight ids exist in dist/games.json with featured=true. Eight entries yield the five up-next previews the hero needs."
+  },
+  "validationFloors": {
+    "nativeWidthTarget": 1920,
+    "hardWidthFloor": 1280,
+    "note": "Three accepted entries are 1600x740 publisher key art (Diablo, Fallout, Theme Hospital) and three are 1920x620 library art (Quake III Arena, Counter-Strike 1.6, Black Ops) — all recorded rather than hidden."
+  },
+  "imageVision": "none for this worker — no vision capability was used here. This is distinct from the primary agent's visual inspection of the final files, which WAS performed and is recorded in primaryReview (halo.jpg, quake3.jpg, surf.jpg, diablo.jpg, dos-doom-dec-1993.jpg, dos-fallout.jpg, dos-theme-hospital.jpg, plus the unchanged, previously reviewed bo1). The earlier statement that the three replacement files had received no visual review is superseded by that inspection. Content descriptions still rest on the cited store listing/app id where the primary's reading adds nothing beyond it.",
+  "compositionMethod": "For each replacement, a 96x54 RGB sample (ffmpeg scale → rawvideo rgb24) gives mean absolute neighbour difference per horizontal third and mean luminance per half. The hero renders full-bleed with background-size:cover under a dark left-to-right gradient, so a centre-dominant source gets x=center and a right-heavy one x=65; y stays in the familiar 32-44% band. This is a pixel-statistic heuristic, not a visual judgement.",
+  "compositionEvidence": [
+    {
+      "id": "diablo",
+      "detailLeftCentreRight": [
+        11.51,
+        31.05,
+        12.38
+      ],
+      "lumLeftRight": [
+        18.8,
+        18
+      ],
+      "detailTopBottom": [
+        12.95,
+        12.62
+      ],
+      "derivedPosition": "center 38%"
+    },
+    {
+      "id": "quake3",
+      "detailLeftCentreRight": [
+        2.71,
+        28.77,
+        6.03
+      ],
+      "lumLeftRight": [
+        16.3,
+        18.8
+      ],
+      "detailTopBottom": [
+        8.62,
+        10.92
+      ],
+      "derivedPosition": "center 40%"
+    },
+    {
+      "id": "surf",
+      "detailLeftCentreRight": [
+        2.46,
+        19.14,
+        13.56
+      ],
+      "lumLeftRight": [
+        197.2,
+        53.2
+      ],
+      "detailTopBottom": [
+        11.07,
+        9.46
+      ],
+      "derivedPosition": "65% 40%"
+    }
+  ],
+  "notReplacedOrOmitted": [
+    {
+      "id": "dos-the-need-for-speed-sep-1995",
+      "outcome": "Omitted from dist/spotlight-media.json; the rejected file was deleted. No authentic wide source of the 1995 title was located in this pass, and the review directs omission over substituting later-game art.",
+      "catalogueImpact": "none — the catalogue entry and its existing .webp art are untouched."
+    },
+    {
+      "id": "dos-prince-of-persia-1990",
+      "outcome": "No genuine wide (>=1280) source of the 1990 game found in the prior pass; no file written. Per the review, the entry is omitted rather than filled with later-game art. The entry keeps its existing 1200x630 dos.zone asset.",
+      "limit": "Fidelity limit stated rather than filled."
+    },
+    {
+      "id": "dos-civilization",
+      "outcome": "No genuine wide (>=1280) source of Sid Meier's Civilization (1991) found; no file written. Entry omitted from the media map rather than filled with a different Civ title.",
+      "limit": "Fidelity limit stated rather than filled."
+    }
+  ],
+  "priorPassAvoided": [
+    "The wrong-edition art the review rejected (Diablo II: Resurrected, NFS Unbound LOCKDOWN franchise art, CS2 empty town, Quake Live for the 1999 entry) is not present in the manifest; the rejected files are replaced or deleted.",
+    "No later-game or remaster art is used as a stand-in for a same-title entry: every entry above cites a listing for its own title or its own title family."
+  ],
+  "caveats": [
+    "Byte-level validation proves each file is a real JPEG of the recorded dimensions whose bytes hash as recorded. It does NOT by itself prove what the frame depicts; that reading comes from the primary agent's visual inspection recorded in primaryReview, not from this worker.",
+    "The primary agent's visual inspection of the final manifest files is recorded in primaryReview: all eight ids accepted.",
+    "surf.jpg and quake3.jpg are byte-identical to assets already in dist/assets (refresh-surf-hero.jpg, refresh-quake3-hero.jpg) — re-fetched independently from the publisher CDN, not re-encoded.",
+    "No right to host, mirror, stream, frame or monetise any destination or asset is claimed or implied by this receipt. These are publisher/store marketing images pulled for internal review; publishing them is a separate licensing decision for the primary agent and the user.",
+    "This receipt makes no claim about browser runtime fidelity: these images are static hero art and say nothing about how any destination renders inside the Gameflex player.",
+    "No change was made to dist/games.json, app.js, index.html, CSS, the player, Git, Sites or Trello. Only the assigned files were written."
+  ]
+}

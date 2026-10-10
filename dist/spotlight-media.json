@@ -1,0 +1,58 @@
+{
+  "halo": {
+    "src": "assets/spotlight-v2/halo.jpg",
+    "position": "65% 32%",
+    "sourceUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1064221/ss_5b9465f7aa2cb4de67f724ef2bff98407f545a7c.1920x1080.jpg?t=1634231276",
+    "width": 1920,
+    "height": 1080
+  },
+  "quake3": {
+    "src": "assets/spotlight-v2/quake3.jpg",
+    "position": "center 40%",
+    "sourceUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2200/library_hero.jpg",
+    "width": 1920,
+    "height": 620
+  },
+  "surf": {
+    "src": "assets/spotlight-v2/surf.jpg",
+    "position": "65% 40%",
+    "sourceUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/10/library_hero.jpg",
+    "width": 1920,
+    "height": 620
+  },
+  "diablo": {
+    "src": "assets/spotlight-v2/diablo.jpg",
+    "position": "center 38%",
+    "sourceUrl": "https://images.gog-statics.com/2a351ec2315d2b082c120a1499434480758e56603d2cf21a93e544300c0f3829.jpg",
+    "width": 1600,
+    "height": 740
+  },
+  "dos-doom-dec-1993": {
+    "src": "assets/spotlight-v2/dos-doom-dec-1993.jpg",
+    "position": "center 44%",
+    "sourceUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2280/ss_e89a593007f181c3aa0209e3e4c2a63c9cbfc34a.1920x1080.jpg?t=1790284857",
+    "width": 1920,
+    "height": 1080
+  },
+  "dos-fallout": {
+    "src": "assets/spotlight-v2/dos-fallout.jpg",
+    "position": "center 36%",
+    "sourceUrl": "https://images.gog-statics.com/6fc6210c7392910ddf30d026b5216e67a7dcdb53e07dd9670d028aa4da1244d3.jpg",
+    "width": 1600,
+    "height": 740
+  },
+  "dos-theme-hospital": {
+    "src": "assets/spotlight-v2/dos-theme-hospital.jpg",
+    "position": "center 32%",
+    "sourceUrl": "https://images.gog-statics.com/e179e3bc09e944c3d148c439b4d4af579ed24d4b3a7fbd16c1be108c8450a0af.jpg",
+    "width": 1600,
+    "height": 740
+  },
+  "bo1": {
+    "src": "assets/refresh-bo1-hero.jpg",
+    "position": "center 40%",
+    "sourceUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/42700/library_hero.jpg",
+    "width": 1920,
+    "height": 620
+  }
+}

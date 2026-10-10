@@ -36,10 +36,10 @@
 .hero-spotlight .hero-dots.is-static .hero-dot.active::after{animation:none;transform:scaleX(1)}
 @keyframes spot-pill-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 
-/* Up-next thumbnails. These replace the pills on the spotlight page: three small cover
+/* Up-next thumbnails. These replace the pills on the spotlight page: five small cover
    cuts of the games that follow the current slide. app.js still builds pills, so the block
    above stays as the fallback when spotlight.mjs cannot load (or hero.slides is absent). */
-.hero-spotlight .hero-thumb{position:relative;flex:0 0 auto;width:104px;height:58px;min-width:0;min-height:44px;padding:0;border:1px solid #ffffff2e;border-radius:9px;background:#0d110ccc;overflow:hidden;cursor:pointer;box-shadow:0 6px 18px #00000059;transition:border-color .2s,box-shadow .2s,transform .2s}
+.hero-spotlight .hero-thumb{position:relative;flex:0 0 auto;width:84px;height:48px;min-width:0;min-height:44px;padding:0;border:1px solid #ffffff2e;border-radius:8px;background:#0d110ccc;overflow:hidden;cursor:pointer;box-shadow:0 6px 18px #00000059;transition:border-color .2s,box-shadow .2s,transform .2s}
 .hero-spotlight .hero-thumb:hover{border-color:#c4fa5399;transform:translateY(-1px)}
 .hero-spotlight .hero-thumb:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 .hero-spotlight .hero-thumb[hidden]{display:none}
@@ -49,7 +49,7 @@
 /* Thin progress bar for the current slide. Shares --spot-autoplay with the timer and the
    same paused/static states spotlight.mjs paints on #hero-dots. */
 .hero-spotlight .hero-progress{width:332px;max-width:100%;display:flex;align-items:center;gap:9px;margin:0 0 2px}
-.hero-spotlight .hero-progress-label{flex:0 0 auto;font-size:9px;letter-spacing:1.7px;text-transform:uppercase;color:#9aa78c;white-space:nowrap}
+.hero-spotlight .hero-progress-label{flex:0 0 auto;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:#9aa78c;white-space:nowrap}
 .hero-spotlight .hero-progress-track{position:relative;flex:1 1 auto;height:2px;border-radius:999px;background:#ffffff26;overflow:hidden}
 .hero-spotlight .hero-progress-fill{position:absolute;inset:0;border-radius:999px;background:var(--lime);transform:scaleX(0);transform-origin:left center;animation:spot-progress var(--spot-autoplay) linear forwards}
 .hero-spotlight .hero-progress.is-paused .hero-progress-fill{animation-play-state:paused}
@@ -81,10 +81,10 @@
   .hero-spotlight .hero-actions{width:100%;gap:9px}
   .hero-spotlight .hero-actions .button{flex:1 1 auto;justify-content:center}
   .hero-spotlight .hero-slider-controls{gap:12px}
-  .hero-spotlight .hero-dots{width:100%;gap:5px;padding:6px 0}
+  .hero-spotlight .hero-dots{width:100%;gap:6px;padding:6px 0}
   .hero-spotlight .hero-dot{flex:1 1 0;width:auto;max-width:26px;min-width:8px}
   .hero-spotlight .hero-progress{width:100%}
-  .hero-spotlight .hero-thumb{flex:1 1 0;width:auto;max-width:none;height:auto;aspect-ratio:104/58;min-height:44px}
+  .hero-spotlight .hero-thumb{flex:1 1 0;width:auto;max-width:none;height:auto;aspect-ratio:84/48;min-height:44px}
   .hero-spotlight .hero-arrow{width:44px;height:44px;font-size:22px}
 }
 @media(prefers-reduced-motion:reduce){

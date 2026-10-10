@@ -12,6 +12,9 @@ let games = [], category = 'all', view = 'discover', search = '', toastTimer;
 let favourites = new Set();
 // Set on the spotlight page only, once its browse module has loaded.
 let discovery = null;
+// Set on the spotlight page only, from spotlight-media.json (artwork worker output). Keyed by
+// game id; an absent file or entry just means the catalogue's own hero art stands.
+let spotlightMedia = null;
 try { const stored = JSON.parse(localStorage.getItem('gameflex:favourites') || '[]'); if (Array.isArray(stored)) favourites = new Set(stored.filter(id => typeof id === 'string')); } catch { /* Browsing still works when storage is unavailable. */ }
 const sections = [
   { id:'top', title:'Straight to the good stuff', subtitle:'A few classics to get you started.', match:g => g.featured },
@@ -89,11 +92,76 @@ function stepShelf(row, direction) {
   shelfTargets.set(row, state);
   row.scrollTo({ left: target, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
 }
-// Hero carousel. Slides are the games the catalogue marks as spotlight or featured, in
-// catalogue order. Artwork prefers an optional heroArt (wide crop) and falls back to art.
+// Hero carousel. Slides are the games the catalogue marks as spotlight or featured.
+// Artwork prefers an optional heroArt (wide crop) and falls back to art. Only a string is
+// accepted, so a malformed catalogue field can never reach `art.replace` in paintHero and
+// blank the whole hero. An unusable value falls through to the next option, then to ''.
+// The homepage keeps the catalogue's deterministic order. The spotlight page reshuffles the
+// same set on every load (Fisher–Yates) and never opens on the game it opened on last
+// refresh, so a repeat visit shows a different game first.
 const hero = { slides: [], index: 0 };
 const heroPad = value => String(value).padStart(2, '0');
-const heroArtOf = game => game.heroArt || game.art || '';
+const heroArtOf = game => [game.heroArt, game.art].find(value => typeof value === 'string' && value !== '') || '';
+const HERO_OPENING_KEY = 'gameflex:spotlight-opening';
+// Fisher–Yates over a copy: the shared catalogue array handed to `games` is never reordered.
+function shuffleSlides(slides) {
+  const copy = slides.slice();
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const swap = copy[i]; copy[i] = copy[j]; copy[j] = swap;
+  }
+  let previous = '';
+  try { previous = sessionStorage.getItem(HERO_OPENING_KEY) || ''; } catch { /* sessionStorage may be blocked; the shuffle still runs. */ }
+  if (copy.length > 1 && previous && copy[0].id === previous) {
+    const target = 1 + Math.floor(Math.random() * (copy.length - 1));
+    const swap = copy[0]; copy[0] = copy[target]; copy[target] = swap;
+  }
+  try { sessionStorage.setItem(HERO_OPENING_KEY, copy[0]?.id || ''); } catch { /* ignore */ }
+  return copy;
+}
+// Spotlight page only. spotlight-media.json maps a game id to {src, position, sourceUrl,
+// width, height}. Each slide gets a shallow clone so overriding heroArt/heroPosition never
+// reaches the shared catalogue entry. The artwork worker writes this file, so it is treated as
+// untrusted: a missing file, a non-object or array root, a missing entry, and each malformed
+// field all fall back to the catalogue art instead of throwing and taking the catalogue down
+// with it. Only `src` paths under the local assets/ directory are honoured.
+const isLocalArtPath = value => typeof value === 'string'
+  && value.startsWith('assets/')
+  && !value.includes('..') && !value.includes('\\') && !value.includes('://');
+// Plain, non-array objects only: a number, string, null or array entry is malformed.
+const isMediaEntry = value => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+async function loadSpotlightMedia() {
+  if (!spotlightPage) return null;
+  try {
+    const response = await fetch('spotlight-media.json');
+    if (!response.ok) return null;
+    const data = await response.json();
+    return isMediaEntry(data) ? data : null;
+  } catch { return null; }
+}
+// The entry for one game, or null when the map or entry is malformed. Own properties only, so
+// inherited names ('constructor', '__proto__') cannot pose as game ids.
+function mediaEntryFor(id) {
+  if (!isMediaEntry(spotlightMedia)) return null;
+  if (!Object.prototype.hasOwnProperty.call(spotlightMedia, id)) return null;
+  const entry = spotlightMedia[id];
+  return isMediaEntry(entry) ? entry : null;
+}
+// Spotlight page only: the quality-curated hero pool. The artwork worker's media map is the
+// source of truth for which featured games carry authentic, high-quality local artwork, so a
+// featured game stays in the hero only when the map holds an entry whose `src` is a usable
+// local assets/ path. When the map is absent, malformed, or supplies fewer than six such
+// featured games, the hero drops back to the full catalogue featured list rather than run a
+// thin rotation. Range check only — the games themselves stay listed in the catalogue.
+const HERO_MIN_CURATED = 6;
+function curatedHeroPool(featured) {
+  const curated = featured.filter(game => {
+    const media = mediaEntryFor(game.id);
+    return Boolean(media) && isLocalArtPath(media.src);
+  });
+  return curated.length >= HERO_MIN_CURATED ? curated : featured;
+}
+
 // Listeners let spotlight.mjs restart its own 7-second countdown after a manual change,
 // without this file knowing anything about autoplay.
 const heroListeners = new Set();
@@ -108,6 +176,11 @@ function paintHero(announce = true) {
   const art = heroArtOf(game), image = $('#hero-image');
   image.style.backgroundImage = art ? `url("${art.replace(/["\\]/g, '\\$&')}")` : 'none';
   image.classList.toggle('hero-image-empty', !art);
+  // Per-game crop point from spotlight-media.json. Homepage slides never carry a position,
+  // and the branch is spotlight-only, so the baseline hero keeps its CSS background-position.
+  // The same branch stamps data-hero-game with the live game id, so QA can read the game the
+  // spotlight is actually showing (the homepage DOM is untouched).
+  if (spotlightPage) { image.style.backgroundPosition = game.heroPosition || ''; image.setAttribute('data-hero-game', game.id); }
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
     image.classList.remove('hero-fade');
     void image.offsetWidth;
@@ -147,7 +220,22 @@ function goHero(index, options = {}) {
   paintHero(options.announce !== false);
 }
 function buildHero() {
-  hero.slides = games.filter(g => g.spotlight || g.featured);
+  const featured = games.filter(g => g.spotlight || g.featured);
+  hero.slides = spotlightPage
+    // Spotlight page: narrow the featured slides to the artwork worker's quality-curated pool
+    // first, then shuffle the survivors, then clone each slide so per-game media can override
+    // the catalogue's heroArt and add a crop position without mutating the shared entries. A
+    // malformed entry (non-object, or an src/position of the wrong type) is ignored outright,
+    // leaving the slide as the catalogue served it.
+    ? shuffleSlides(curatedHeroPool(featured)).map(game => {
+        const media = mediaEntryFor(game.id);
+        if (!media) return game;
+        const clone = { ...game };
+        if (isLocalArtPath(media.src)) clone.heroArt = media.src;
+        if (typeof media.position === 'string') clone.heroPosition = media.position;
+        return clone;
+      })
+    : featured;
   hero.index = 0;
   const total = hero.slides.length;
   // The homepage keeps its numbered selectors; the spotlight page uses unnumbered
@@ -276,6 +364,10 @@ document.addEventListener('keydown', event => {
 window.addEventListener('resize',updateArrows);
 window.addEventListener('storage',event => { if (event.key !== 'gameflex:favourites') return; try { const values = JSON.parse(event.newValue || '[]'); favourites = new Set(Array.isArray(values) ? values.filter(id => typeof id === 'string') : []); render(); } catch { /* Ignore corrupted storage from other tabs. */ } });
 let catalogueLoaded = false;
+// Spotlight page only: the artwork worker's media map is fetched before the hero is built so
+// the shuffled slides carry the overridden art and crop from the very first paint. A missing
+// file resolves to null and the catalogue art stands.
+spotlightMedia = await loadSpotlightMedia();
 try {
   const response = await fetch('games.json'); if (!response.ok) throw new Error('catalogue unavailable'); games = await response.json();
   buildHero();
