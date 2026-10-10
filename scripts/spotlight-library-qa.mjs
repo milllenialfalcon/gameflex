@@ -9,7 +9,8 @@
  * static server over dist/.
  *
  * What it checks, all against the real DOM and real localStorage:
- *   - a fresh visitor has no recent shelf and no stored history;
+ *   - a fresh visitor sees a Continue playing preview shelf, clearly flagged Preview, and no
+ *     stored history is written;
  *   - opening the ready player (no frame yet) records nothing;
  *   - a sandbox-pending game reaching the blocked state records nothing;
  *   - pressing the player's own Start creates the sandboxed frame and records the allowed id;
@@ -110,6 +111,9 @@ try {
   const reload = async () => { await page.goto(PAGE_URL); await page.locator('#shelves .sd-card').first().waitFor(); await page.evaluate(() => document.fonts.ready); };
   const stored = () => page.evaluate(key => { try { return JSON.parse(localStorage.getItem(key) ?? 'null'); } catch { return 'unparsable'; } }, RECENT_KEY);
   const shelfIds = () => page.evaluate(() => [...document.querySelectorAll('[data-sd-shelf="recent"] .sd-card')].map(card => card.dataset.game));
+  // The fresh-browser placeholder lives in its own kind (`demo`); real launches use `recent`.
+  const demo = page.locator('[data-sd-shelf="demo"]');
+  const demoFlagged = async () => (await demo.count()) === 1 && /preview/i.test(await demo.innerText());
   const writeStored = value => page.evaluate(({ key, raw }) => localStorage.setItem(key, raw), { key: RECENT_KEY, raw: value });
   // Open the player for an id: search-filtered card → detail panel → Play/View action.
   // Waits for the stage to leave 'idle'; the caller then checks ready vs blocked.
@@ -125,11 +129,12 @@ try {
   const closePlayer = async () => { await page.locator('#player-close').click(); await page.locator('#player').waitFor({ state: 'hidden', timeout: 3000 }); await page.locator('#search').fill(''); await page.waitForTimeout(250); };
   const launch = async id => { await openReady(id); await page.locator('.player-panel [data-player-action="start"]').click(); await page.locator('iframe.player-frame').waitFor({ timeout: 3000 }); };
 
-  /* -------------------------------------------------- fresh visitor: no history */
+  /* -------------------------------------------------- fresh visitor: demo preview */
   await reload();
-  assert.equal(await page.locator('[data-sd-shelf="recent"]').count(), 0, 'a fresh visitor sees no Continue playing shelf');
-  assert.equal(await stored(), null, 'and no history is written by ordinary browsing');
-  pass('a fresh visitor has no recent shelf and no stored launch history');
+  assert.equal(await demo.count(), 1, 'a fresh visitor sees the Continue playing preview shelf');
+  assert(await demoFlagged(), 'the fresh shelf is clearly flagged as a preview');
+  assert.equal(await stored(), null, 'no history is written by ordinary browsing');
+  pass('a fresh visitor sees a Preview-flagged Continue playing shelf and no stored launch history');
 
   /* ----------------------------------- opening the ready player records nothing */
   await openReady(READY.id);
@@ -139,7 +144,8 @@ try {
   assert.equal(await page.locator('#player-start').isHidden(), true, 'the header Start/Restart control stays hidden before a frame loads');
   assert.equal(await stored(), null, 'opening the ready player alone records no launch');
   await closePlayer();
-  assert.equal(await page.locator('[data-sd-shelf="recent"]').count(), 0, 'closing the untouched ready player shows no recent shelf');
+  assert.equal(await stored(), null, 'closing the untouched ready player still records no launch');
+  assert(await demoFlagged(), 'closing the untouched ready player leaves the preview shelf in place');
   pass('opening the ready player (hash set, no frame, no Start) records nothing');
 
   /* ------------------------------------------ a blocked / pending game records nothing */
@@ -148,8 +154,8 @@ try {
   assert.equal(await page.locator('iframe.player-frame').count(), 0, 'the blocked path creates no frame');
   assert.equal(await stored(), null, 'a blocked launch records nothing');
   await closePlayer();
-  assert.equal(await page.locator('[data-sd-shelf="recent"]').count(), 0, 'a blocked launch adds no recent shelf');
-  pass('a sandbox-pending game in the blocked state records nothing and shows no shelf');
+  assert(await demoFlagged(), 'a blocked launch leaves the preview shelf in place');
+  pass('a sandbox-pending game in the blocked state records nothing and shows no real shelf');
 
   /* -------------------------------- pressing the player's own Start records the id */
   await launch(READY.id);
@@ -163,7 +169,8 @@ try {
   assert.equal(await page.locator('#player [class*="progress"]').count(), 0, 'the player has no progress widget');
   await closePlayer();
   await page.locator('[data-sd-shelf="recent"]').waitFor({ timeout: 3000 });
-  assert.deepEqual(await shelfIds(), [READY.id], 'after closing, Continue playing repaints with the launched game first');
+  assert.deepEqual(await shelfIds(), [READY.id], 'after a real launch, the real history overrides the preview shelf and shows the launched game');
+  assert.equal(await demo.count(), 0, 'the preview shelf is dropped once a real launch exists');
   await page.screenshot({ path: 'artifacts/qa/spotlight-library-recent.png', fullPage: false });
   pass('pressing the player Start creates the sandboxed frame, records the allowed id and repaints the shelf');
 
@@ -189,17 +196,18 @@ try {
   /* ------------------------------------- malformed and junk stored ids degrade quietly */
   await writeStored('not json{');
   await reload();
-  assert.equal(await page.locator('[data-sd-shelf="recent"]').count(), 0, 'malformed JSON degrades to no shelf instead of an error');
+  assert(await demoFlagged(), 'malformed JSON degrades to the preview shelf instead of an error');
   assert.equal(await page.locator('#shelves [data-sd-shelf="curated"]').count() > 0, true, 'the curated shelves still render');
   await writeStored(JSON.stringify(['ghost-game', 'halo', 'halo', '', 42, { x: 1 }, 'not a real id!']));
   await reload();
   assert.deepEqual(await shelfIds(), ['halo'], 'unknown, non-string, blank, malformed and duplicate ids are dropped, valid catalogue ids kept');
+  assert.equal(await demo.count(), 0, 'real history replaces the preview shelf');
   await writeStored('[]');
   await reload();
-  assert.equal(await page.locator('[data-sd-shelf="recent"]').count(), 0, 'an empty list hides the shelf again');
+  assert.equal(await demo.count(), 1, 'an empty list brings the preview shelf back');
   const shelvesText = await page.locator('#shelves').innerText();
   assert(!/\d+\s?%/.test(shelvesText), 'the shelves never print a fabricated progress percentage');
-  pass('malformed JSON and unknown/duplicate stored ids degrade to a missing or filtered shelf, no percentage shown');
+  pass('malformed JSON and unknown/duplicate stored ids degrade to the preview or filtered shelf, no percentage shown');
 
   /* ------------------------------------------------------------- no detours */
   assert.deepEqual(pops, [], `no launch path opened a new tab: ${pops.join(', ')}`);
