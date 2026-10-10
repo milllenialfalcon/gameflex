@@ -31,7 +31,22 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.resolve(HERE, '..', 'dist');
 const GAMES = JSON.parse(await readFile(path.join(DIST, 'games.json'), 'utf8'));
+// The homepage hero keeps every spotlight/featured game. The spotlight page narrows that set to
+// the artwork worker's quality-curated pool (dist/app.js curatedHeroPool): a featured game stays
+// only when spotlight-media.json holds an entry whose src is a usable local assets/ path, and the
+// pool falls back to the full featured list when fewer than six survive. This suite derives the
+// same pool rather than assuming catalogue order, and reads the shuffled order the UI rendered.
 const SLIDES = GAMES.filter(game => game.spotlight || game.featured);
+const SPOT_MEDIA = await readFile(path.join(DIST, 'spotlight-media.json'), 'utf8').then(text => JSON.parse(text)).catch(() => ({}));
+const isLocalArtPath = value => typeof value === 'string' && value.startsWith('assets/') && !value.includes('..') && !value.includes('\\') && !value.includes('://');
+const SPOT_POOL = (() => {
+  const curated = SLIDES.filter(game => {
+    const media = SPOT_MEDIA[game.id];
+    return Boolean(media) && typeof media === 'object' && !Array.isArray(media) && isLocalArtPath(media.src);
+  });
+  return curated.length >= 6 ? curated : SLIDES;
+})();
+const SPOT_TITLES = SPOT_POOL.map(game => game.title);
 const INTERVAL_MS = 7000;
 const OVERRUN_MS = 700;
 const CHECK_VIEWPORT = { width: 1440, height: 1000 };
@@ -79,7 +94,7 @@ const blockExternal = page => page.route(url => ['http:', 'https:'].includes(url
 const checks = [];
 const pass = label => { checks.push(label); console.log(`ok — ${label}`); };
 let browser = null;
-const results = { passed: false, heroSlides: SLIDES.length, autoplayIntervalMs: INTERVAL_MS, checks, timings: {}, externalRequests: external, errors: [] };
+const results = { passed: false, homepageSlides: SLIDES.length, spotlightSlides: SPOT_POOL.length, autoplayIntervalMs: INTERVAL_MS, checks, timings: {}, externalRequests: external, errors: [] };
 
 try {
   const { chromium } = await loadPlaywright();
@@ -107,10 +122,12 @@ try {
   const title = () => page.locator('#spotlight-name').textContent();
   const status = () => page.locator('#hero-status').textContent();
   const paused = () => page.locator('#hero-dots').evaluate(el => el.classList.contains('is-paused'));
-  const advance = async (from, timeout = INTERVAL_MS * 2) => {
-    const expected = SLIDES[(from + 1) % SLIDES.length].title;
+  // The spotlight order is shuffled per load, so "advance" waits for the hero to move to any
+  // other real slide rather than to a fixed index, and reports how long that took.
+  const TITLES_ALL = SPOT_TITLES;
+  const advance = async (fromTitle, timeout = INTERVAL_MS * 2) => {
     const started = Date.now();
-    await page.waitForFunction(wanted => document.getElementById('spotlight-name').textContent === wanted, expected, { timeout });
+    await page.waitForFunction(({ from, titles }) => { const shown = document.getElementById('spotlight-name').textContent; return shown !== from && titles.includes(shown); }, { from: fromTitle, titles: TITLES_ALL }, { timeout });
     return Date.now() - started;
   };
   // Any click leaves the pointer and focus inside the hero, and both of those pause the
@@ -195,16 +212,53 @@ try {
   await page.evaluate(() => document.fonts.ready);
   await page.mouse.move(2, 2);
 
+  // The spotlight pool is shuffled on every load, so the suite reads the order the UI actually
+  // rendered instead of assuming catalogue order: it snapshots the opener from the live hero
+  // (data-hero-game, stamped by dist/app.js paintHero), then walks one full cycle with Next and
+  // records each game and the media map's background + crop point on the way round.
+  const TOTAL = SPOT_POOL.length;
+  const TITLES = SPOT_TITLES;
+  const heroGameId = () => page.locator('#hero-image').getAttribute('data-hero-game');
+  const gameById = id => SPOT_POOL.find(game => game.id === id) || null;
+  const ORDER = [];
+  const openerId = await heroGameId();
+  assert(SPOT_POOL.some(game => game.id === openerId), `the spotlight opens on one of the ${TOTAL} quality-curated games (${openerId})`);
+  for (let step = 0; step < TOTAL; step += 1) {
+    const id = await heroGameId();
+    const game = gameById(id);
+    assert(game, `every spotlight slide maps to a curated game (${id})`);
+    assert.equal(await title(), game.title, `the h1 names the game the hero is showing (${game.title})`);
+    const media = SPOT_MEDIA[id];
+    const { image, position } = await page.locator('#hero-image').evaluate(el => ({ image: el.style.backgroundImage, position: el.style.backgroundPosition }));
+    assert(image.includes(media.src), `${id}: the hero paints the media map artwork (${image})`);
+    assert.equal(position, media.position, `${id}: the hero keeps the media map crop point`);
+    ORDER.push(id);
+    await page.locator('#hero-next').click();
+  }
+  assert.equal(await heroGameId(), openerId, 'one full cycle of Next returns to the opener');
+  assert.deepEqual([...new Set(ORDER)].sort(), SPOT_POOL.map(game => game.id).sort(), `the cycle visits all ${TOTAL} curated games exactly once`);
+  await releaseHero();
+  const thumbs = () => page.evaluate(() => [...document.querySelectorAll('#hero-dots .hero-thumb')].map(button => ({
+    index: Number(button.dataset.heroIndex),
+    title: button.getAttribute('title'),
+    label: button.getAttribute('aria-label'),
+    text: button.textContent.trim(),
+    current: button.classList.contains('active') || button.getAttribute('aria-current') !== null,
+    tabIndex: button.tabIndex,
+    art: button.querySelector('img.hero-thumb-art')?.getAttribute('src') || '',
+  })));
+
   assert.equal(await page.locator('html').getAttribute('class'), 'page-spotlight', 'the spotlight page marks itself with page-spotlight');
   assert.equal(await page.locator('h1').count(), 1, 'the spotlight page has exactly one h1');
   assert.equal(await page.locator('#spotlight-name').evaluate(el => el.tagName), 'H1', 'the current game title is the page heading, not a generic slogan');
   assert.equal(await page.locator('#hero-heading').count(), 0, 'no leftover marketing headline on the spotlight page');
-  assert.equal(await title(), SLIDES[0].title, 'the hero opens on the first spotlight game');
-  assert.equal(await page.locator('#spotlight-tag').textContent(), SLIDES[0].tag, 'the hero kicker is the current game tag');
-  const expectedMeta = [SLIDES[0].genre, SLIDES[0].availability === 'sandbox-pending' ? 'Sandbox pending' : (SLIDES[0].platform || 'Desktop')].filter(Boolean).join(' · ');
+  const opener = gameById(ORDER[0]);
+  assert(opener && TITLES.includes(opener.title), `the hero opens on one of the ${TOTAL} quality-curated spotlight games, not a fixed one (${opener?.title})`);
+  assert.equal(await page.locator('#spotlight-tag').textContent(), opener.tag, 'the hero kicker is the current game tag');
+  const expectedMeta = [opener.genre, opener.availability === 'sandbox-pending' ? 'Sandbox pending' : (opener.platform || 'Desktop')].filter(Boolean).join(' · ');
   assert.equal(await page.locator('#spotlight-genre').textContent(), expectedMeta, 'the meta line describes the current game');
-  assert.equal(await page.locator('#spotlight-description').textContent(), SLIDES[0].description, 'the description is the current game description');
-  assert.equal(await page.locator('#spotlight-requirements').textContent(), SLIDES[0].requirements, 'the requirements note is the current game requirements');
+  assert.equal(await page.locator('#spotlight-description').textContent(), opener.description, 'the description is the current game description');
+  assert.equal(await page.locator('#spotlight-requirements').textContent(), opener.requirements, 'the requirements note is the current game requirements');
 
   const copyBox = await page.locator('#spotlight-description').boundingBox();
   const titleBox = await page.locator('#spotlight-name').boundingBox();
@@ -215,17 +269,24 @@ try {
     assert(size >= minimum, `${selector} is readable (${size}px)`);
   }
   assert.equal(await page.locator('#hero-slide-req').count(), 0);
-  pass('spotlight hero is title-led: the current game title is the h1, meta/description/requirements are the current game, copy reads on the left and stays readable');
+  pass('spotlight hero is title-led on a shuffled opener: the h1, meta, description and requirements all describe whatever game is showing');
 
-  /* ---------------------------------------------------------- pills and controls */
+  /* ---------------------------------------------------------- up-next thumbnails */
   const pills = page.locator('[data-hero-index]');
-  assert.equal(await pills.count(), 3, 'three upcoming game thumbnails');
-  assert.deepEqual(await pills.evaluateAll(els => els.map(el => Number(el.dataset.heroIndex))), [1,2,3], 'the first strip previews the next three games');
+  assert.equal(await pills.count(), 5, 'five upcoming game thumbnails');
   await page.waitForFunction(() => [...document.querySelectorAll('.hero-thumb-art')].every(img => img.complete && img.naturalWidth > 0));
-  assert.equal(await pills.evaluateAll(els => els.every(el => el.textContent.trim() === '' && el.getAttribute('title'))), true, 'the pills are unnumbered and carry the game title as a tooltip');
+  const peek = await thumbs();
+  assert.equal(peek.length, 5, 'the strip holds five thumbnails');
+  assert.equal(peek.every(entry => entry.text === '' && entry.title && entry.art), true, 'the thumbnails are unnumbered and carry the game title as a tooltip');
+  assert.equal(new Set(peek.map(entry => entry.title)).size, 5, 'the five upcoming games are distinct');
+  assert.equal(peek.some(entry => entry.title === opener.title), false, 'the current game is never repeated in its own up-next strip');
+  assert.equal(peek.every(entry => TITLES.includes(entry.title)), true, 'every upcoming thumbnail names a real spotlight game');
+  assert.equal(peek.every(entry => entry.current === false && entry.tabIndex === 0), true, 'no upcoming thumbnail is marked current and all stay tabbable');
+  const currentIndex = ((peek[0].index - 1) + TOTAL) % TOTAL;
+  const expectedPeek = [1, 2, 3, 4, 5].map(step => (currentIndex + step) % TOTAL);
+  assert.deepEqual(peek.map(entry => entry.index), expectedPeek, 'the thumbnails preview current+1…current+5, wrapping once and never repeating');
   assert.equal(await page.locator('#hero-index-current').count(), 0, 'the spotlight hero drops the numeric index');
-  assert.equal(await page.locator('[data-hero-index].active').count(), 0, 'upcoming games are not marked current');
-  assert.equal(await page.locator('#hero-dots').evaluate(el => getComputedStyle(el).display), 'flex', 'the pills render as a row');
+  assert.equal(await page.locator('#hero-dots').evaluate(el => getComputedStyle(el).display), 'flex', 'the thumbnails render as a row');
   const declared = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--spot-autoplay').trim());
   assert.equal(declared, '7s', 'the stylesheet declares the 7 second interval');
   assert.equal(await page.locator('.hero-progress-fill').evaluate(el => getComputedStyle(el).animationDuration), '7s', 'the current slide progress matches the interval');
@@ -240,34 +301,39 @@ try {
   const arrows = await page.locator('#hero-prev, #hero-next, #hero-pause').evaluateAll(els => els.map(el => { const box = el.getBoundingClientRect(); return { x: box.x, y: box.y, size: box.width }; }));
   assert(arrows.every(box => box.size >= 32), 'every control keeps a usable hit area');
   assert(arrows.every(box => box.x + box.size > CHECK_VIEWPORT.width / 2 && box.y > CHECK_VIEWPORT.height / 2), 'prev, next and pause all sit bottom right');
-  pass('spotlight hero controls: three decoded upcoming thumbnails, 7s progress, prev/next/pause bottom right');
+  pass('spotlight hero shows five distinct decoded upcoming thumbnails previewing current+1…current+5, with 7s progress and bottom-right controls');
 
   /* ------------------------------------------------------ manual navigation first */
+  await page.evaluate(() => [...document.querySelectorAll('#hero-dots .hero-thumb')].forEach((button, slot) => { button.dataset.qaNode = `n${slot}`; }));
+  const nextUp = (await thumbs())[0];
   await page.locator('#hero-next').click();
-  assert.equal(await title(), SLIDES[1].title, 'Next shows the next spotlight game');
-  assert((await status()).includes(`Spotlight 2 of ${SLIDES.length}`), 'a manual change is still announced politely');
+  assert.equal(await title(), nextUp.title, `Next shows the game that was first up next (${nextUp.title})`);
+  assert((await status()).includes(`Spotlight ${currentIndex + 2} of ${TOTAL}`), 'a manual change is announced politely with the running order');
+  const nodeIds = await page.evaluate(() => [...document.querySelectorAll('#hero-dots .hero-thumb')].map(button => button.dataset.qaNode));
+  assert.deepEqual(nodeIds, ['n0', 'n1', 'n2', 'n3', 'n4'], 'the five thumbnail nodes are stable across a slide change, so focus and animation state survive');
   await page.locator('#hero-prev').click();
-  assert.equal(await title(), SLIDES[0].title, 'Previous returns to the first game');
-  await page.locator(`[data-hero-index="2"]`).click();
-  assert.equal(await title(), SLIDES[2].title, 'a preview thumbnail selects its game');
-  assert.deepEqual(await pills.evaluateAll(els => els.map(el => Number(el.dataset.heroIndex))), [3,4,5], 'the upcoming previews follow the selected game');
-  await page.locator('#hero-prev').click();
-  await page.locator('#hero-prev').click();
-  assert.equal(await title(), SLIDES[0].title);
+  assert.equal(await title(), opener.title, 'Previous returns to the game it came from');
+  const pick = (await thumbs())[2];
+  await page.locator(`[data-hero-index="${pick.index}"]`).click();
+  assert.equal(await title(), pick.title, 'a preview thumbnail selects the game it names');
+  assert.deepEqual((await thumbs()).map(entry => entry.index), [1, 2, 3, 4, 5].map(step => (pick.index + step) % TOTAL), 'the five upcoming previews follow the selected game');
   await releaseHero();
   assert.equal(await paused(), false, 'the slideshow resumes once the pointer and focus leave the hero');
-  pass('manual next/previous/preview thumbnails select games, update upcoming indexes and announce the change');
+  pass('manual next/previous/preview thumbnails select games, update the five upcoming indexes and announce the change');
 
   /* ----------------------------------------------------------- autoplay behaviour */
   await page.evaluate(() => document.activeElement?.blur());
+  const beforeAuto = await title();
+  const announcement = await status();
   const autoplayStart = Date.now();
-  const waited = await advance(0);
+  const waited = await advance(beforeAuto);
   results.timings.firstAdvanceMs = waited;
-  assert.equal(await title(), SLIDES[1].title, 'the hero advances on its own');
+  const afterAuto = await title();
+  assert(afterAuto !== beforeAuto && TITLES.includes(afterAuto), `the hero advances on its own to another spotlight game (${afterAuto})`);
   results.timings.autoplayMeasuredMs = Date.now() - autoplayStart;
   assert(waited >= INTERVAL_MS - 700 && waited <= INTERVAL_MS + 1700, `autoplay advances on a ~7s beat (measured ${waited}ms)`);
   assert.equal(await page.evaluate(() => document.activeElement === document.body || document.activeElement === null), true, 'autoplay moves no focus');
-  assert((await status()).includes(`Spotlight 1 of ${SLIDES.length}`), 'autoplay announces nothing: the last manual announcement is untouched');
+  assert.equal(await status(), announcement, 'autoplay announces nothing: the last manual announcement is untouched');
   assert.equal(await page.locator('#toast').evaluate(el => el.classList.contains('visible')), false, 'autoplay raises no toast');
   pass(`autoplay advances the hero on a measured ${waited}ms beat with no announcement and no focus change`);
 
@@ -278,7 +344,7 @@ try {
   assert.equal(await title(), afterAutoplay, 'nothing advances while the hero is hovered');
   await page.mouse.move(2, 2);
   assert.equal(await paused(), false, 'leaving the hero resumes the slideshow');
-  const resumeWait = await advance(SLIDES.indexOf(SLIDES.find(game => game.title === afterAutoplay)));
+  const resumeWait = await advance(afterAutoplay);
   results.timings.resumeAfterHoverMs = resumeWait;
   pass('hover pauses the spotlight slideshow and leaving resumes it');
 
@@ -320,7 +386,7 @@ try {
   await page.locator('#hero-pause').click();
   await releaseHero();
   assert.equal(await page.locator('#hero-pause').getAttribute('aria-pressed'), 'false', 'the pause button toggles back');
-  const manualResume = await advance(SLIDES.findIndex(game => game.title === beforeManual));
+  const manualResume = await advance(beforeManual);
   results.timings.resumeAfterManualPauseMs = manualResume;
   pass('the pause button stops the slideshow for good and starts it again on the second press');
 
@@ -407,18 +473,32 @@ try {
   await page.setViewportSize(CHECK_VIEWPORT);
   pass('spotlight hero is full-bleed on desktop and stacks legibly with no overflow on a 390px viewport');
 
+  /* -------------------------------------------- shuffle refresh opens on a new game */
+  const preRefreshOpener = await page.locator('#hero-image').getAttribute('data-hero-game');
+  await page.reload();
+  await page.locator('.game-card').first().waitFor();
+  await page.waitForFunction(() => document.querySelector('#hero-image')?.getAttribute('data-hero-game'));
+  await page.mouse.move(2, 2);
+  const postRefreshOpener = await page.locator('#hero-image').getAttribute('data-hero-game');
+  assert(SPOT_POOL.some(game => game.id === postRefreshOpener), `a refresh still opens on one of the ${TOTAL} curated games (${postRefreshOpener})`);
+  assert.notEqual(postRefreshOpener, preRefreshOpener, 'a refresh never reopens on the game it opened on last time');
+  pass('the spotlight reshuffles on every load and a refresh never reopens on the previous game');
+
   /* ------------------------------------------------- reduced motion (no autoplay) */
   const calmElapsed = Date.now() - calmStarted;
+  const calmOpenerId = await calmPage.locator('#hero-image').getAttribute('data-hero-game');
+  const calmOpener = SPOT_POOL.find(game => game.id === calmOpenerId);
   const calmTitle = await calmPage.locator('#spotlight-name').textContent();
-  assert.equal(calmTitle, SLIDES[0].title, `reduced motion never starts the slideshow (checked after ${Math.round(calmElapsed / 1000)}s)`);
+  assert(Boolean(calmOpener) && calmTitle === calmOpener.title, `reduced motion opens on a curated game and never starts the slideshow (checked after ${Math.round(calmElapsed / 1000)}s)`);
   assert((await calmPage.locator('#hero-dots').evaluate(el => el.classList.contains('is-paused'))) === true, 'reduced motion leaves the slideshow in the paused state');
   assert.equal(await calmPage.locator('.hero-progress-fill').evaluate(el => getComputedStyle(el).animationName), 'none', 'reduced motion removes the progress animation');
   assert.equal(await calmPage.locator('#hero-pause').isVisible(), true, 'the manual pause control stays available under reduced motion');
   assert(await calmElapsed > INTERVAL_MS + OVERRUN_MS, 'the reduced-motion window really did cover a full interval');
   results.timings.reducedMotionWindowMs = calmElapsed;
+  const calmUpNext = await calmPage.locator('#hero-dots .hero-thumb').first().getAttribute('title');
   await calmPage.locator('#hero-next').click();
-  assert.equal(await calmPage.locator('#spotlight-name').textContent(), SLIDES[1].title, 'manual controls still work under reduced motion');
-  pass(`reduced motion: no autoplay across a ${Math.round(calmElapsed / 1000)}s window, no progress animation, manual controls intact`);
+  assert.equal(await calmPage.locator('#spotlight-name').textContent(), calmUpNext, 'manual controls still work under reduced motion, moving to the game that was up next');
+  pass(`reduced motion: no autoplay across a ${Math.round(calmElapsed / 1000)}s window from its own shuffled opener, no progress animation, manual controls intact`);
 
   /* -------------------------------------------------------------------- sources */
   for (const file of ['dist/index.html', 'dist/spotlight.html', 'dist/app.js', 'dist/spotlight.mjs']) {
@@ -437,7 +517,7 @@ try {
   results.errors = errors;
   await writeFile('artifacts/qa/hero-comparison-report.json', JSON.stringify(results, null, 2) + '\n');
   console.log(`\n${checks.length} checks passed in ${Math.round((Date.now() - calmStarted) / 1000)}s`);
-  console.log(JSON.stringify({ passed: results.passed, heroSlides: results.heroSlides, timings: results.timings }, null, 2));
+  console.log(JSON.stringify({ passed: results.passed, homepageSlides: results.homepageSlides, spotlightSlides: results.spotlightSlides, timings: results.timings }, null, 2));
 } finally {
   await browser?.close();
   await server.stop();

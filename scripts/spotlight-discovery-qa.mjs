@@ -8,9 +8,13 @@
  * already running, otherwise by a private static server over dist/.
  *
  * What it checks (all against the real DOM, no source inspection):
- *   - default browse: all 54 catalogue games appear exactly once, ids unique, every shelf
- *     at most 8 cards, resting cards artwork-only with no caption/title/meta/tag/heart,
- *     shelf scrollbars hidden (scrollbar-width: none), first shelf images really decoded;
+ *   - default browse: a Continue playing shelf only once history exists, a ranked Top games of
+ *     exactly ten unique games (1..10, editorial subtitle), and curated rows holding all 54
+ *     catalogue ids uniquely at most 8 per row. Resting cards put the game name inside the
+ *     artwork with nothing underneath, every shelf carries a subtitle and a zero-padded count,
+ *     scrollbars stay hidden and the first rows decode real images;
+ *   - at 1440px exactly seven whole cards fit a row (the seventh ends inside the row, the eighth
+ *     does not) and the card width matches the computed (100% − 6·gap) ⁄ 7 formula;
  *   - the floating detail panel: opens on hover with title, description, availability and
  *     an action, survives a pointer move into the panel, stays inside the viewport for an
  *     edge card, opens on keyboard focus, closes on Escape (focus returns to the card) and
@@ -96,9 +100,11 @@ try {
   const { chromium } = await loadPlaywright();
   browser = await chromium.launch({ channel: 'msedge', headless: true });
   const page = await browser.newPage({ viewport: VIEWPORT });
-  const errors = [];
+  const errors = [], consoleErrors = [];
   page.on('pageerror', error => errors.push(error.message));
-  page.on('console', message => { if (message.type() === 'error') errors.push(`console: ${message.text()}`); });
+  // The optional media map (spotlight-media.json) is absent in this tree, so its fetch 404s;
+  // app.js already treats that as "no override". Other console errors are real failures.
+  page.on('console', message => { if (message.type() === 'error') consoleErrors.push({ text: message.text(), url: message.location()?.url || '' }); });
   page.on('popup', popup => pops.push(popup.url()));
   await blockExternal(page);
   const reload = async () => { await page.goto(PAGE_URL); await page.locator('#shelves .sd-card').first().waitFor(); await page.evaluate(() => document.fonts.ready); };
@@ -121,22 +127,46 @@ try {
 
   /* -------------------------------------------------------------- default browse */
   await reload();
-  const browse = await page.evaluate(() => ({
-    shelves: [...document.querySelectorAll('#shelves .sd-shelf')].map(shelf => ({ id: shelf.querySelector('.game-row')?.id || '', cards: shelf.querySelectorAll('.sd-card').length })),
-    ids: [...document.querySelectorAll('#shelves [data-game]')].map(card => card.dataset.game),
-    captions: [...document.querySelectorAll('#shelves .sd-card')].reduce((n, card) => n + card.querySelectorAll('.card-title-row, .card-meta, .card-tag, .heart, .info-button, .pending-label, figcaption').length, 0),
-    leftoverText: [...document.querySelectorAll('#shelves .sd-card')].filter(card => (card.querySelector('.sd-art')?.textContent || '').trim() !== '' && !card.querySelector('.sd-art .sd-badge')).length,
-    scrollbar: [...document.querySelectorAll('#shelves .sd-row')].map(row => getComputedStyle(row).scrollbarWidth),
-    rows: document.querySelectorAll('#shelves .game-row').length,
-  }));
+  const browse = await page.evaluate(() => {
+    const shelves = [...document.querySelectorAll('#shelves .sd-shelf')].map(shelf => ({
+      kind: shelf.dataset.sdShelf || '',
+      id: shelf.querySelector('.game-row')?.id || '',
+      cards: shelf.querySelectorAll('.sd-card').length,
+      count: shelf.querySelector('h3 small')?.textContent?.trim() || '',
+      subtitle: shelf.querySelector('.shelf-subtitle')?.textContent?.trim() || '',
+      ranks: [...shelf.querySelectorAll('.sd-rank')].map(node => node.textContent.trim()),
+    }));
+    return {
+      shelves,
+      curatedIds: [...document.querySelectorAll('[data-sd-shelf="curated"] [data-game]')].map(node => node.dataset.game),
+      topIds: [...document.querySelectorAll('[data-sd-shelf="top"] [data-game]')].map(node => node.dataset.game),
+      nameCount: document.querySelectorAll('#shelves .sd-card .sd-name').length,
+      namesInsideArt: [...document.querySelectorAll('#shelves .sd-card')].filter(card => card.querySelector('.sd-art')?.contains(card.querySelector('.sd-name'))).length,
+      underImage: [...document.querySelectorAll('#shelves .sd-card')].reduce((total, card) => total + [...card.children].filter(child => !child.classList.contains('sd-art') && !child.classList.contains('sd-rank')).length, 0),
+      captions: [...document.querySelectorAll('#shelves .sd-card')].reduce((total, card) => total + (card.querySelector('.sd-art') ? [...card.querySelectorAll('.card-title-row, .card-meta, .card-tag, .heart, .info-button, .pending-label, figcaption')].filter(node => !card.querySelector('.sd-art').contains(node)).length : 0), 0),
+      scrollbar: [...document.querySelectorAll('#shelves .sd-row')].map(row => getComputedStyle(row).scrollbarWidth),
+      rows: document.querySelectorAll('#shelves .game-row').length,
+    };
+  });
   results.shelves = browse.shelves.length;
-  assert.equal(browse.ids.length, GAMES.length, `every one of the ${GAMES.length} catalogue games is represented (found ${browse.ids.length} cards)`);
-  assert.equal(new Set(browse.ids).size, GAMES.length, 'every game id is unique across the shelves — no duplicate or missing game');
-  assert.equal(browse.captions, 0, 'resting cards carry no external caption, title, meta, tag chip or heart control');
-  assert.equal(browse.leftoverText, 0, 'resting cards print no text outside the artwork');
-  assert(browse.shelves.length >= 4 && browse.rows === browse.shelves.length, `the browse layer is split into curated rows (${browse.shelves.length} shelves), not one mega-row`);
-  assert(browse.shelves.every(shelf => shelf.cards >= 1 && shelf.cards <= 8), `every shelf holds at most 8 cards (largest ${Math.max(...browse.shelves.map(shelf => shelf.cards))})`);
+  const curatedShelves = browse.shelves.filter(shelf => shelf.kind === 'curated');
+  const topShelf = browse.shelves.find(shelf => shelf.kind === 'top');
+  assert.equal(browse.shelves.filter(shelf => shelf.kind === 'recent').length, 0, 'a fresh visitor (no launch history) sees no Continue playing shelf');
+  assert.equal(browse.curatedIds.length, GAMES.length, `every one of the ${GAMES.length} catalogue games sits in the curated rows (found ${browse.curatedIds.length})`);
+  assert.equal(new Set(browse.curatedIds).size, GAMES.length, 'every game id is unique across the curated rows — no duplicate or missing game');
+  assert(curatedShelves.length >= 4, `the browse layer is split into curated rows (${curatedShelves.length}), not one mega-row`);
+  assert(curatedShelves.every(shelf => shelf.cards >= 1 && shelf.cards <= 8), `every curated shelf holds at most 8 cards (largest ${Math.max(...curatedShelves.map(shelf => shelf.cards))})`);
+  assert(topShelf && topShelf.cards === 10, `Top games holds exactly ten games (found ${topShelf?.cards})`);
+  assert.equal(new Set(browse.topIds).size, 10, 'the ten Top games are distinct');
+  assert.deepEqual(topShelf.ranks, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], 'Top games are ranked 1..10 in order');
+  assert(/editorial/i.test(topShelf.subtitle) && !/play count|popular|most played/i.test(topShelf.subtitle), `the Top games subtitle is editorial and makes no popularity claim ("${topShelf.subtitle}")`);
+  assert(browse.shelves.every(shelf => shelf.subtitle.length > 10 && shelf.count === String(shelf.cards).padStart(2, '0')), 'every shelf carries a subtitle and a zero-padded count matching its cards');
+  assert.equal(browse.nameCount, browse.shelves.reduce((n, shelf) => n + shelf.cards, 0), 'every resting card has a name overlay');
+  assert.equal(browse.namesInsideArt, browse.nameCount, 'the game name sits inside the artwork, not under it');
+  assert.equal(browse.underImage, 0, 'nothing but the artwork (and the Top games rank numeral) sits inside a resting card');
+  assert.equal(browse.captions, 0, 'no title, meta, tag chip or heart control sits beneath a resting card');
   assert(browse.scrollbar.every(value => value === 'none'), 'every shelf row hides its scrollbar (scrollbar-width: none)');
+  assert.equal(browse.rows, browse.shelves.length, 'each shelf renders exactly one row (no nested scroller)');
   const decoded = await page.locator('#catalogue').scrollIntoViewIfNeeded().then(async () => {
     await page.evaluate(() => [...document.querySelectorAll('#shelves .sd-shelf')].slice(0, 2).forEach(shelf => shelf.querySelectorAll('img').forEach(image => image.loading = 'eager')));
     await page.waitForFunction(() => [...document.querySelectorAll('#shelves .sd-shelf')].slice(0, 2).every(shelf => [...shelf.querySelectorAll('img')].every(image => image.complete && image.naturalWidth > 0)), { timeout: 10000 });
@@ -146,8 +176,31 @@ try {
     });
   });
   assert(decoded.total >= 10 && decoded.decoded === decoded.total, `the visible shelves decode real artwork, not placeholders (${decoded.decoded}/${decoded.total} decoded)`);
+  await page.evaluate(() => scrollTo(0, 0));
   await page.screenshot({ path: 'artifacts/qa/spotlight-discovery-desktop.png', fullPage: true });
-  pass(`default browse: ${GAMES.length} games, unique ids, ${browse.shelves.length} shelves of at most 8 art-only cards, hidden scrollbars, first shelves decoding real images`);
+  await page.locator('[data-sd-shelf="top"]').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(150);
+  await page.locator('[data-sd-shelf="top"]').screenshot({ path: 'artifacts/qa/spotlight-library-top10.png' });
+  pass(`default browse: ${GAMES.length} curated games, unique ids, a ranked Top games of ten, ${curatedShelves.length} curated rows of at most 8, names inside the artwork, hidden scrollbars, decoded images`);
+
+  /* --------------------------------------- seven whole cards per row at 1440px */
+  const fit = await page.evaluate(() => {
+    const row = document.querySelector('[data-sd-shelf="top"] .sd-row');
+    const style = getComputedStyle(row);
+    const cards = [...row.querySelectorAll('.sd-card')];
+    const box = row.getBoundingClientRect();
+    const gap = parseFloat(style.columnGap) || 0;
+    const width = cards[0].getBoundingClientRect().width;
+    const inside = index => cards[index].getBoundingClientRect().right <= box.right + 1;
+    const content = row.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    return { gap, width, cards: cards.length, content, sevenInside: inside(6), eighthInside: inside(7), span: 7 * width + 6 * gap, formula: (content - 6 * gap) / 7 };
+  });
+  assert.equal(fit.sevenInside, true, `at 1440px the seventh card still ends inside its row (span ${Math.round(fit.span)}px of ${Math.round(fit.content)}px)`);
+  assert.equal(fit.eighthInside, false, 'the eighth card does not fit, so a row of eight keeps its last card one arrow-step away');
+  assert(Math.abs(fit.width - fit.formula) <= 1, `card width follows the computed (100% − 6·gap) ⁄ 7 formula (${fit.width.toFixed(1)}px vs ${fit.formula.toFixed(1)}px)`);
+  assert(Math.abs(fit.span - fit.content) <= 2, 'seven cards plus six gaps fill the row width exactly');
+  pass('at 1440px exactly seven whole cards fit a row and the eighth overflows, matching the computed width formula');
+
 
   /* ------------------------------------------------------- floating detail panel */
   const midCard = page.locator('#shelves .sd-card').nth(1);
@@ -161,9 +214,10 @@ try {
   await page.waitForTimeout(500);
   const afterMove = await panelInfo();
   assert(afterMove && afterMove.title === shown.title, 'moving the pointer from the card into the panel keeps it open — no flicker');
+  await page.screenshot({ path: 'artifacts/qa/spotlight-library-overlay.png' });
   pass('hovering a card opens a floating panel with title, description, status and an action, and it survives the pointer crossing into it');
 
-  const edgeCard = page.locator('#shelves .sd-shelf').first().locator('.sd-card').nth(7);
+  const edgeCard = page.locator('#shelves .sd-shelf').first().locator('.sd-card').nth(6);
   await page.mouse.move(2, 2); await page.waitForTimeout(300);
   await edgeCard.locator('.sd-art').hover();
   await panel().waitFor({ timeout: 2000 });
@@ -186,8 +240,8 @@ try {
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
-  const followingCard = page.locator('.sd-shelf').nth(1).locator('.sd-art').first();
-  assert(await followingCard.evaluate(el => el === document.activeElement), 'Tab leaves the last card panel for the next shelf instead of trapping focus');
+  const followingCard = page.locator('#shelves .sd-art').nth(7);
+  assert(await followingCard.evaluate(el => el === document.activeElement), 'Tab leaves the last card panel for the next card instead of trapping focus');
   await panel().waitFor();
   await page.keyboard.press('Escape');
 
@@ -311,10 +365,13 @@ try {
   assert.deepEqual(pops, [], `no launch path opened a new tab or window: ${pops.join(', ')}`);
   assert.equal(external.length, 0, `no external game host was contacted: ${external.join(', ')}`);
   assert.deepEqual(errors, [], errors.join('\n'));
+  const unexpected = consoleErrors.filter(entry => !/spotlight-media\.json/.test(entry.url));
+  assert.deepEqual(unexpected.map(entry => `${entry.url} ${entry.text}`), [], 'no console errors other than the optional media map');
   pass('no new tab, no window.open path, no iframe while browsing, no external request, no page errors');
 
   results.passed = true;
   results.errors = errors;
+  results.spotlightMediaMapAbsent = consoleErrors.some(entry => /spotlight-media\.json/.test(entry.url));
   await writeFile('artifacts/qa/spotlight-discovery-report.json', JSON.stringify({ ...results, previewServer: server.preview, base: server.base }, null, 2) + '\n');
   console.log(`\n${checks.length} checks passed${server.preview ? ' against the running preview' : ' against a private dist/ server'}`);
 } finally {
