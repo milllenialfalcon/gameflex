@@ -10,4 +10,6 @@ External game links open in a new tab with noopener noreferrer. Only publish des
 
 Hermes worker: profile gameflex, provider opencode-go, model deepseek-v4.1-flash. Always invoke with --in D:\AI\Gameflex. Workers must modify only assigned files; the primary agent handles Git commits, Sites publication and Trello updates.
 
+Delegation preference: always delegate simple, time-consuming Gameflex jobs to Hermes to conserve the user's ChatGPT usage. This includes bulk link/header checks, discovery, data cleanup and routine file work. The primary agent sets scope, reviews results and makes architecture/product decisions. Do not substitute a ChatGPT subagent for the requested Hermes worker.
+
 Research worker profile: gameflexresearch, same provider/model and project root. Discovered games belong in research/ only, never dist/games.json. Research evidence is not user approval. Candidates need separate assistant verification and explicit user verification before publication; do not infer either from HTTP status or discovery. Do not modify existing review decisions.
