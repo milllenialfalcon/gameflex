@@ -14,7 +14,7 @@
  *     `gameflex:recent` for it — and it is dropped the moment this browser has any real history, so
  *     genuine launches always supersede it. This shelf's row is sized so five wider cards fill the
  *     desktop viewport (see spotlight-discovery.css), which sets it apart from the six-card rows.
- *   - Top games → ten unique editorial picks with a large outlined 1..10 rank beside the artwork
+ *   - Top games → ten unique editorial picks with a code-native SVG rank numeral beside the artwork
  *     and, when the artwork worker supplied one, a real portrait (2:3) poster. Curated, not a
  *     play-count or popularity claim.
  *   - Curated shelves → short rows (at most MAX_ROW games) grouped by genre or intent. Every
@@ -22,11 +22,24 @@
  *   - Filtered / search / favourites → one responsive grid of every matching game.
  *
  * Resting cards are landscape artwork with the title in a plain line under the image (never
- * overlaying it). The ranked Top games row swaps in a portrait poster on the right of each card
- * with an oversized dark numeral tucked behind it on the left, and keeps the title under it too.
- * A game that cannot launch here carries one small status chip in the artwork's top-left corner.
- * Each shelf heading opens with an original stroke-only lime glyph (aria-hidden), and the shelf
- * subtitle aligns with the heading text rather than the glyph.
+ * overlaying it). Each Continue playing card's name line opens with the small lime play triangle;
+ * no shelf heading and no other card carries that mark. The ranked Top games row swaps in a
+ * portrait poster on the right of each card with the numerals 1..10 tucked behind the poster's left
+ * edge — that row carries no visible name
+ * line, because the rank and the poster are the whole card and the button's accessible label still
+ * names the game. A game that cannot launch here carries one small status chip in the artwork's
+ * top-left corner. Each shelf heading opens with an original stroke-only lime glyph (aria-hidden)
+ * that sits in its own gutter beside the heading block, vertically centred across the title and
+ * subtitle lines, and the shelf subtitle sits in the heading's text column.
+ *
+ * Continue playing (the fresh-browser preview or a real local history) is the one shelf whose cards
+ * link straight into the player: each card is a plain #play/<id> anchor with the shared data-play
+ * handler, so Enter or a tap opens the ready player and the existing Start gate stays in charge.
+ * Those cards never open the floating detail card (no panel on hover, focus or tap) and the row
+ * closes any panel that is already open. Two things under the artwork are honest about themselves:
+ * the demo preview paints fixed sample fractions ([35,62,18,48,76]) on a 3px rail labelled "Sample
+ * progress" and stores nothing, while a real history entry paints an empty rail labelled "Gameplay
+ * progress unavailable" — a cross-origin frame cannot report gameplay progress.
  *
  * Launch history (local only; no backend and no cross-origin save state):
  *   - Stored under `gameflex:recent`, at most 20 ids, newest first, deduplicated.
@@ -46,18 +59,41 @@
  * or on an explicit tap of the card's details affordance. The card holds a larger landscape
  * image, the title, genre, a brief description, an honest availability note, and Play Now/View
  * status, Favourite and Info controls that reuse the existing data-play / data-favourite /
- * data-details handlers in app.js. Escape or an outside click closes it. On touch the first tap
- * opens the card; only the card's own play control opens the existing player.
+ * data-details handlers in app.js. It is centred on the source card's thumbnail rectangle — not on
+ * the whole card — and clamped to the viewport and to 12px below the site header's bottom edge.
+ * Escape or an outside click closes it. Cards on the Continue playing shelf never open it: their
+ * first tap or Enter goes straight to the player's ready screen.
  */
 const MAX_ROW = 8;
 const TOP_LIMIT = 10;
 const RECENT_LIMIT = 20;
 const RECENT_KEY = 'gameflex:recent';
+// Fixed sample fractions for the preview shelf's progress rail: index-aligned with the preview
+// cards, deterministic, and never written anywhere. A real history entry never shows a fraction.
+const DEMO_PROGRESS = [35, 62, 18, 48, 76];
 const HOVER_DELAY = 200;
 const CLOSE_DELAY = 140;
 const BRIEF_LENGTH = 150;
 const ID_PATTERN = /^[a-z0-9-]{1,40}$/i;
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
+// The small lime play triangle that opens the name line of each Continue playing card — and only
+// those cards. No other shelf and no other card carries it.
+const PLAY_MARK = '<span class="sd-play-mark" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m8 5 11 7-11 7z"/></svg></span>';
+// Rank numerals 1..10 are SVG text, so their baseline is geometry rather than a font metric the
+// layout engine has to guess. The viewBox is the digits' real ink box in the shipped body font
+// (Space Grotesk, assets/body.ttf: 1000 units/em, cap height 700, round digits overshooting to 714
+// above the baseline and -14 below, wide ink ending at x=592, the narrowest digit advancing from
+// x=318), padded by 6 units so the 2px outline is never clipped by the glyph's own box. The text is
+// drawn at font-size 1000 with its baseline at y=700, so one viewBox unit is exactly one font unit
+// and the digit's real ink spans -14..714 inside the -20..720 box. The
+// numeral's box is stretched to the poster's height by the card grid, so mapping the ink box onto
+// it with preserveAspectRatio="none" lands the baseline a hair above the poster's bottom edge and
+// leaves nothing able to paint below the poster — no negative margin, no line-height guesswork.
+// Every digit is right-anchored in the box, so the narrow 1 sits as close to the poster as a wide
+// 0, and the pair in 10 is squeezed into one digit's width with textLength instead of a transform.
+const RANK_VIEWBOX = '14 -20 584 740';
+const RANK_TEXT_X = 598;
+const RANK_TEN_LENGTH = 576;
 // The shelf heading marks: thirteen original cyberpunk outline glyphs (broken hexes, brackets,
 // circuit crosshairs, triangular tech marks). Every one is stroke-only on a 24-viewBox — fill
 // none, stroke currentColor at 1.7px — and decorative, so it is aria-hidden and adds no text to
@@ -214,20 +250,23 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
     return glyphByRow.get(rowId);
   };
 
+  // Both Continue playing rows are direct-launch rows: their cards anchor straight to #play/<id>
+  // (the shared data-play handler) and never open the floating detail card. `rail` says which
+  // progress rail the artwork carries: `sample` for the preview, `unavailable` for real history.
   const recentRow = () => {
     const items = recent.map(id => byId.get(id)).filter(Boolean).slice(0, RECENT_LIMIT);
     if (!items.length) return null;
-    return { kind: 'recent', id: 'continue', title: 'Continue playing', subtitle: 'Reopen your recent launches.', games: items };
+    return { kind: 'recent', id: 'continue', title: 'Continue playing', subtitle: 'Reopen your recent launches.', games: items, direct: true, rail: 'unavailable' };
   };
   // Fresh browser, no real history yet: a fixed preview of launchable games. Computed here and
   // never written to storage, so it cannot masquerade as history — and it carries no badge, just
-  // the plain shelf copy below.
+  // the plain shelf copy below, which says out loud that the rail is sample progress.
   const demoRow = () => {
     const launchable = list.filter(isPlayable);
     const ordered = DEMO_ORDER.map(id => launchable.find(game => game.id === id)).filter(Boolean);
     const items = [...ordered, ...launchable.filter(game => !ordered.includes(game))].slice(0, DEMO_LIMIT);
     if (!items.length) return null;
-    return { kind: 'demo', id: 'continue-preview', title: 'Continue playing', subtitle: 'Start a game to begin your history.', games: items };
+    return { kind: 'demo', id: 'continue-preview', title: 'Continue playing', subtitle: 'Start a game to begin your history. Sample progress shown.', games: items, direct: true, rail: 'sample' };
   };
   // Real launches always win: the preview only appears while this browser has no history at all.
   const continueRow = () => recentRow() || demoRow();
@@ -247,34 +286,69 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
     return `<span class="${className} sd-fallback" style="--cover:${escape(game.color || '#37452b')}">${escape(game.symbol || '+')}</span>`;
   };
 
-  const cardMarkup = (game, rank = 0) => {
+  /** Rank 1..10 as SVG text in the numeral's own ink box (see RANK_VIEWBOX). The digit stays real
+   *  text inside the SVG, so the numeral is still readable as text and needs no path data. */
+  const rankMarkup = rank => {
+    const ten = rank === 10;
+    const text = ten
+      ? `<text x="${RANK_TEXT_X}" y="700" text-anchor="end" font-size="1000" textLength="${RANK_TEN_LENGTH}" lengthAdjust="spacingAndGlyphs">${rank}</text>`
+      : `<text x="${RANK_TEXT_X}" y="700" text-anchor="end" font-size="1000">${rank}</text>`;
+    return `<span class="sd-rank${ten ? ' sd-rank-ten' : ''}" aria-hidden="true"><svg viewBox="${RANK_VIEWBOX}" preserveAspectRatio="none" aria-hidden="true" focusable="false">${text}</svg></span>`;
+  };
+
+  /** The 3px progress rail under the preview artwork: an empty track with an optional lime fill. */
+  const railMarkup = (percent, label) =>
+    `<span class="sd-rail" role="img" aria-label="${escape(label)}"><span class="sd-rail-fill" style="width:${percent}%"></span></span>`;
+
+  function cardMarkup(game, options = {}) {
+    const { rank = 0, direct = false, progress = null, railLabel = '' } = options;
     const id = escape(game.id), title = escape(game.title);
     const status = isPlayable(game) ? '' : `<span class="sd-badge">${game.availability === 'sandbox-pending' ? 'Pending' : 'Unavailable'}</span>`;
-    const rankMark = rank ? `<span class="sd-rank${rank === 10 ? ' sd-rank-ten' : ''}" aria-hidden="true">${rank}</span>` : '';
+    const rail = railLabel ? railMarkup(progress ?? 0, railLabel) : '';
+    const rankMark = rank ? rankMarkup(rank) : '';
+    // A Continue playing card is a real link into the player: same #play/<id> hash and data-play
+    // hook the rest of the site uses, no aria-haspopup/expanded and no detail-card affordance.
+    if (direct) {
+      return `<article class="game-card sd-card" data-game="${id}" data-sd-direct="true">`
+        + `<a class="game-art sd-art" href="#play/${id}" data-play="${id}" aria-label="Play ${title} in the gameflex player">`
+        + artMarkup(game, 'sd-img') + status + rail
+        + `</a>`
+        + `<span class="sd-name">${PLAY_MARK}${title}</span>`
+        + `</article>`;
+    }
     const label = `${rank ? `Rank ${rank}, ` : ''}show details for ${title}, ${escape(game.genre)}`;
-    // The name sits below the artwork in plain text; the button carries the accessible label.
+    // The name sits below the artwork in plain text; the button carries the accessible label. The
+    // ranked row paints no name line at all — its rank and poster are the whole card, and the
+    // button label still names the game for assistive tech.
     return `<article class="game-card sd-card${rank ? ' sd-ranked' : ''}" data-game="${id}">`
       + rankMark
       + `<button class="game-art sd-art" type="button" data-sd-open="${id}" aria-haspopup="dialog" aria-expanded="false" aria-label="${label}">`
       + artMarkup(game, 'sd-img', Boolean(rank)) + status
       + `</button>`
-      + `<span class="sd-name">${title}</span>`
+      + (rank ? '' : `<span class="sd-name">${title}</span>`)
       + `</article>`;
-  };
+  }
 
   function shelfMarkup(row) {
     const heading = `sd-h-${row.id}`, label = escape(row.title);
     const count = String(row.games.length).padStart(2, '0');
-    // The mark and the title text sit in two fixed grid columns (see .sd-shelf .shelf-heading h3),
-    // so the shelf subtitle lines up with the text, not with the glyph. The text is wrapped in
-    // .sd-title-text so the QA hooks can read it directly.
+    // Heading block: the mark owns the gutter column and is centred across BOTH rows, so it lines
+    // up with the title-plus-subtitle block rather than the title line alone; the h3 takes the text
+    // column's first row and the subtitle its second, with no padding of its own. The title text
+    // stays in .sd-title-text with its count, which the QA hooks read directly.
+    const cards = row.games.map((game, index) => cardMarkup(game, {
+      rank: row.ranked ? index + 1 : 0,
+      direct: Boolean(row.direct),
+      progress: row.rail === 'sample' ? DEMO_PROGRESS[index] ?? 0 : 0,
+      railLabel: row.rail === 'sample' ? 'Sample progress' : row.rail === 'unavailable' ? 'Gameplay progress unavailable' : '',
+    })).join('');
     return `<section class="shelf sd-shelf" data-sd-shelf="${row.kind}" aria-labelledby="${heading}">`
-      + `<div class="shelf-heading"><div class="sd-shelf-title"><h3 id="${heading}">`
-      + `<span class="sd-glyph" aria-hidden="true">${glyphFor(row.id)}</span><span class="sd-title-text">${label} <small>${count}</small></span></h3>`
+      + `<div class="shelf-heading"><div class="sd-shelf-title"><span class="sd-glyph" aria-hidden="true">${glyphFor(row.id)}</span><h3 id="${heading}">`
+      + `<span class="sd-title-text">${label} <small>${count}</small></span></h3>`
       + (row.subtitle ? `<p class="shelf-subtitle">${escape(row.subtitle)}</p>` : '')
       + `</div><div class="shelf-controls"><button class="shelf-arrow" type="button" data-scroll="${row.id}" data-direction="-1" aria-label="Scroll ${label} left by one game">‹</button>`
       + `<button class="shelf-arrow" type="button" data-scroll="${row.id}" data-direction="1" aria-label="Scroll ${label} right by one game">›</button></div></div>`
-      + `<div class="game-row sd-row" id="row-${row.id}" tabindex="0" role="region" aria-labelledby="${heading}"${row.ranked ? ' data-portrait="true"' : ''}>${row.games.map((game, index) => cardMarkup(game, row.ranked ? index + 1 : 0)).join('')}</div>`
+      + `<div class="game-row sd-row" id="row-${row.id}" tabindex="0" role="region" aria-labelledby="${heading}"${row.ranked ? ' data-portrait="true"' : ''}>${cards}</div>`
       + '</section>';
   }
 
@@ -311,14 +385,31 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
       + '</div></div></div>';
   }
 
+  /** Cards on a direct-launch shelf (Continue playing) own no detail card. */
+  const isDirect = card => card instanceof Element && card.hasAttribute('data-sd-direct');
+
+  /**
+   * Places the panel centred on the source card's THUMBNAIL rectangle — the artwork the visitor is
+   * pointing at — not on the whole card, which would drag it down over the name line. It is clamped
+   * into the viewport with a 12px margin and kept 12px below the site header's bottom edge, so it
+   * never covers the navigation.
+   */
   function position(card) {
     if (!panel || !card) return;
-    const rect = card.getBoundingClientRect();
+    const thumb = card.querySelector('.sd-art') || card;
+    const rect = thumb.getBoundingClientRect();
     const width = panel.offsetWidth, height = panel.offsetHeight;
+    if (rect.right < 0 || rect.left > window.innerWidth || rect.bottom < 0 || rect.top > window.innerHeight) { closePanel(); return; }
     const maxLeft = Math.max(12, window.innerWidth - width - 12);
     const left = Math.max(12, Math.min(rect.left + rect.width / 2 - width / 2, maxLeft));
-    if (rect.right < 0 || rect.left > window.innerWidth || rect.bottom < 0 || rect.top > window.innerHeight) { closePanel(); return; }
-    const top = Math.max(12, Math.min(rect.top - 8, window.innerHeight - height - 12));
+    const header = document.querySelector('.site-header');
+    const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
+    const minTop = Math.max(12, headerBottom + 12);
+    const maxTop = Math.max(minTop, window.innerHeight - height - 12);
+    const centred = rect.top + rect.height / 2 - height / 2;
+    const top = Math.min(Math.max(centred, minTop), maxTop);
+    // Which side of the thumbnail the panel ended up on decides where the pointer bridge sits.
+    panel.dataset.flip = centred <= rect.top ? 'below' : 'above';
     panel.style.left = `${Math.round(left)}px`;
     panel.style.top = `${Math.round(top)}px`;
   }
@@ -333,7 +424,8 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
     panel.remove(); panel = null; activeCard = null;
     if (card) {
       const trigger = card.querySelector('.sd-art');
-      trigger?.setAttribute('aria-expanded', 'false');
+      // Continue playing cards are links into the player: they never carry aria-expanded.
+      if (trigger && !isDirect(card)) trigger.setAttribute('aria-expanded', 'false');
       if (restoreFocus || hadFocus) {
         suppressFocus = true;
         trigger?.focus({ preventScroll: true });
@@ -343,7 +435,7 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
   }
 
   function openPanel(card, { focusPanel = false } = {}) {
-    if (!card || !card.dataset.game) return;
+    if (!card || !card.dataset.game || isDirect(card)) return;
     const game = byId.get(card.dataset.game);
     if (!game) return;
     if (activeCard === card && panel) { position(card); return; }
@@ -360,6 +452,7 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
   }
 
   const armOpen = card => {
+    if (isDirect(card)) { armClose(); return; }
     if (activeCard === card && panel) { clearTimeout(closeTimer); return; }
     clearTimeout(openTimer); clearTimeout(closeTimer);
     openTimer = setTimeout(() => openPanel(card), HOVER_DELAY);
@@ -388,13 +481,20 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
   const onClick = event => {
     if (event.target.closest('#player') || event.target.closest('dialog')) return;
     const card = event.target.closest('.sd-card');
-    if (card) { openPanel(card); return; }
+    if (card) {
+      // A direct-launch card keeps the click: its own href/data-play handler opens the ready player.
+      // Only a stale panel from another card is cleared here.
+      if (isDirect(card)) { closePanel(); return; }
+      openPanel(card);
+      return;
+    }
     if (panel && !event.target.closest('.sd-panel')) closePanel();
   };
   const onFocusIn = event => {
     if (suppressFocus || touchFocus) return;
     const card = event.target.closest?.('.sd-card');
     if (!card) { if (panel && !panel.contains(event.target)) closePanel(); return; }
+    if (isDirect(card)) { if (panel && !panel.contains(event.target)) closePanel(); return; }
     clearTimeout(openTimer); clearTimeout(closeTimer);
     openPanel(card);
   };

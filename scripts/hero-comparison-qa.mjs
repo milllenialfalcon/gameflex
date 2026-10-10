@@ -28,8 +28,9 @@
  *   - the homepage document title is UNCHANGED ("gameflex — one more game.", read from
  *     dist/index.html at run time) and the spotlight page carries the new title "GameFlex -
  *     The Browser is your Console.";
- *   - ONLY the spotlight page carries the compact ~75px nav bar (the homepage keeps its
- *     original 94px header);
+ *   - ONLY the spotlight page carries the compact ~82.5px nav bar (the homepage keeps its
+ *     original 94px header); the active Discover underline is a 2px lime rule that rests at 24px
+ *     flush right under the label and grows to the full label width on hover or focus;
  *   - the shared header menu, account popover, Sports rename and in-site player are intact,
  *     with no new tab, no window.open and no external fallback.
  *
@@ -79,9 +80,9 @@ const HOME_SLIDE_COUNT = SLIDES.length;
 const INTERVAL_MS = 7000;
 const OVERRUN_MS = 700;
 const CHECK_VIEWPORT = { width: 1440, height: 1000 };
-const NAVBAR_HEIGHT = 75;
-const NAVBAR_TOLERANCE = 8;
-// The homepage keeps its original header: the compact 75px bar is a SPOTLIGHT-ONLY change.
+const NAVBAR_HEIGHT = 82.5;
+const NAVBAR_TOLERANCE = 5;
+// The homepage keeps its original header: the compact 82.5px bar is a SPOTLIGHT-ONLY change.
 const HOME_NAVBAR_HEIGHT = 94;
 const HOME_NAVBAR_TOLERANCE = 6;
 const BROWSER_TITLE = 'GameFlex - The Browser is your Console.';
@@ -224,58 +225,59 @@ try {
     } else {
       assert(Math.abs(navHeight - NAVBAR_HEIGHT) <= NAVBAR_TOLERANCE, `spotlight: the nav bar is the compact ~${NAVBAR_HEIGHT}px design (measured ${Math.round(navHeight)}px)`);
     }
-    // APPROVED: on the spotlight page BOTH the header and footer wordmark are the local SVG asset
-    // gameflex-curve.svg, and each anchor's accessible name is GAMEFLEX. Its textContent is empty
-    // now (the logo is an image with alt="GAMEFLEX"), so the old text assertion must read the
-    // accessible label, not textContent. The homepage keeps its original text wordmark, unchanged.
+    // APPROVED: the header and footer wordmarks are the straight text "GAMEFLEX" in the Pixel
+    // font plus the lime <span class="logo-pixel"> on BOTH pages — the earlier gameflex-curve.svg
+    // image is gone, so no <img> survives in either wordmark.
     const wordmarks = page.locator('.site-header .wordmark, footer .wordmark');
     assert.equal(await wordmarks.count(), 2, `${label}: a header and a footer wordmark are present`);
     for (const [slot, place] of [[0, 'header'], [1, 'footer']]) {
       const wm = wordmarks.nth(slot);
       const textContent = ((await wm.textContent()) || '').trim();
       const ariaLabel = ((await wm.getAttribute('aria-label')) || '').trim();
-      const img = wm.locator('img');
-      if (label === 'spotlight') {
-        const alt = ((await img.getAttribute('alt')) || '').trim();
-        const accessible = ariaLabel || alt;
-        assert(/GAMEFLEX/.test(accessible), `${label}: the spotlight ${place} wordmark's accessible name is GAMEFLEX ("${accessible}")`);
-        assert.equal(alt, 'GAMEFLEX', `${label}: the spotlight ${place} wordmark image alt is GAMEFLEX`);
-        assert.equal(await img.count(), 1, `${label}: the spotlight ${place} wordmark uses an image asset`);
-        const src = await img.getAttribute('src');
-        assert(/gameflex-curve\.svg$/.test(src || ''), `${label}: the spotlight ${place} wordmark paints the local gameflex-curve.svg asset (${src})`);
-        assert.equal(textContent, '', `${label}: the spotlight ${place} wordmark anchor carries no stray text — the logo is the image`);
-      } else {
-        // UNCHANGED: the homepage keeps the original text wordmark and no curve asset.
-        assert(/gameflex/i.test(textContent), `${label}: the homepage ${place} wordmark still shows its original text ("${textContent}")`);
-        assert.equal(await img.count(), 0, `${label}: the homepage ${place} wordmark is not replaced by an image`);
-      }
+      const style = await wm.evaluate(el => { const s = getComputedStyle(el); return { family: s.fontFamily, size: parseFloat(s.fontSize) }; });
+      assert(/GAMEFLEX/.test(textContent), `${label}: the ${place} wordmark is the straight text GAMEFLEX ("${textContent}")`);
+      assert(/Pixel/i.test(style.family), `${label}: the ${place} wordmark paints the Pixel font (${style.family})`);
+      assert.equal(await wm.locator('img').count(), 0, `${label}: the ${place} wordmark is text, not a curve image`);
+      assert.equal(await wm.locator('.logo-pixel').count(), 1, `${label}: the ${place} wordmark keeps its lime pixel dot`);
+      if (label === 'spotlight') assert(/^GAMEFLEX home/.test(ariaLabel), `${label}: the spotlight ${place} wordmark keeps its accessible name (${ariaLabel})`);
     }
-    // APPROVED: the active nav item keeps its underline, but the rule now sits INSIDE the button
-    // beneath the label — never a pill or a background enclosure. The header keeps its height.
+    // APPROVED: the active Discover rule is a 2px lime underline inside the button, right-aligned
+    // under the label — never a pill. On the spotlight page it rests at 24px and grows to the full
+    // label width on hover or keyboard focus, over a 0.22s width transition. The homepage keeps its
+    // own underline. Read the ::after box at rest, on hover and on focus.
     const activeNav = page.locator('.site-header nav .nav-link.active');
     assert.equal(await activeNav.count(), 1, `${label}: exactly one nav item is active`);
-    const nav = await activeNav.evaluate(el => {
-      const box = el.getBoundingClientRect();
-      const after = getComputedStyle(el, '::after');
+    const navAfter = () => activeNav.evaluate(el => {
+      const s = getComputedStyle(el, '::after');
       return {
-        width: box.width,
-        content: after.content,
-        afterHeight: parseFloat(after.height) || 0,
-        afterWidth: parseFloat(after.width) || 0,
-        afterBg: after.backgroundColor,
-        afterBottom: after.bottom,
+        content: s.content, width: parseFloat(s.width) || 0, height: parseFloat(s.height) || 0,
+        right: s.right, bottom: parseFloat(s.bottom), bg: s.backgroundColor,
+        transition: s.transitionDuration, labelWidth: el.getBoundingClientRect().width,
         background: getComputedStyle(el).backgroundColor,
       };
     });
-    assert(nav.content && nav.content !== 'none', `${label}: the active nav item keeps an ::after underline`);
+    const navRest = await navAfter();
+    assert(navRest.content && navRest.content !== 'none', `${label}: the active nav item keeps an ::after underline`);
     if (label === 'spotlight') {
-      // The inside-the-button rule is the approved Spotlight change; the homepage keeps its own.
-      assert(nav.afterHeight > 0 && nav.afterHeight <= 6, `${label}: the underline is a thin rule (${nav.afterHeight}px)`);
-      assert(nav.afterBg && !/rgba?\(0, 0, 0, 0\)/.test(nav.afterBg), `${label}: the underline is painted (${nav.afterBg})`);
-      const afterBottom = parseFloat(nav.afterBottom);
-      assert(Number.isFinite(afterBottom) && afterBottom >= 0, `${label}: the underline sits INSIDE the button, not below it (::after bottom ${nav.afterBottom})`);
-      assert(/rgba?\(0, 0, 0, 0\)|transparent/.test(nav.background), `${label}: the active nav item has no pill or background enclosure (${nav.background})`);
-      assert(nav.afterWidth <= nav.width + 1, `${label}: the underline stays within the button width`);
+      assert(Math.abs(navRest.width - 24) <= 1, `${label}: the underline rests at 24px (${navRest.width}px)`);
+      assert(navRest.height > 0 && navRest.height <= 3, `${label}: the underline is a thin 2px rule (${navRest.height}px)`);
+      assert(/196, ?250, ?83/.test(navRest.bg), `${label}: the underline is lime (${navRest.bg})`);
+      assert(parseFloat(navRest.right) === 0, `${label}: the underline is flush right under the label (::after right ${navRest.right})`);
+      assert(navRest.bottom >= 0, `${label}: the underline sits INSIDE the button, not below it (::after bottom ${navRest.bottom})`);
+      assert(/rgba?\(0, 0, 0, 0\)|transparent/.test(navRest.background), `${label}: the active nav item has no pill or background enclosure (${navRest.background})`);
+      assert(parseFloat(navRest.transition) > 0, `${label}: the underline width animates (transition ${navRest.transition})`);
+      await activeNav.hover();
+      await page.waitForFunction(() => { const el = document.querySelector('.site-header nav .nav-link.active'); return parseFloat(getComputedStyle(el, '::after').width) >= el.getBoundingClientRect().width - 1; });
+      const navHover = await navAfter();
+      assert(navHover.width >= navRest.labelWidth - 1, `${label}: the underline grows to the full label width on hover (${Math.round(navHover.width)}px vs label ${Math.round(navRest.labelWidth)}px)`);
+      assert(navHover.width > navRest.width + 4, `${label}: hover really widens the rule past its 24px rest (${Math.round(navRest.width)}px -> ${Math.round(navHover.width)}px)`);
+      await page.mouse.move(2, 2);
+      // A keyboard press first, so the scripted focus counts as :focus-visible.
+      await page.keyboard.press('Tab');
+      await activeNav.focus();
+      await page.waitForFunction(() => { const el = document.querySelector('.site-header nav .nav-link.active'); return parseFloat(getComputedStyle(el, '::after').width) >= el.getBoundingClientRect().width - 1; });
+      const navFocus = await navAfter();
+      assert(navFocus.width >= navRest.labelWidth - 1, `${label}: the underline reaches the full label width on keyboard focus (${Math.round(navFocus.width)}px)`);
     }
     const search = await page.locator('.search-box').boundingBox();
     const menu = await page.locator('#menu-button').boundingBox();
@@ -318,6 +320,21 @@ try {
     await page.locator('[data-category="all"]').click();
   }
   pass(`the spotlight page carries the new title "${BROWSER_TITLE}" and the compact ~${NAVBAR_HEIGHT}px nav bar, while the homepage keeps its original title "${HOME_TITLE_EXPECTED}" and ~${HOME_NAVBAR_HEIGHT}px header; menu sits immediately right of search on both and links both pages; account popover is coming-soon only; Sports filter renamed`);
+
+  /* ---------------------------------------- Discover underline at 390px (spotlight) */
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(SPOTLIGHT);
+  await page.locator('.game-card').first().waitFor();
+  const mobileNav = await page.locator('.site-header nav .nav-link.active').evaluate(el => {
+    const s = getComputedStyle(el, '::after');
+    return { width: parseFloat(s.width) || 0, height: parseFloat(s.height) || 0, right: s.right, labelWidth: el.getBoundingClientRect().width };
+  });
+  assert(Math.abs(mobileNav.width - 24) <= 1, `spotlight at 390px: the Discover underline still rests at 24px (${mobileNav.width}px)`);
+  assert(parseFloat(mobileNav.right) === 0, `spotlight at 390px: the underline stays flush right under the label (${mobileNav.right})`);
+  assert(mobileNav.height > 0 && mobileNav.height <= 3, `spotlight at 390px: the underline stays a thin 2px rule (${mobileNav.height}px)`);
+  assert(mobileNav.labelWidth <= 390, `spotlight at 390px: the Discover label fits the viewport (${Math.round(mobileNav.labelWidth)}px)`);
+  await page.setViewportSize(CHECK_VIEWPORT);
+  pass('the Discover underline rests at 24px, flush right and inside the label at both 1440px and 390px');
 
   /* ------------------------------------------------------------------ page ground colour */
   // APPROVED: the spotlight ground is the darker #0b0d0b, a shade below the homepage #101210.
