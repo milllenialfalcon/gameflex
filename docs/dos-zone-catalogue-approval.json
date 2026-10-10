@@ -87,6 +87,74 @@
     {
       "id": "dos-theme-hospital",
       "url": "https://dos.zone/theme-hospital/"
+    },
+    {
+      "id": "dos-warcraft-ii",
+      "url": "https://dos.zone/warcraft-ii-tides-of-darkness/"
+    },
+    {
+      "id": "dos-age-of-empires",
+      "url": "https://dos.zone/age-of-empires-1997/"
+    },
+    {
+      "id": "dos-master-of-orion-ii",
+      "url": "https://dos.zone/master-of-orion-ii-battle-at-antares-1996/"
+    },
+    {
+      "id": "dos-sim-city-2000",
+      "url": "https://dos.zone/sim-city-2000-1993/"
+    },
+    {
+      "id": "dos-prince-of-persia-2",
+      "url": "https://dos.zone/prince-of-persia-2-the-shadow-the-flame-1993/"
+    },
+    {
+      "id": "dos-tomb-raider",
+      "url": "https://dos.zone/tomb-raider/"
+    },
+    {
+      "id": "dos-resident-evil",
+      "url": "https://dos.zone/resident-evil/"
+    },
+    {
+      "id": "dos-dungeon-keeper",
+      "url": "https://dos.zone/dungeon-keeper/"
+    },
+    {
+      "id": "dos-secret-of-monkey-island",
+      "url": "https://dos.zone/the-secret-of-monkey-island/"
+    },
+    {
+      "id": "dos-beneath-a-steel-sky",
+      "url": "https://dos.zone/beneath-a-steel-sky-1994/"
+    },
+    {
+      "id": "dos-blood",
+      "url": "https://dos.zone/blood-may-31-1997/"
+    },
+    {
+      "id": "dos-heretic",
+      "url": "https://dos.zone/heretic-1994/"
+    },
+    {
+      "id": "dos-road-rash",
+      "url": "https://dos.zone/road-rash/"
+    },
+    {
+      "id": "dos-dark-forces",
+      "url": "https://dos.zone/dark-forces/"
+    },
+    {
+      "id": "dos-battle-chess",
+      "url": "https://dos.zone/battle-chess-jan-1989/"
+    },
+    {
+      "id": "dos-rayman",
+      "url": "https://dos.zone/rayman/"
+    },
+    {
+      "id": "dos-the-lost-vikings",
+      "url": "https://dos.zone/the-lost-vikings-1993/"
     }
   ],
   "excluded": [
@@ -117,6 +185,53 @@
       "url": "https://dos.zone/fallout-1991/",
       "title": "Fallout (1991)",
       "reason": "Date conflicts with the 1997 original and the listing duplicates the main Fallout page; excluded as an uncertain/duplicate entry."
+    }
+  ],
+  "approvalEvents": [
+    {
+      "date": "2026-10-10",
+      "answer": "Add disabled listings",
+      "scope": "catalogue-listing-only",
+      "instruction": "Human explicitly approved adding the exact 17 disabled DOS Zone listings to the catalogue. This overrides research-only publication for disabled catalogue listings only, not for playable reviews.",
+      "ids": [
+        "dos-warcraft-ii",
+        "dos-age-of-empires",
+        "dos-master-of-orion-ii",
+        "dos-sim-city-2000",
+        "dos-prince-of-persia-2",
+        "dos-tomb-raider",
+        "dos-resident-evil",
+        "dos-dungeon-keeper",
+        "dos-secret-of-monkey-island",
+        "dos-beneath-a-steel-sky",
+        "dos-blood",
+        "dos-heretic",
+        "dos-road-rash",
+        "dos-dark-forces",
+        "dos-battle-chess",
+        "dos-rayman",
+        "dos-the-lost-vikings"
+      ],
+      "urls": [
+        "https://dos.zone/warcraft-ii-tides-of-darkness/",
+        "https://dos.zone/age-of-empires-1997/",
+        "https://dos.zone/master-of-orion-ii-battle-at-antares-1996/",
+        "https://dos.zone/sim-city-2000-1993/",
+        "https://dos.zone/prince-of-persia-2-the-shadow-the-flame-1993/",
+        "https://dos.zone/tomb-raider/",
+        "https://dos.zone/resident-evil/",
+        "https://dos.zone/dungeon-keeper/",
+        "https://dos.zone/the-secret-of-monkey-island/",
+        "https://dos.zone/beneath-a-steel-sky-1994/",
+        "https://dos.zone/blood-may-31-1997/",
+        "https://dos.zone/heretic-1994/",
+        "https://dos.zone/road-rash/",
+        "https://dos.zone/dark-forces/",
+        "https://dos.zone/battle-chess-jan-1989/",
+        "https://dos.zone/rayman/",
+        "https://dos.zone/the-lost-vikings-1993/"
+      ],
+      "verificationLimit": "Approval covers disabled catalogue listings only. It is not a playable review and not a user gameplay verification. A playable release still requires separate assistant and explicit user verification."
     }
   ]
 }
