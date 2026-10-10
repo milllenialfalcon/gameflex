@@ -5,6 +5,9 @@ const icons = {
   heart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>',
 };
 const escape = (value) => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// spotlight.html shares this script and marks itself with page-spotlight on <html>. The
+// homepage keeps its current hero untouched: only that class unlocks the new-page pieces.
+const spotlightPage = document.documentElement.classList.contains('page-spotlight');
 let games = [], category = 'all', view = 'discover', search = '', toastTimer;
 let favourites = new Set();
 try { const stored = JSON.parse(localStorage.getItem('gameflex:favourites') || '[]'); if (Array.isArray(stored)) favourites = new Set(stored.filter(id => typeof id === 'string')); } catch { /* Browsing still works when storage is unavailable. */ }
@@ -86,11 +89,15 @@ function stepShelf(row, direction) {
 const hero = { slides: [], index: 0 };
 const heroPad = value => String(value).padStart(2, '0');
 const heroArtOf = game => game.heroArt || game.art || '';
+// Listeners let spotlight.mjs restart its own 7-second countdown after a manual change,
+// without this file knowing anything about autoplay.
+const heroListeners = new Set();
+const onHeroChange = listener => { heroListeners.add(listener); return () => heroListeners.delete(listener); };
 function heroAnnounce() {
-  const game = hero.slides[hero.index];
-  $('#hero-status').textContent = game ? `Spotlight ${hero.index + 1} of ${hero.slides.length}: ${game.title}` : '';
+  const game = hero.slides[hero.index], status = $('#hero-status');
+  if (status) status.textContent = game ? `Spotlight ${hero.index + 1} of ${hero.slides.length}: ${game.title}` : '';
 }
-function paintHero() {
+function paintHero(announce = true) {
   const game = hero.slides[hero.index];
   if (!game) return;
   const art = heroArtOf(game), image = $('#hero-image');
@@ -102,7 +109,9 @@ function paintHero() {
     image.classList.add('hero-fade');
   }
   $('#spotlight-name').textContent = game.title;
-  $('#spotlight-genre').textContent = [game.genre, game.availability === 'sandbox-pending' ? 'Sandbox pending' : (game.platform || 'Desktop')].filter(Boolean).join(' · ');
+  const tag = $('#spotlight-tag'); if (tag) tag.textContent = game.tag || 'IN THE SPOTLIGHT';
+  const genre = $('#spotlight-genre');
+  if (genre) genre.textContent = [game.genre, game.availability === 'sandbox-pending' ? 'Sandbox pending' : (game.platform || 'Desktop')].filter(Boolean).join(' · ');
   $('#spotlight-description').textContent = game.description || '';
   $('#spotlight-requirements').textContent = game.requirements || '';
   document.querySelectorAll('[data-hero-index]').forEach((dot, index) => {
@@ -111,8 +120,8 @@ function paintHero() {
     if (active) dot.setAttribute('aria-current', 'true'); else dot.removeAttribute('aria-current');
     dot.tabIndex = active ? 0 : -1;
   });
-  $('#hero-index-current').textContent = heroPad(hero.index + 1);
-  $('#hero-index-total').textContent = heroPad(hero.slides.length);
+  const indexCurrent = $('#hero-index-current'); if (indexCurrent) indexCurrent.textContent = heroPad(hero.index + 1);
+  const indexTotal = $('#hero-index-total'); if (indexTotal) indexTotal.textContent = heroPad(hero.slides.length);
   const single = hero.slides.length < 2;
   $('#hero-prev').disabled = single; $('#hero-next').disabled = single;
   $('#hero-play').disabled = false;
@@ -123,23 +132,41 @@ function paintHero() {
     const dots = activeDot.parentElement;
     dots.scrollLeft = Math.max(0, activeDot.offsetLeft - dots.offsetLeft - dots.clientWidth / 2 + activeDot.clientWidth / 2);
   }
-  heroAnnounce();
+  if (announce) heroAnnounce();
+  heroListeners.forEach(listener => listener(hero.index));
 }
-function goHero(index) {
+function goHero(index, options = {}) {
   const total = hero.slides.length;
   if (!total) return;
   hero.index = ((index % total) + total) % total;
-  paintHero();
+  paintHero(options.announce !== false);
 }
 function buildHero() {
   hero.slides = games.filter(g => g.spotlight || g.featured);
   hero.index = 0;
   const total = hero.slides.length;
-  $('#hero-dots').innerHTML = hero.slides.map((game, index) => `<button class="hero-dot" type="button" data-hero-index="${index}" aria-label="Show spotlight ${index + 1} of ${total}: ${escape(game.title)}">${heroPad(index + 1)}</button>`).join('');
+  // The homepage keeps its numbered selectors; the spotlight page uses unnumbered
+  // progress pills, so its digits are dropped and the title moves into a tooltip.
+  $('#hero-dots').innerHTML = hero.slides.map((game, index) => {
+    const label = spotlightPage ? '' : heroPad(index + 1);
+    const title = spotlightPage ? ` title="${escape(game.title)}"` : '';
+    return `<button class="hero-dot" type="button" data-hero-index="${index}" aria-label="Show spotlight ${index + 1} of ${total}: ${escape(game.title)}"${title}>${label}</button>`;
+  }).join('');
   $('#hero-slider').hidden = total === 0;
   if (!total) { $('#hero-play').disabled = true; heroAnnounce(); return; }
   paintHero();
 }
+// Handed to spotlight.mjs on the spotlight page only. Nothing imports this script on the
+// homepage, so index.html never loads the autoplay module.
+const heroApi = {
+  get index() { return hero.index; },
+  get total() { return hero.slides.length; },
+  get game() { return hero.slides[hero.index] || null; },
+  go: (index, options) => goHero(index, options),
+  next: options => goHero(hero.index + 1, options),
+  prev: options => goHero(hero.index - 1, options),
+  onChange: onHeroChange,
+};
 function details(id) {
   const game = games.find(g => g.id === id); if (!game) return;
   const host = new URL(game.url).hostname;
@@ -159,6 +186,41 @@ function syncNav() {
   document.querySelectorAll('[data-view]').forEach(button => { const active = button.dataset.view === view; button.classList.toggle('active',active); active ? button.setAttribute('aria-current','page') : button.removeAttribute('aria-current'); });
   document.querySelectorAll('[data-category]').forEach(button => { const active = button.dataset.category === category; button.classList.toggle('active',active); button.setAttribute('aria-pressed',String(active)); });
 }
+// Header chrome, shared by both pages: a pages menu right of search plus a placeholder
+// account popover. Both are disclosures — Escape, an outside click or focus leaving the
+// header closes them and returns focus to the trigger. There is no sign-in anywhere.
+const headerMenus = [
+  { name: 'pages', button: $('#menu-button'), panel: $('#site-menu') },
+  { name: 'account', button: $('#account-button'), panel: $('#account-popover') },
+].filter(entry => entry.button && entry.panel);
+function closeMenus(except = null) {
+  headerMenus.forEach(({ button, panel }) => {
+    if (panel === except) return;
+    panel.hidden = true;
+    button.setAttribute('aria-expanded', 'false');
+  });
+}
+function openMenu(entry) {
+  closeMenus(entry.panel);
+  entry.panel.hidden = false;
+  entry.button.setAttribute('aria-expanded', 'true');
+  entry.panel.querySelector('a, button')?.focus({ preventScroll: true });
+}
+const menuNamed = name => headerMenus.find(entry => entry.name === name);
+headerMenus.forEach(entry => entry.button.addEventListener('click', () => {
+  if (entry.panel.hidden) openMenu(entry); else closeMenus();
+}));
+$('#account-close')?.addEventListener('click', () => { closeMenus(); menuNamed('account')?.button.focus({ preventScroll: true }); });
+document.addEventListener('click', event => { if (!event.target.closest('.header-tools')) closeMenus(); });
+document.addEventListener('focusin', event => { if (!event.target.closest('.header-tools')) closeMenus(); });
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  const entry = headerMenus.find(item => !item.panel.hidden);
+  if (!entry) return;
+  event.preventDefault();
+  closeMenus();
+  entry.button.focus({ preventScroll: true });
+});
 document.addEventListener('click', event => {
   if (event.target.closest('#player')) return;
   const play = event.target.closest('[data-play]'); if (play) { event.preventDefault(); return openPlayer(play.dataset.play); }
@@ -223,3 +285,11 @@ await initPlayer({
   closeDialogs: () => document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close()),
 });
 if (catalogueLoaded) render();
+// Spotlight page only: the autoplay/pause controller for the new full-bleed hero. The
+// module owns its own timers, so index.html never starts a slideshow.
+if (spotlightPage && catalogueLoaded) {
+  try {
+    const { initSpotlightHero } = await import('./spotlight.mjs');
+    initSpotlightHero({ hero: heroApi, isBusy: () => isPlayerOpen() || Boolean(document.querySelector('dialog[open]')) });
+  } catch { /* The hero keeps its manual controls when the autoplay module cannot load. */ }
+}

@@ -10,7 +10,8 @@
     "research:list": "node scripts/research-db.mjs list",
     "test:research": "node scripts/research-db.test.mjs",
     "test:catalogue": "node scripts/catalogue-qa.mjs",
-    "test:catalogue-gate": "node scripts/catalogue-gate.test.mjs"
+    "test:catalogue-gate": "node scripts/catalogue-gate.test.mjs",
+    "test:hero": "node scripts/hero-comparison-qa.mjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

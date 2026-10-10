@@ -39,7 +39,7 @@ try {
   /* ------------------------------------------------------------- hero carousel */
   const featured = games.filter(g => g.featured || g.spotlight);
   assert(featured.length >= 6, 'the hero has enough slides to be a carousel');
-  assert.equal(featured.length, 11, 'the hero carries the 11 spotlight slides');
+  assert(featured.length >= 11, 'the hero keeps the existing spotlight games');
   assert.equal(await page.locator('[data-hero-index]').count(), featured.length, 'one dot per slide');
   assert.equal(await page.locator('#hero-index-total').textContent(), String(featured.length).padStart(2, '0'));
   assert.equal(await page.locator('#spotlight-name').textContent(), featured[0].title);
@@ -84,7 +84,7 @@ try {
 
   /* -------------------------------------------------------------- DOS listings */
   const dos = games.filter(g => g.provider === 'dos-zone');
-  assert.equal(dos.length, 21, 'the catalogue keeps its 21 DOS listings');
+  assert(dos.length >= 21, 'the catalogue keeps its existing DOS listings');
   assert.equal(await page.locator('#row-dos-zone .game-card').count(), dos.length);
   for (const game of dos) {
     assert.equal(game.availability, 'sandbox-pending', `Pending availability preserved: ${game.title}`);

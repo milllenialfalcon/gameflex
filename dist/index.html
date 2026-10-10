@@ -20,7 +20,26 @@
       <button class="nav-link active" data-view="discover" aria-current="page">Discover</button>
       <button class="nav-link" data-view="favourites">My favourites <span id="favourite-count">0</span></button>
     </nav>
-    <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Find your next game" aria-label="Search games" autocomplete="off"><kbd>/</kbd></label>
+    <div class="header-right">
+      <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Find your next game" aria-label="Search games" autocomplete="off"><kbd>/</kbd></label>
+      <div class="header-tools">
+        <div class="menu-anchor">
+          <button class="header-icon" id="menu-button" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Browse gameflex pages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          <nav class="popover" id="site-menu" aria-label="Gameflex pages" hidden>
+            <a href="index.html" aria-current="page">Original home<span>Homepage spotlight</span></a>
+            <a href="spotlight.html">Spotlight preview<span>Full-bleed hero</span></a>
+          </nav>
+        </div>
+        <div class="menu-anchor">
+          <button class="header-icon" id="account-button" type="button" aria-expanded="false" aria-controls="account-popover" aria-label="Account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.7"/><path d="M4.6 20a7.4 7.4 0 0 1 14.8 0"/></svg></button>
+          <div class="popover account-popover" id="account-popover" role="dialog" aria-modal="false" aria-labelledby="account-title" hidden>
+            <strong id="account-title">Accounts are coming soon</strong>
+            <p>Your favourites are saved in this browser.</p>
+            <button class="button lime" id="account-close" type="button">Got it</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </header>
   <main>
     <section class="hero" id="hero" aria-labelledby="hero-heading">
@@ -51,7 +70,7 @@
     </section>
     <section class="catalogue" id="catalogue" aria-labelledby="catalogue-heading">
       <div class="catalogue-intro"><div><span class="eyebrow muted">LESS SCROLLING. MORE PLAYING.</span><h2 id="catalogue-heading">Find your kind of fun<span class="lime-text">.</span></h2></div><span id="collection-count" class="collection-count"></span></div>
-      <div class="browse-tools"><div class="filters" role="group" aria-label="Filter by genre"><button class="filter active" data-category="all" aria-pressed="true">All games</button><button class="filter" data-category="shooters" aria-pressed="false">Shooters</button><button class="filter" data-category="zombies" aria-pressed="false">Zombies</button><button class="filter" data-category="sports" aria-pressed="false">Skate & sports</button><button class="filter" data-category="adventure" aria-pressed="false">Adventure</button><button class="filter" data-category="strategy" aria-pressed="false">Strategy</button><button class="filter" data-category="racing" aria-pressed="false">Racing</button><button class="filter" data-category="platformers" aria-pressed="false">Platformers</button><button class="filter" data-category="puzzle" aria-pressed="false">Puzzle</button><button class="filter" data-category="fighting" aria-pressed="false">Fighting</button><button class="filter" data-category="rpg" aria-pressed="false">RPG</button><button class="filter" data-category="simulation" aria-pressed="false">Simulation</button></div><button id="surprise" class="surprise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c5 0 7-12 12-12h3m-4-4 4 4-4 4"/></svg>Pick for me</button></div>
+      <div class="browse-tools"><div class="filters" role="group" aria-label="Filter by genre"><button class="filter active" data-category="all" aria-pressed="true">All games</button><button class="filter" data-category="shooters" aria-pressed="false">Shooters</button><button class="filter" data-category="zombies" aria-pressed="false">Zombies</button><button class="filter" data-category="sports" aria-pressed="false">Sports</button><button class="filter" data-category="adventure" aria-pressed="false">Adventure</button><button class="filter" data-category="strategy" aria-pressed="false">Strategy</button><button class="filter" data-category="racing" aria-pressed="false">Racing</button><button class="filter" data-category="platformers" aria-pressed="false">Platformers</button><button class="filter" data-category="puzzle" aria-pressed="false">Puzzle</button><button class="filter" data-category="fighting" aria-pressed="false">Fighting</button><button class="filter" data-category="rpg" aria-pressed="false">RPG</button><button class="filter" data-category="simulation" aria-pressed="false">Simulation</button></div><button id="surprise" class="surprise"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c5 0 7-12 12-12h3m-4-4 4 4-4 4"/></svg>Pick for me</button></div>
       <div id="results" aria-live="polite" class="sr-only"></div><div id="shelves"></div>
       <div id="empty-state" class="empty-state" hidden><span class="pixel-decoration" aria-hidden="true">+ +</span><h3 id="empty-heading">Nothing here. Yet.</h3><p id="empty-copy"></p><button class="button lime" id="reset">Explore all games</button></div>
       <aside class="small-print"><span class="pixel-decoration" aria-hidden="true">i</span><div><strong>Stay here. Keep playing.</strong><p>Choose a game to open the player. Some ports need your original game files; others may not run here yet. Check the notes before you start.</p></div><button id="about-button">How it works</button></aside>
