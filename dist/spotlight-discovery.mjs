@@ -6,18 +6,24 @@
  * existing behaviour untouched.
  *
  * Shelf shapes, in order:
- *   - Continue playing → up to 20 locally remembered launches, newest first, shown only once
- *     this browser has one. Recorded when an in-site launch really creates its frame (below),
- *     never from opening the ready player or from browsing.
- *   - Top games → ten unique editorial picks with a large outlined 1..10 rank beside/behind
- *     the artwork. Curated, not a play-count or popularity claim.
+ *   - Continue playing → up to 20 locally remembered launches, newest first, shown only once this
+ *     browser has one. Recorded when an in-site launch really creates its frame (below), never from
+ *     opening the ready player or from browsing. On a fresh browser, before there is any real
+ *     history, the same slot shows a fixed, visibly-labelled preview of a few launchable catalogue
+ *     games (kind `demo`, chip "Preview"). The preview is computed on the fly and never stored —
+ *     nothing is written to `gameflex:recent` for it — and it is dropped the moment this browser
+ *     has any real history, so genuine launches always supersede it.
+ *   - Top games → ten unique editorial picks with a large outlined 1..10 rank beside the artwork
+ *     and, when the artwork worker supplied one, a real portrait (2:3) poster. Curated, not a
+ *     play-count or popularity claim.
  *   - Curated shelves → short rows (at most MAX_ROW games) grouped by genre or intent. Every
  *     catalogue game appears at least once here; leftovers are chunked into "More classics".
  *   - Filtered / search / favourites → one responsive grid of every matching game.
  *
- * Resting cards keep the game name inside the artwork over the bottom gradient, clamped to two
- * lines: no title, meta, tag chip or heart control sits under the image. A game that cannot
- * launch here carries one small status chip in the artwork's top-left corner, clear of the name.
+ * Resting cards are landscape artwork with the title in a plain line under the image (never
+ * overlaying it). The ranked Top games row swaps in the portrait poster and keeps the title under
+ * it too. A game that cannot launch here carries one small status chip in the artwork's top-left
+ * corner. Each shelf heading opens with a small decorative lime mark (aria-hidden).
  *
  * Launch history (local only; no backend and no cross-origin save state):
  *   - Stored under `gameflex:recent`, at most 20 ids, newest first, deduplicated.
@@ -49,6 +55,13 @@ const CLOSE_DELAY = 140;
 const BRIEF_LENGTH = 150;
 const ID_PATTERN = /^[a-z0-9-]{1,40}$/i;
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
+// One small decorative mark for every shelf heading: a four-point lime sparkle. Decorative only,
+// so it is aria-hidden and contributes no text to the heading.
+const SHELF_GLYPH = '<svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M6 0l1.7 4.3L12 6l-4.3 1.7L6 12 4.3 7.7 0 6l4.3-1.7z"/></svg>';
+// The fresh-browser preview shelf: a few launchable catalogue games, in a fixed editorial order.
+// Nothing here is persisted and no play count, percentage or "last played" time is invented.
+const DEMO_ORDER = ['halo', 'bo1', 'quake3', 'diablo', 'vicecity', 'skate'];
+const DEMO_LIMIT = 6;
 
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ESCAPES[c]);
@@ -134,17 +147,18 @@ const brief = value => {
   return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), 60))}…`;
 };
 
-function artMarkup(game, className) {
-  const src = className === 'sd-img' ? game.art || game.heroArt : game.heroArt || game.art;
-  if (src) return `<img class="${className}" src="${escape(src)}" alt="" loading="lazy" decoding="async">`;
-  return `<span class="${className} sd-fallback" style="--cover:${escape(game.color || '#37452b')}">${escape(game.symbol || '+')}</span>`;
-}
-
-export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => false, syncHearts = () => {} } = {}) {
+export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => false, portraitSrc = () => '', syncHearts = () => {} } = {}) {
   const list = Array.isArray(games) ? games.filter(game => game && typeof game.id === 'string' && ID_PATTERN.test(game.id)) : [];
   const byId = new Map(list.map(game => [game.id, game]));
   // Availability always comes from the player's own config through app.js, never guessed here.
   const isPlayable = game => Boolean(game) && mode?.(game.id)?.mode === 'iframe';
+  // Real portrait poster for a ranked Top game, or '' when the artwork worker did not supply one.
+  // Same local-asset rule app.js applies: only a plain assets/ path is accepted.
+  const portraitOf = game => {
+    let src = '';
+    try { src = portraitSrc(game.id) || ''; } catch { src = ''; }
+    return typeof src === 'string' && src.startsWith('assets/') && !src.includes('..') && !src.includes('\\') && !src.includes('://') ? src : '';
+  };
 
   const readRecent = () => {
     try { return validIds(JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]'), byId); }
@@ -165,36 +179,60 @@ export function initSpotlightDiscovery({ games = [], mode, isFavourite = () => f
     if (!items.length) return null;
     return { kind: 'recent', id: 'continue', title: 'Continue playing', subtitle: 'Reopen your recent launches.', games: items };
   };
+  // Fresh browser, no real history yet: a fixed preview of launchable games, marked with a short
+  // "Preview" chip. Computed here and never written to storage, so it cannot masquerade as history.
+  const demoRow = () => {
+    const launchable = list.filter(isPlayable);
+    const ordered = DEMO_ORDER.map(id => launchable.find(game => game.id === id)).filter(Boolean);
+    const items = [...ordered, ...launchable.filter(game => !ordered.includes(game))].slice(0, DEMO_LIMIT);
+    if (!items.length) return null;
+    return { kind: 'demo', id: 'continue-preview', title: 'Continue playing', subtitle: 'Preview picks — start any game to begin your own history.', games: items, preview: true };
+  };
+  // Real launches always win: the preview only appears while this browser has no history at all.
+  const continueRow = () => recentRow() || demoRow();
   const topRow = () => {
     const items = topGames(list, isPlayable);
     if (!items.length) return null;
     return { kind: 'top', id: 'top-games', title: 'Top games', subtitle: 'Ten editorial picks.', games: items, ranked: true };
   };
-  const browseRows = () => [recentRow(), topRow(), ...curatedRows(list, isPlayable)].filter(Boolean);
+  const browseRows = () => [continueRow(), topRow(), ...curatedRows(list, isPlayable)].filter(Boolean);
   const browseMarkup = () => browseRows().map(shelfMarkup).join('');
+
+  // Artwork for one card. The ranked Top games use the artwork worker's real portrait poster when
+  // there is one; every other card (and any ranked game without a poster) uses the catalogue art.
+  const artMarkup = (game, className, portrait = false) => {
+    const src = (portrait ? portraitOf(game) : '') || (className === 'sd-img' ? game.art || game.heroArt : game.heroArt || game.art);
+    if (src) return `<img class="${className}" src="${escape(src)}" alt="" loading="lazy" decoding="async">`;
+    return `<span class="${className} sd-fallback" style="--cover:${escape(game.color || '#37452b')}">${escape(game.symbol || '+')}</span>`;
+  };
 
   const cardMarkup = (game, rank = 0) => {
     const id = escape(game.id), title = escape(game.title);
     const status = isPlayable(game) ? '' : `<span class="sd-badge">${game.availability === 'sandbox-pending' ? 'Pending' : 'Unavailable'}</span>`;
     const rankMark = rank ? `<span class="sd-rank" aria-hidden="true">${rank}</span>` : '';
     const label = `${rank ? `Rank ${rank}, ` : ''}show details for ${title}, ${escape(game.genre)}`;
+    // The name sits below the artwork in plain text; the button carries the accessible label.
     return `<article class="game-card sd-card${rank ? ' sd-ranked' : ''}" data-game="${id}">`
       + rankMark
       + `<button class="game-art sd-art" type="button" data-sd-open="${id}" aria-haspopup="dialog" aria-expanded="false" aria-label="${label}">`
-      + artMarkup(game, 'sd-img') + status
+      + artMarkup(game, 'sd-img', Boolean(rank)) + status
+      + `</button>`
       + `<span class="sd-name">${title}</span>`
-      + '</button></article>';
+      + `</article>`;
   };
 
   function shelfMarkup(row) {
     const heading = `sd-h-${row.id}`, label = escape(row.title);
     const count = String(row.games.length).padStart(2, '0');
+    // The chip is short on purpose: it identifies the preview shelf without inventing any history.
+    const preview = row.preview ? '<span class="sd-preview-tag">Preview</span>' : '';
     return `<section class="shelf sd-shelf" data-sd-shelf="${row.kind}" aria-labelledby="${heading}">`
-      + `<div class="shelf-heading"><div class="sd-shelf-title"><h3 id="${heading}">${label} <small>${count}</small></h3>`
+      + `<div class="shelf-heading"><div class="sd-shelf-title"><h3 id="${heading}">`
+      + `<span class="sd-glyph" aria-hidden="true">${SHELF_GLYPH}</span>${label} <small>${count}</small>${preview}</h3>`
       + (row.subtitle ? `<p class="shelf-subtitle">${escape(row.subtitle)}</p>` : '')
       + `</div><div class="shelf-controls"><button class="shelf-arrow" type="button" data-scroll="${row.id}" data-direction="-1" aria-label="Scroll ${label} left by one game">‹</button>`
       + `<button class="shelf-arrow" type="button" data-scroll="${row.id}" data-direction="1" aria-label="Scroll ${label} right by one game">›</button></div></div>`
-      + `<div class="game-row sd-row" id="row-${row.id}" tabindex="0" role="region" aria-labelledby="${heading}">${row.games.map((game, index) => cardMarkup(game, row.ranked ? index + 1 : 0)).join('')}</div>`
+      + `<div class="game-row sd-row" id="row-${row.id}" tabindex="0" role="region" aria-labelledby="${heading}"${row.ranked ? ' data-portrait="true"' : ''}>${row.games.map((game, index) => cardMarkup(game, row.ranked ? index + 1 : 0)).join('')}</div>`
       + '</section>';
   }
 
