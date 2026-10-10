@@ -1,0 +1,70 @@
+/* spotlight-discovery.css — the Spotlight page's browse layer (spotlight.html only).
+ *
+ * Loaded after style.css and spotlight.css, so it can restyle the shared .shelf / .game-row /
+ * .game-card classes without touching the homepage, which never loads this file.
+ *
+ * Resting cards are artwork only — no captions, titles, meta, tags or favourite controls under
+ * the image. A game that cannot launch here shows one small overlay chip. The horizontal
+ * scrollbar is hidden on every shelf while arrows, swipes and single-card keyboard steps keep
+ * working. The floating detail card is fixed-positioned on <body>, so it sits above the page
+ * without reflowing content or being clipped by a row's overflow.
+ */
+
+/* Resting cards ------------------------------------------------------------------- */
+.sd-card .sd-art{border:0;padding:0;background:#23291c;display:block;width:100%;aspect-ratio:16/9;border-radius:6px;overflow:hidden;position:relative;isolation:isolate;cursor:pointer}
+.sd-card .sd-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.82);transition:transform .4s,filter .4s}
+.sd-card:hover .sd-img,.sd-card .sd-art:focus-visible .sd-img{transform:scale(1.045);filter:saturate(1)}
+.sd-card .sd-art:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+.sd-card .cover-contain{object-fit:contain}
+.sd-fallback{display:grid;place-items:center;width:100%;height:100%;background:var(--cover,#37452b);color:#eef4e4;font-family:Pixel,monospace;font-size:22px;letter-spacing:1px;position:absolute;inset:0}
+.sd-badge{position:absolute;left:8px;bottom:8px;z-index:1;padding:3px 6px;font-size:12px;letter-spacing:.4px;color:#dfe7d5;background:#0a100bdb;border:1px solid #ffffff21;border-radius:3px;pointer-events:none}
+
+/* Shelves: hidden scrollbar, working arrows and touch swipes ---------------------- */
+.sd-row{scrollbar-width:none;-ms-overflow-style:none}
+.sd-row::-webkit-scrollbar{display:none;width:0;height:0}
+.page-spotlight,.page-spotlight .filters,.sd-panel-body{scrollbar-width:none}
+.page-spotlight::-webkit-scrollbar,.page-spotlight .filters::-webkit-scrollbar,.sd-panel-body::-webkit-scrollbar{display:none}
+.sd-shelf .shelf-heading h3{font-size:19px;letter-spacing:-.4px}
+
+/* Filtered / search / favourites: a responsive grid of every result --------------- */
+.sd-results{scroll-margin-top:90px}
+.sd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
+.sd-grid .sd-card{min-width:0}
+
+/* Floating detail card ------------------------------------------------------------ */
+.sd-panel{position:fixed;z-index:80;width:min(430px,92vw);display:flex;flex-direction:column;background:#151a13;border:1px solid var(--border);border-radius:10px;box-shadow:0 30px 70px #000000c4;animation:sd-panel-in .18s ease-out}
+/* Transparent bridge across the gap, so a pointer travelling from the card into the panel
+   never leaves "hovered" ground and the panel does not flicker shut. */
+.sd-panel::before{content:'';position:absolute;left:0;right:0;height:14px;top:-13px}
+.sd-panel[data-flip="above"]::before{top:auto;bottom:-13px}
+.sd-panel-art{position:relative;border-radius:10px 10px 0 0;overflow:hidden;background:#23291c}
+.sd-panel-img{display:block;width:100%;aspect-ratio:16/9;max-height:34vh;object-fit:cover}
+.sd-panel-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:7px;max-height:52vh;overflow:auto}
+.sd-panel-title{margin:0;font-size:17px;line-height:1.25;letter-spacing:-.2px}
+.sd-panel-genre{margin:0;font-size:14px;color:#b2bca7}
+.sd-panel-copy{margin:0;font-size:14px;line-height:1.6;color:#dbe2d1}
+.sd-panel-avail{margin:0;font-size:14px;line-height:1.55;color:#b2bca7;padding-left:10px;border-left:2px solid #c4fa5366}
+.sd-panel-avail.is-pending{color:#cbd6bd}
+.sd-panel-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.sd-panel-actions .button{min-height:44px;flex:1 1 auto;justify-content:center;font-size:14px}
+.sd-panel-actions .heart-inline{display:inline-flex;align-items:center;gap:8px}
+.sd-panel-actions .heart-inline svg{width:16px;height:16px}
+.sd-panel-actions .heart-inline.saved{color:var(--lime);border-color:var(--lime)}
+@keyframes sd-panel-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+
+/* Responsive ---------------------------------------------------------------------- */
+@media(max-width:1050px){
+  .sd-shelf .shelf-heading h3{font-size:17px}
+  .sd-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+}
+@media(max-width:720px){
+  .sd-panel{width:min(430px,94vw)}
+  .sd-panel-img{max-height:30vh}
+  .sd-panel-body{max-height:46vh;padding:12px 13px 14px}
+  .sd-panel-actions .button{flex:1 1 46%}
+  .sd-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .sd-panel{animation:none}
+  .sd-card .sd-img{transition:none}
+}

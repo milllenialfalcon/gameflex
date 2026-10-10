@@ -63,3 +63,5 @@ Additional checks: `npm run test:catalogue-gate` and `npm run test:catalogue`. S
 The separate Hermes `gameflexresearch` profile installs Agent Reach and researches new candidates. It uses the same project folder and OpenCode Go / DeepSeek V4.1 Flash model. Discoveries remain outside the deployed `dist/` directory.
 
 See `research/README.md`, `research/review-queue.md` and `research/candidates.csv`. The canonical JSON is tracked in Git; `node scripts/research-db.mjs build` regenerates the local SQLite database. Both assistant verification and explicit human verification are required before an entry becomes eligible for a separate catalogue change. No automatic publication or recurring research schedule is configured.
+
+Spotlight discovery: short shelves, artwork-only resting cards, expanded hover/focus/tap details, and grids for filters/search/favourites. See docs/spotlight-discovery.md. Run npm run test:discovery and npm run test:hero for the Spotlight checks.

@@ -10,7 +10,7 @@
  *   - the homepage hero is still the baseline: generic headline, numbered selectors,
  *     numeric index, 570px band, no pause control, never autoplays;
  *   - spotlight.html: the current game title is the page h1, the description reads on the
- *     left, unnumbered progress pills, arrows + pause in the bottom-right corner;
+ *     left, three upcoming game thumbnails, arrows + pause in the bottom-right corner;
  *   - autoplay: advances every 7s with no announcement and no focus movement, and stands
  *     down on hover, on focus, on a hidden tab, on manual pause and under reduced motion;
  *   - the header menu sits immediately right of search on both pages and links the two
@@ -219,14 +219,16 @@ try {
 
   /* ---------------------------------------------------------- pills and controls */
   const pills = page.locator('[data-hero-index]');
-  assert.equal(await pills.count(), SLIDES.length, 'one pill per spotlight game');
+  assert.equal(await pills.count(), 3, 'three upcoming game thumbnails');
+  assert.deepEqual(await pills.evaluateAll(els => els.map(el => Number(el.dataset.heroIndex))), [1,2,3], 'the first strip previews the next three games');
+  await page.waitForFunction(() => [...document.querySelectorAll('.hero-thumb-art')].every(img => img.complete && img.naturalWidth > 0));
   assert.equal(await pills.evaluateAll(els => els.every(el => el.textContent.trim() === '' && el.getAttribute('title'))), true, 'the pills are unnumbered and carry the game title as a tooltip');
   assert.equal(await page.locator('#hero-index-current').count(), 0, 'the spotlight hero drops the numeric index');
-  assert.equal(await page.locator('[data-hero-index].active').count(), 1, 'exactly one pill is current');
+  assert.equal(await page.locator('[data-hero-index].active').count(), 0, 'upcoming games are not marked current');
   assert.equal(await page.locator('#hero-dots').evaluate(el => getComputedStyle(el).display), 'flex', 'the pills render as a row');
   const declared = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--spot-autoplay').trim());
   assert.equal(declared, '7s', 'the stylesheet declares the 7 second interval');
-  assert.equal(await page.locator('[data-hero-index].active').evaluate(el => getComputedStyle(el, '::after').animationDuration), '7s', 'the pill progress fill matches the interval');
+  assert.equal(await page.locator('.hero-progress-fill').evaluate(el => getComputedStyle(el).animationDuration), '7s', 'the current slide progress matches the interval');
 
   const controlBox = await page.locator('.hero-slider-controls').boundingBox();
   assert(controlBox.x + controlBox.width > CHECK_VIEWPORT.width / 2, 'the controls sit on the right');
@@ -238,7 +240,7 @@ try {
   const arrows = await page.locator('#hero-prev, #hero-next, #hero-pause').evaluateAll(els => els.map(el => { const box = el.getBoundingClientRect(); return { x: box.x, y: box.y, size: box.width }; }));
   assert(arrows.every(box => box.size >= 32), 'every control keeps a usable hit area');
   assert(arrows.every(box => box.x + box.size > CHECK_VIEWPORT.width / 2 && box.y > CHECK_VIEWPORT.height / 2), 'prev, next and pause all sit bottom right');
-  pass(`spotlight hero controls: ${SLIDES.length} unnumbered progress pills, 7s fill matching the interval, prev/next/pause bottom right`);
+  pass('spotlight hero controls: three decoded upcoming thumbnails, 7s progress, prev/next/pause bottom right');
 
   /* ------------------------------------------------------ manual navigation first */
   await page.locator('#hero-next').click();
@@ -246,11 +248,15 @@ try {
   assert((await status()).includes(`Spotlight 2 of ${SLIDES.length}`), 'a manual change is still announced politely');
   await page.locator('#hero-prev').click();
   assert.equal(await title(), SLIDES[0].title, 'Previous returns to the first game');
-  await page.locator(`[data-hero-index="0"]`).click();
+  await page.locator(`[data-hero-index="2"]`).click();
+  assert.equal(await title(), SLIDES[2].title, 'a preview thumbnail selects its game');
+  assert.deepEqual(await pills.evaluateAll(els => els.map(el => Number(el.dataset.heroIndex))), [3,4,5], 'the upcoming previews follow the selected game');
+  await page.locator('#hero-prev').click();
+  await page.locator('#hero-prev').click();
   assert.equal(await title(), SLIDES[0].title);
   await releaseHero();
   assert.equal(await paused(), false, 'the slideshow resumes once the pointer and focus leave the hero');
-  pass('manual next/previous/pills still work inside the spotlight hero and announce the change');
+  pass('manual next/previous/preview thumbnails select games, update upcoming indexes and announce the change');
 
   /* ----------------------------------------------------------- autoplay behaviour */
   await page.evaluate(() => document.activeElement?.blur());
@@ -331,8 +337,9 @@ try {
   assert.equal(await page.locator('#player').evaluate(el => el.hidden), true, 'Back closes the player');
   const pending = GAMES.find(game => game.availability === 'sandbox-pending');
   await page.locator('#search').fill(pending.title);
-  const pendingCard = page.locator('.game-card').filter({ has: page.locator(`[data-details="${pending.id}"]`) }).first();
+  const pendingCard = page.locator(`.sd-card[data-game="${pending.id}"]`).first();
   await pendingCard.locator('.game-art').click();
+  await page.locator('.sd-panel [data-play]').click();
   assert.equal(await page.locator('#player-stage').getAttribute('data-state'), 'blocked', 'a sandbox-pending game still shows the blocked player state');
   assert((await page.locator('.player-panel').innerText()).includes('Sandbox pending'), 'the blocked panel still explains the pending state');
   await page.locator('#player-close').click();
@@ -405,13 +412,13 @@ try {
   const calmTitle = await calmPage.locator('#spotlight-name').textContent();
   assert.equal(calmTitle, SLIDES[0].title, `reduced motion never starts the slideshow (checked after ${Math.round(calmElapsed / 1000)}s)`);
   assert((await calmPage.locator('#hero-dots').evaluate(el => el.classList.contains('is-paused'))) === true, 'reduced motion leaves the slideshow in the paused state');
-  assert.equal(await calmPage.locator('[data-hero-index].active').evaluate(el => getComputedStyle(el, '::after').animationName), 'none', 'reduced motion removes the pill progress animation');
+  assert.equal(await calmPage.locator('.hero-progress-fill').evaluate(el => getComputedStyle(el).animationName), 'none', 'reduced motion removes the progress animation');
   assert.equal(await calmPage.locator('#hero-pause').isVisible(), true, 'the manual pause control stays available under reduced motion');
   assert(await calmElapsed > INTERVAL_MS + OVERRUN_MS, 'the reduced-motion window really did cover a full interval');
   results.timings.reducedMotionWindowMs = calmElapsed;
   await calmPage.locator('#hero-next').click();
   assert.equal(await calmPage.locator('#spotlight-name').textContent(), SLIDES[1].title, 'manual controls still work under reduced motion');
-  pass(`reduced motion: no autoplay across a ${Math.round(calmElapsed / 1000)}s window, no pill animation, manual controls intact`);
+  pass(`reduced motion: no autoplay across a ${Math.round(calmElapsed / 1000)}s window, no progress animation, manual controls intact`);
 
   /* -------------------------------------------------------------------- sources */
   for (const file of ['dist/index.html', 'dist/spotlight.html', 'dist/app.js', 'dist/spotlight.mjs']) {

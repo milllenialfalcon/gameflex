@@ -10,6 +10,8 @@ const escape = (value) => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&a
 const spotlightPage = document.documentElement.classList.contains('page-spotlight');
 let games = [], category = 'all', view = 'discover', search = '', toastTimer;
 let favourites = new Set();
+// Set on the spotlight page only, once its browse module has loaded.
+let discovery = null;
 try { const stored = JSON.parse(localStorage.getItem('gameflex:favourites') || '[]'); if (Array.isArray(stored)) favourites = new Set(stored.filter(id => typeof id === 'string')); } catch { /* Browsing still works when storage is unavailable. */ }
 const sections = [
   { id:'top', title:'Straight to the good stuff', subtitle:'A few classics to get you started.', match:g => g.featured },
@@ -56,6 +58,9 @@ function render() {
   $('#collection-count').textContent = `${filtered.length} ${filtered.length === 1 ? 'game' : 'games'}${view === 'favourites' ? ' saved' : ' to explore'}`;
   $('#results').textContent = `${filtered.length} games${search ? ` matching ${search}` : ''}`;
   $('#shelves').innerHTML = isBrowse ? sections.map(s => { const items = filtered.filter(s.match); return items.length && (s.id !== 'zombies' || items.length > 1) ? shelf(s, items) : ''; }).join('') : filtered.length ? shelf({id:'results',title:view === 'favourites' ? 'Saved for a good time' : category === 'all' ? 'The collection' : $('.filter.active').textContent,subtitle: view === 'favourites' ? 'All your favourites. Right where you left them.' : ''}, filtered) : '';
+  // Spotlight page only: the browse module owns the curated shelves and the result grid. The
+  // homepage keeps the markup computed above, byte for byte.
+  if (spotlightPage && discovery) $('#shelves').innerHTML = discovery.render({ isBrowse, filtered, view, category });
   $('#empty-state').hidden = filtered.length > 0;
   $('#empty-heading').textContent = search ? 'No games found.' : view === 'favourites' ? 'Your favourites start here.' : 'Nothing in this lane. Yet.';
   $('#empty-copy').textContent = search ? `No matches for “${search}”. Try another title or reset the filters.` : view === 'favourites' ? 'Tap the heart on any game to save it for later. We’ll keep your picks right here in this browser.' : 'No verified games match these filters. Explore the rest of the collection.';
@@ -161,6 +166,8 @@ function buildHero() {
 const heroApi = {
   get index() { return hero.index; },
   get total() { return hero.slides.length; },
+  // Exposed for the separate hero worker: the slide list itself, not just the current game.
+  get slides() { return hero.slides; },
   get game() { return hero.slides[hero.index] || null; },
   go: (index, options) => goHero(index, options),
   next: options => goHero(hero.index + 1, options),
@@ -169,6 +176,7 @@ const heroApi = {
 };
 function details(id) {
   const game = games.find(g => g.id === id); if (!game) return;
+  discovery?.close();
   const host = new URL(game.url).hostname;
   const mode = gameMode(game.id);
   const playable = mode.mode === 'iframe';
@@ -223,7 +231,7 @@ document.addEventListener('keydown', event => {
 });
 document.addEventListener('click', event => {
   if (event.target.closest('#player')) return;
-  const play = event.target.closest('[data-play]'); if (play) { event.preventDefault(); return openPlayer(play.dataset.play); }
+  const play = event.target.closest('[data-play]'); if (play) { event.preventDefault(); discovery?.close(); return openPlayer(play.dataset.play); }
   const favourite = event.target.closest('[data-favourite]'); if (favourite) return toggleFavourite(favourite.dataset.favourite);
   const info = event.target.closest('[data-details]'); if (info) { event.preventDefault(); return details(info.dataset.details); }
   const categoryButton = event.target.closest('[data-category]'); if (categoryButton) { category = categoryButton.dataset.category; syncNav(); return render(); }
@@ -284,6 +292,19 @@ await initPlayer({
   toast,
   closeDialogs: () => document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close()),
 });
+// Spotlight page only: the browse layer swaps the homepage shelves for curated rows and a
+// result grid, and owns the floating detail card. index.html never imports this module.
+if (spotlightPage && catalogueLoaded) {
+  try {
+    const { initSpotlightDiscovery } = await import('./spotlight-discovery.mjs');
+    discovery = initSpotlightDiscovery({
+      games,
+      mode: id => gameMode(id),
+      isFavourite: id => favourites.has(id),
+      syncHearts,
+    });
+  } catch { /* The homepage shelves still work when the browse module cannot load. */ }
+}
 if (catalogueLoaded) render();
 // Spotlight page only: the autoplay/pause controller for the new full-bleed hero. The
 // module owns its own timers, so index.html never starts a slideshow.
