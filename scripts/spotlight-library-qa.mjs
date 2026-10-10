@@ -9,8 +9,10 @@
  * static server over dist/.
  *
  * What it checks, all against the real DOM and real localStorage:
- *   - a fresh visitor sees a Continue playing preview shelf, clearly flagged Preview, and no
- *     stored history is written;
+ *   - a fresh visitor sees the Continue playing demo shelf (five fixed editorial ids — halo, bo1,
+ *     quake3, diablo, vicecity — no Preview badge) and no stored history is written; the shelf is a
+ *     direct-launch shelf: each card is a #play/<id> anchor with data-play and no aria-haspopup, and
+ *     then a real launch, and its rail is left unfilled with no fabricated progress;
  *   - opening the ready player (no frame yet) records nothing;
  *   - a sandbox-pending game reaching the blocked state records nothing;
  *   - pressing the player's own Start creates the sandboxed frame and records the allowed id;
@@ -120,14 +122,22 @@ try {
     && (await demo.locator('.sd-preview-tag').count()) === 0
     && !/preview/i.test(await demo.innerText());
   const writeStored = value => page.evaluate(({ key, raw }) => localStorage.setItem(key, raw), { key: RECENT_KEY, raw: value });
-  // Open the player for an id: search-filtered card → detail panel → Play/View action.
-  // Waits for the stage to leave 'idle'; the caller then checks ready vs blocked.
+  // Open the player for an id. The Continue playing shelf is a direct-launch shelf: when the id is
+  // one of its cards, click that #play/<id> anchor straight away. Otherwise fall back to a curated
+  // shelf's detail panel (search-filtered card → panel → Play/View), which is unchanged.
   const openReady = async id => {
-    await page.locator('#search').fill(GAMES.find(game => game.id === id).title);
+    await page.locator('#search').fill('');
     await page.waitForTimeout(150);
-    await page.locator(`.sd-card[data-game="${id}"] .sd-art`).first().click();
-    await page.locator('.sd-panel').waitFor({ timeout: 3000 });
-    await page.locator('.sd-panel [data-play]').click();
+    const direct = page.locator(`[data-sd-shelf="demo"] .sd-card[data-game="${id}"] .sd-art, [data-sd-shelf="recent"] .sd-card[data-game="${id}"] .sd-art`).first();
+    if (await direct.count()) {
+      await direct.click();
+    } else {
+      await page.locator('#search').fill(GAMES.find(game => game.id === id).title);
+      await page.waitForTimeout(150);
+      await page.locator(`.sd-card[data-game="${id}"] .sd-art`).first().click();
+      await page.locator('.sd-panel').waitFor({ timeout: 3000 });
+      await page.locator('.sd-panel [data-play]').click();
+    }
     await page.locator('#player').waitFor({ state: 'visible', timeout: 3000 });
     await page.waitForFunction(() => document.getElementById('player-stage').dataset.state !== 'idle', null, { timeout: 3000 });
   };
@@ -178,6 +188,19 @@ try {
   await page.locator('[data-sd-shelf="recent"]').waitFor({ timeout: 3000 });
   assert.deepEqual(await shelfIds(), [READY.id], 'after a real launch, the real history overrides the demo shelf and shows the launched game');
   assert.equal(await demo.count(), 0, 'the demo shelf is dropped once a real launch exists');
+  // The real Continue playing shelf is a direct-launch shelf too: each card anchors #play/<id>,
+  // carries data-play and no aria-haspopup, and its rail is left unfilled — no fabricated progress.
+  const recentLink = await page.locator('[data-sd-shelf="recent"] .sd-card .sd-art').first().evaluate(el => ({ tag: el.tagName, href: el.getAttribute('href'), dataPlay: el.getAttribute('data-play'), haspopup: el.getAttribute('aria-haspopup') }));
+  assert.equal(recentLink.tag, 'A', 'a real Continue playing card is a direct-launch anchor');
+  assert.equal(recentLink.href, `#play/${READY.id}`, 'the recent card deep-links its game through the existing player hash');
+  assert.equal(recentLink.dataPlay, READY.id, 'the recent card carries data-play for its game');
+  assert.equal(recentLink.haspopup, null, 'the recent card carries no aria-haspopup — it launches directly');
+  const recentRail = await page.locator('[data-sd-shelf="recent"]').evaluate(shelf => ({
+    pct: /\d+\s?%/.test(shelf.innerText),
+    filled: [...shelf.querySelectorAll('.sd-rail-fill')].some(node => node.getBoundingClientRect().width > 0),
+  }));
+  assert.equal(recentRail.pct, false, 'the real Continue playing shelf shows no fabricated progress percentage');
+  assert.equal(recentRail.filled, false, 'the real Continue playing rail is left unfilled — no fake game progress on a history card');
   await page.screenshot({ path: 'artifacts/qa/spotlight-library-recent.png', fullPage: false });
   pass('pressing the player Start creates the sandboxed frame, records the allowed id and repaints the shelf');
 
