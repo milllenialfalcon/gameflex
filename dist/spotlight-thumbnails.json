@@ -1,0 +1,238 @@
+{
+  "halo": {
+    "image": "assets/thumbnails/halo.svg",
+    "source": "assets/spotlight-v2/halo.jpg",
+    "composition": "vector title card"
+  },
+  "bo1": {
+    "image": "assets/thumbnails/bo1.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/42700/capsule_616x353.jpg"
+  },
+  "quake3": {
+    "image": "assets/thumbnails/quake3.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/2200/capsule_616x353.jpg"
+  },
+  "surf": {
+    "image": "assets/surf.png",
+    "source": "assets/surf.png"
+  },
+  "quake": {
+    "image": "assets/thumbnails/quake.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/2310/capsule_616x353.jpg"
+  },
+  "quake2": {
+    "image": "assets/thumbnails/quake2.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/2320/capsule_616x353.jpg"
+  },
+  "rtcw": {
+    "image": "assets/thumbnails/rtcw.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/9010/header.jpg"
+  },
+  "urbanterror": {
+    "image": "assets/thumbnails/urbanterror.svg",
+    "source": "assets/urbanterror-cover.jpg",
+    "composition": "vector title card"
+  },
+  "webxash": {
+    "image": "assets/thumbnails/webxash.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/10/capsule_616x353.jpg"
+  },
+  "halomobile": {
+    "image": "assets/thumbnails/halomobile.svg",
+    "source": "assets/spotlight-v2/halo.jpg",
+    "composition": "vector title card"
+  },
+  "pes6": {
+    "image": "assets/thumbnails/pes6.svg",
+    "source": "assets/refresh-pes6-cover.jpg",
+    "composition": "vector title card"
+  },
+  "skate": {
+    "image": "assets/thumbnails/skate.svg",
+    "source": "assets/refresh-skate-cover.jpg",
+    "composition": "vector title card"
+  },
+  "vicecity": {
+    "image": "assets/thumbnails/vicecity.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1546990/capsule_616x353.jpg"
+  },
+  "simpsons": {
+    "image": "assets/thumbnails/simpsons.svg",
+    "source": "assets/refresh-simpsons-cover.png",
+    "composition": "vector title card"
+  },
+  "diablo": {
+    "image": "assets/thumbnails/diablo.png",
+    "source": "https://images.gog-statics.com/2a351ec2315d2b082c120a1499434480758e56603d2cf21a93e544300c0f3829.png"
+  },
+  "wasmarcade": {
+    "image": "assets/wasmarcade-cover.png",
+    "source": "assets/wasmarcade-cover.png"
+  },
+  "dos-doom-dec-1993": {
+    "image": "assets/thumbnails/dos-doom-dec-1993.svg",
+    "source": "assets/dos-doom-dec-1993.webp",
+    "composition": "vector title card"
+  },
+  "dos-doom-ii-oct-10-1994": {
+    "image": "assets/thumbnails/dos-doom-ii-oct-10-1994.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/2300/header.jpg"
+  },
+  "dos-wolfenstein-3d-may-05-1992": {
+    "image": "assets/thumbnails/dos-wolfenstein-3d-may-05-1992.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/2270/capsule_616x353.jpg"
+  },
+  "dos-duke-nukem-3d-1996": {
+    "image": "assets/thumbnails/dos-duke-nukem-3d-1996.svg",
+    "source": "assets/dos-duke-nukem-3d-1996.webp",
+    "composition": "vector title card"
+  },
+  "dos-prince-of-persia-1990": {
+    "image": "assets/dos-prince-of-persia-1990.webp",
+    "source": "assets/dos-prince-of-persia-1990.webp"
+  },
+  "dos-civilization": {
+    "image": "assets/dos-civilization.webp",
+    "source": "assets/dos-civilization.webp"
+  },
+  "dos-warcraft-orcs-humans": {
+    "image": "assets/dos-warcraft-orcs-humans.webp",
+    "source": "assets/dos-warcraft-orcs-humans.webp"
+  },
+  "dos-settlers2": {
+    "image": "assets/thumbnails/dos-settlers2.png",
+    "source": "https://images.gog-statics.com/df8399dd08c66cee193241b63a74cc8c786ab677f6ec3f2101eb96cb222e5d71.png"
+  },
+  "dos-sim-city-1989": {
+    "image": "assets/dos-sim-city-1989.webp",
+    "source": "assets/dos-sim-city-1989.webp"
+  },
+  "dos-lemmings-1991": {
+    "image": "assets/thumbnails/dos-lemmings-1991.svg",
+    "source": "assets/refresh-dos-lemmings-1991-cover.png",
+    "composition": "vector title card"
+  },
+  "dos-jazz-jackrabbit": {
+    "image": "assets/thumbnails/dos-jazz-jackrabbit.png",
+    "source": "https://images.gog-statics.com/fe603bb3642e8480e8ff6811eae82a2b5510237231b57e150b55105e8046634a.png"
+  },
+  "dos-commander-keen4": {
+    "image": "assets/thumbnails/dos-commander-keen4.png",
+    "source": "https://images.gog-statics.com/4ea0ed20f38cb0ab4696c219c37fecfe662befd500670fea3921dc865000db58.png"
+  },
+  "dos-descent": {
+    "image": "assets/thumbnails/dos-descent.svg",
+    "source": "assets/dos-descent.webp",
+    "composition": "vector title card"
+  },
+  "dos-fallout": {
+    "image": "assets/thumbnails/dos-fallout.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/38400/capsule_616x353.jpg"
+  },
+  "dos-heroes-of-might-and-magic-ii": {
+    "image": "assets/thumbnails/dos-heroes-of-might-and-magic-ii.png",
+    "source": "https://images.gog-statics.com/80940c3b71947fd3d83e7e53faf3c232089986188947b3f116f1f3069a534056.png"
+  },
+  "dos-worms-1995": {
+    "image": "assets/thumbnails/dos-worms-1995.svg",
+    "source": "assets/dos-worms-1995.webp",
+    "composition": "vector title card"
+  },
+  "dos-the-need-for-speed-sep-1995": {
+    "image": "assets/thumbnails/dos-the-need-for-speed-sep-1995.svg",
+    "source": "assets/dos-the-need-for-speed-sep-1995.webp",
+    "composition": "vector title card"
+  },
+  "dos-mortal-kombat-1993": {
+    "image": "assets/thumbnails/dos-mortal-kombat-1993.png",
+    "source": "https://images.gog-statics.com/aa4a952f2e8a9f7ab2d320659fb1f00b0ee35ca214e844513900c9378f3d6ce8.png"
+  },
+  "dos-street-fighter-2": {
+    "image": "assets/dos-street-fighter-2.webp",
+    "source": "assets/dos-street-fighter-2.webp"
+  },
+  "dos-dune-2-dos-1992": {
+    "image": "assets/thumbnails/dos-dune-2-dos-1992.svg",
+    "source": "assets/dos-dune-2-dos-1992.webp",
+    "composition": "vector title card"
+  },
+  "dos-theme-hospital": {
+    "image": "assets/thumbnails/dos-theme-hospital.png",
+    "source": "https://images.gog-statics.com/e179e3bc09e944c3d148c439b4d4af579ed24d4b3a7fbd16c1be108c8450a0af.png"
+  },
+  "dos-warcraft-ii": {
+    "image": "assets/refresh-candidate-dos-warcraft-ii.webp",
+    "source": "assets/refresh-candidate-dos-warcraft-ii.webp"
+  },
+  "dos-age-of-empires": {
+    "image": "assets/thumbnails/dos-age-of-empires.svg",
+    "source": "assets/refresh-candidate-dos-age-of-empires.webp",
+    "composition": "vector title card"
+  },
+  "dos-master-of-orion-ii": {
+    "image": "assets/thumbnails/dos-master-of-orion-ii.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/410980/capsule_616x353.jpg"
+  },
+  "dos-sim-city-2000": {
+    "image": "assets/thumbnails/dos-sim-city-2000.png",
+    "source": "https://images.gog-statics.com/6158456175ba7ca5a0a4951841e98282b3bcc5c1b48209c2215810fb40708204.png"
+  },
+  "dos-prince-of-persia-2": {
+    "image": "assets/thumbnails/dos-prince-of-persia-2.svg",
+    "source": "assets/refresh-candidate-dos-prince-of-persia-2.webp",
+    "composition": "vector title card"
+  },
+  "dos-tomb-raider": {
+    "image": "assets/thumbnails/dos-tomb-raider.svg",
+    "source": "assets/refresh-candidate-dos-tomb-raider.webp",
+    "composition": "vector title card"
+  },
+  "dos-resident-evil": {
+    "image": "assets/thumbnails/dos-resident-evil.svg",
+    "source": "assets/refresh-candidate-dos-resident-evil.webp",
+    "composition": "vector title card"
+  },
+  "dos-dungeon-keeper": {
+    "image": "assets/thumbnails/dos-dungeon-keeper.png",
+    "source": "https://images.gog-statics.com/59d47094960f0ba6b8712a046a2022ba23c8047bc4c75fda94d6c8b2304e4794.png"
+  },
+  "dos-secret-of-monkey-island": {
+    "image": "assets/thumbnails/dos-secret-of-monkey-island.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/32360/capsule_616x353.jpg"
+  },
+  "dos-beneath-a-steel-sky": {
+    "image": "assets/thumbnails/dos-beneath-a-steel-sky.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1368340/capsule_616x353.jpg"
+  },
+  "dos-blood": {
+    "image": "assets/thumbnails/dos-blood.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/1010750/capsule_616x353.jpg"
+  },
+  "dos-heretic": {
+    "image": "assets/thumbnails/dos-heretic.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/2390/header.jpg"
+  },
+  "dos-road-rash": {
+    "image": "assets/thumbnails/dos-road-rash.svg",
+    "source": "assets/refresh-candidate-dos-road-rash.webp",
+    "composition": "vector title card"
+  },
+  "dos-dark-forces": {
+    "image": "assets/thumbnails/dos-dark-forces.svg",
+    "source": "assets/refresh-candidate-dos-dark-forces.webp",
+    "composition": "vector title card"
+  },
+  "dos-battle-chess": {
+    "image": "assets/thumbnails/dos-battle-chess.jpg",
+    "source": "https://cdn.cloudflare.steamstatic.com/steam/apps/622830/capsule_616x353.jpg"
+  },
+  "dos-rayman": {
+    "image": "assets/thumbnails/dos-rayman.png",
+    "source": "https://images.gog-statics.com/da28dfea86e08ae4c02ce73a6317b37833661c079898f02826b7475bbb685921.png"
+  },
+  "dos-the-lost-vikings": {
+    "image": "assets/thumbnails/dos-the-lost-vikings.svg",
+    "source": "assets/refresh-candidate-dos-the-lost-vikings.webp",
+    "composition": "vector title card"
+  }
+}

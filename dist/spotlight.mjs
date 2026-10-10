@@ -177,12 +177,28 @@ export function initSpotlightHero({ hero, isBusy = () => false } = {}) {
   // never pauses; a press also releases any focus pause already held, so a click can never leave
   // the beat stuck. Keyboard focus still pauses exactly as before.
   let pointerFocus = false, pointerFocusTimer = 0;
+  // The marker is bounded by the gesture that set it. It is normally consumed by the focusin the
+  // press lands, but a press on an already-focused control fires no focusin, and a press on a
+  // non-focusable part of the hero fires none either — leaving the marker set after the click, so
+  // a quick keyboard Tab within the remaining window would be misread as pointer-borne and never
+  // pause. Releasing it on the document's pointerup/pointercancel keeps it alive only for the
+  // gesture itself (the focusin, when there is one, still arrives before the release).
+  const clearPointerFocus = () => {
+    clearTimeout(pointerFocusTimer); pointerFocusTimer = 0;
+    if (!pointerFocus) return;
+    pointerFocus = false;
+  };
   root.addEventListener('pointerdown', () => {
     pointerFocus = true;
     clearTimeout(pointerFocusTimer);
     pointerFocusTimer = setTimeout(() => { pointerFocus = false; }, 1200);
     if (state.focus) { state.focus = false; refresh(); }
   }, true);
+  // Document capture: the release has to be seen even when the press ended outside the hero
+  // (drag off a thumb, or a pointercancel). Clearing the marker does NOT touch state.focus, so
+  // a real focus pause is never released by a release event.
+  document.addEventListener('pointerup', clearPointerFocus, true);
+  document.addEventListener('pointercancel', clearPointerFocus, true);
   root.addEventListener('focusin', () => {
     state.focus = !pointerFocus;
     if (pointerFocus) { pointerFocus = false; clearTimeout(pointerFocusTimer); }
