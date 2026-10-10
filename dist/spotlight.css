@@ -8,6 +8,28 @@
  */
 :root{--spot-autoplay:7s}
 
+/* Header: the spotlight page runs a compact 75px bar, ~20% shorter than the homepage's 94px
+   (style.css). The logo drops a step, the item gap scales with the viewport and search narrows a
+   little, so the row stays balanced instead of stretching. Scoped to .page-spotlight (the class is
+   on <html>) and to >=851px so the shared wrapping header at 721–850px and the mobile layout are
+   left exactly as they are. Interactive header controls keep a 44px touch target on mobile. */
+@media(min-width:851px){
+  .page-spotlight .site-header{height:75px;gap:clamp(20px,3.6vw,44px)}
+  .page-spotlight .site-header nav{gap:clamp(16px,2.2vw,26px)}
+  .page-spotlight .wordmark{font-size:27px}
+  .page-spotlight .nav-link{font-size:14px;padding:12px 0}
+  /* The shared active underline is positioned for the 94px homepage bar; at 75px it fell below
+     the header edge. Tuck it up so the underline sits inside the compact bar. */
+  .page-spotlight .nav-link.active:after{bottom:-15px}
+  .page-spotlight .search-box{max-width:264px;width:23%;padding:9px 11px}
+  .page-spotlight{scroll-padding-top:84px}
+}
+@media(max-width:720px){
+  .page-spotlight .wordmark{font-size:27px}
+  .page-spotlight .nav-link{display:inline-flex;align-items:center;min-height:44px;padding:0}
+  .page-spotlight .header-icon{width:44px;height:44px}
+}
+
 .hero-spotlight{height:auto;min-height:min(86vh,820px);display:flex;flex-direction:column;justify-content:flex-end;padding:56px 4.6% 118px;background:#0c0f0c}
 .hero-spotlight .hero-image{background-position:center 40%;background-size:cover;filter:saturate(.95) brightness(.8);transform:none}
 .hero-spotlight .hero-shade{background:linear-gradient(90deg,#0a0d0af7 0%,#0a0d0ad9 32%,#0a0d0a70 58%,#0a0d0a1f 82%),linear-gradient(0deg,#101210 0%,#101210eb 15%,#10121000 58%),radial-gradient(72% 62% at 86% 6%,#c4fa5317,transparent 72%)}

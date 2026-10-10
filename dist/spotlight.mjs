@@ -3,22 +3,24 @@
  *
  * app.js imports this module when <html> carries the page-spotlight class, and hands it
  * the hero API. The module owns every timer: one interval advances the carousel with the
- * hero fade, with no announcement and no focus movement, and it stands down while the
- * visitor hovers the hero, while focus sits inside it, while the tab is hidden, while the
- * hero is scrolled out of view, while the player or a dialog is open, while the visitor
- * has pressed the pause button, and whenever the system asks for reduced motion. The
- * pause button is the manual control WCAG 2.2.2 asks for; reduced motion never starts.
+ * hero fade, with no announcement and no focus movement, and it stands down while focus sits
+ * inside the hero, while the tab is hidden, while the hero is scrolled out of view, while the
+ * player or a dialog is open, while the visitor has pressed the pause button, and whenever the
+ * system asks for reduced motion. The pause button is the manual control WCAG 2.2.2 asks for;
+ * reduced motion never starts. Hovering the hero does NOT pause it: the slideshow keeps its
+ * beat under the pointer, so a visitor reading a card is not left with a frozen hero.
  *
  * The interval lives in spotlight.css (--spot-autoplay) so this module, the timer and the
  * progress fill all read one number.
  *
  * The spotlight page shows the *next five* games as small cover thumbnails in place of the
- * unnumbered progress pills. This module replaces the contents of #hero-dots with five
- * stable <button class="hero-thumb"> nodes at init and rewrites their data-hero-index,
- * artwork, label and tooltip on every hero change, so the existing app.js click delegate
- * ([data-hero-index]) and its arrow-key handler keep working untouched. A thin standalone
- * progress bar for the current slide sits above the strip and shares the same number and
- * pause states as the timer.
+ * unnumbered progress pills. The promotional slide (the one marked `brand`, spliced into the
+ * pool by app.js) is skipped, so the strip always previews five real games. This module replaces
+ * the contents of #hero-dots with five stable <button class="hero-thumb"> nodes at init and
+ * rewrites their data-hero-index, artwork, label and tooltip on every hero change, so the
+ * existing app.js click delegate ([data-hero-index]) and its arrow-key handler keep working
+ * untouched. A thin standalone progress bar for the current slide sits above the strip and shares
+ * the same number and pause states as the timer.
  *
  * Dependency: the thumbnail layer reads `hero.slides` (the game list). When the host does not
  * expose that getter the strip is left as the plain pills app.js built — nothing breaks.
@@ -26,14 +28,14 @@
 const FALLBACK_INTERVAL_MS = 7000;
 const THUMB_COUNT = 5;
 
-/** The next `count` slide indexes after `current`, wrapping once and never repeating. */
-function upcomingIndexes(current, total, count) {
-  const out = [];
-  for (let step = 1; step <= total && out.length < count; step += 1) {
-    const index = (((current + step) % total) + total) % total;
-    if (!out.includes(index)) out.push(index);
-  }
-  return out;
+/** The `count` slide indexes after `current`, wrapping once and never repeating, drawn only from
+ *  `indexes` (the real game slides — the brand promo slide is filtered out by the caller so the
+ *  strip still previews five games). */
+function upcomingIndexes(current, indexes, count) {
+  if (!indexes.length) return [];
+  const start = indexes.findIndex(index => index > current);
+  const ordered = start === -1 ? indexes.slice() : [...indexes.slice(start), ...indexes.slice(0, start)];
+  return ordered.slice(0, count);
 }
 
 function intervalMs() {
@@ -51,13 +53,16 @@ export function initSpotlightHero({ hero, isBusy = () => false } = {}) {
   if (!hero || !root || !dots || !pause || hero.total < 2) return null;
 
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  const state = { hover: false, focus: false, offscreen: false, hidden: document.visibilityState === 'hidden', reduced: motion.matches, manual: false };
+  const state = { focus: false, offscreen: false, hidden: document.visibilityState === 'hidden', reduced: motion.matches, manual: false };
   let timer = 0, remaining = intervalMs(), startedAt = 0;
 
   // --- Up-next thumbnails -------------------------------------------------------------
-  // The strip holds exactly three stable nodes for the page's lifetime; only their
+  // The strip holds exactly five stable nodes for the page's lifetime; only their
   // attributes change, so focus and the animation state never get thrown away.
   const slidesOf = () => { try { const list = hero.slides; return Array.isArray(list) ? list : []; } catch { return []; } };
+  // Indexes of the real game slides only. The brand promo slide carries artwork of its own (a CSS
+  // collage, no `art`), so it is skipped here and the strip always previews games.
+  const gameIndexes = () => slidesOf().reduce((out, slide, index) => { if (!slide?.brand) out.push(index); return out; }, []);
   const artOf = game => (game && (game.heroArt || game.art)) || '';
   const thumbs = [];
   let fill = null, progress = null;
@@ -80,7 +85,7 @@ export function initSpotlightHero({ hero, isBusy = () => false } = {}) {
 
   const buildThumbs = () => {
     // Only take over the strip when the host gives us the games to name and illustrate.
-    if (slidesOf().length < 2) return false;
+    if (gameIndexes().length < 2) return false;
     dots.textContent = '';
     for (let slot = 0; slot < THUMB_COUNT; slot += 1) {
       const button = document.createElement('button');
@@ -111,9 +116,9 @@ export function initSpotlightHero({ hero, isBusy = () => false } = {}) {
   const syncThumbs = () => {
     if (!thumbs.length) return;
     const slides = slidesOf();
-    const total = slides.length;
-    if (!total) return;
-    const indexes = upcomingIndexes(hero.index, total, Math.min(THUMB_COUNT, total));
+    const games = gameIndexes();
+    if (!games.length) return;
+    const indexes = upcomingIndexes(hero.index, games, Math.min(THUMB_COUNT, games.length));
     thumbs.forEach(({ button, image }, slot) => {
       const index = indexes[slot];
       const game = index === undefined ? null : slides[index];
@@ -136,7 +141,7 @@ export function initSpotlightHero({ hero, isBusy = () => false } = {}) {
 
   if (buildThumbs()) syncThumbs();
 
-  const paused = () => state.manual || state.hover || state.focus || state.offscreen || state.hidden || state.reduced;
+  const paused = () => state.manual || state.focus || state.offscreen || state.hidden || state.reduced;
   const paint = () => {
     dots.classList.toggle('is-paused', paused());
     dots.classList.toggle('is-static', state.reduced);
@@ -162,8 +167,7 @@ export function initSpotlightHero({ hero, isBusy = () => false } = {}) {
   }
   const refresh = () => { paint(); start(); };
 
-  root.addEventListener('mouseenter', () => { state.hover = true; refresh(); });
-  root.addEventListener('mouseleave', () => { state.hover = false; refresh(); });
+  // Hovering the hero deliberately does not pause: the pointer no longer stops the beat.
   root.addEventListener('focusin', () => { state.focus = true; refresh(); });
   root.addEventListener('focusout', event => {
     if (root.contains(event.relatedTarget)) return;
@@ -186,7 +190,7 @@ export function initSpotlightHero({ hero, isBusy = () => false } = {}) {
   });
 
   // A manual change restarts the countdown so the fill matches the next advance, and the
-  // up-next strip re-points at the three games that follow the new current slide.
+  // up-next strip re-points at the five games that follow the new current slide.
   hero.onChange?.(() => {
     stop(); remaining = intervalMs(); if (!paused()) start();
     syncThumbs(); restartProgress();

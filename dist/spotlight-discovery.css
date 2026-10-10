@@ -3,70 +3,89 @@
  * Loaded after style.css and spotlight.css, so it can restyle the shared .shelf / .game-row /
  * .game-card classes without touching the homepage, which never loads this file.
  *
- * Cards are landscape artwork with the game name inside the bottom gradient, clamped to two
- * lines, so no text sits under the image. A game that cannot launch here shows one small status
- * chip in the artwork's top-left corner. The Top games row adds a large outlined 1..10 rank that
- * sits beside the artwork and tucks behind its edge, so it never covers the name or the chip.
+ * Cards are landscape artwork with the game name in a plain line UNDER the image, clamped to two
+ * lines — nothing overlays the artwork except the small status chip in its top-left corner. The
+ * ranked Top games row swaps the landscape art for the artwork worker's real portrait (2:3) poster
+ * and keeps the name under it; the large outlined 1..10 rank sits in its own fixed column beside
+ * the poster, bottom-aligned with it. Every shelf heading opens with a small lime sparkle
+ * (aria-hidden).
  *
- * Desktop shows seven whole cards per row; narrower widths step down to six, five, four, three
- * and two, so rows finish inside the viewport at every size. Scrollbars stay hidden while
+ * Desktop shows six whole cards per row at >=1200px; narrower widths step down to five, four,
+ * three and two, so rows finish inside the viewport at every size. Scrollbars stay hidden while
  * arrows, swipes and single-card keyboard steps keep working.
  *
  * The floating detail card is fixed-positioned on <body>, so it sits above the page without
- * reflowing content or being clipped by a row's overflow.
+ * reflowing content or being clipped by a row's overflow. It is ~30% narrower than the original
+ * overlay with a compact vertical rhythm; body copy stays at 12–13px and every action keeps a
+ * 44px-tall target.
  *
  * This file is linked after style.css and .sd-row has the same specificity as the shared
  * .game-row, so the Spotlight rows win here and the homepage (which never loads this file) is
  * untouched.
  */
 
-/* Cards: landscape artwork, name overlay, status chip ----------------------------- */
+/* Cards: landscape artwork, name below, status chip ---------------------------------- */
+.sd-card{display:flex;flex-direction:column;gap:8px}
 .sd-card .sd-art{border:0;padding:0;background:#23291c;display:block;width:100%;aspect-ratio:16/9;border-radius:6px;overflow:hidden;position:relative;isolation:isolate;cursor:pointer}
 .sd-card .sd-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.82);transition:transform .4s,filter .4s}
 .sd-card:hover .sd-img,.sd-card .sd-art:focus-visible .sd-img{transform:scale(1.045);filter:saturate(1)}
 .sd-card .sd-art:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
 .sd-card .cover-contain{object-fit:contain}
 .sd-fallback{display:grid;place-items:center;width:100%;height:100%;background:var(--cover,#37452b);color:#eef4e4;font-family:Pixel,monospace;font-size:22px;letter-spacing:1px;position:absolute;inset:0}
-/* Deeper bottom gradient than the shared .game-art:after, sized for two lines of name. The
-   gradient belongs to ::after only; the name box itself reserves no gradient padding, so its
-   whole 2.68em (two 1.34 lines at 14px) is available for text instead of being eaten by padding. */
-.sd-card .sd-art:after{background:linear-gradient(0deg,#040703f2 0%,#040703cc 34%,#0407034d 62%,transparent 100%)}
-.sd-card .sd-name{position:absolute;left:10px;right:10px;bottom:8px;z-index:2;margin:0;padding:0;font-size:14px;font-weight:700;line-height:1.34;letter-spacing:-.1px;color:#f4f4eb;text-shadow:0 1px 3px #000000d9,0 1px 14px #000000a6;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-height:2.68em;overflow-wrap:anywhere;pointer-events:none}
-/* Top-left chip: separated from the name overlay at the bottom, and never interactive. */
+/* The name is no longer painted over the artwork, so the gradient is only a soft vignette for
+   depth behind the status chip instead of a text backdrop. */
+.sd-card .sd-art:after{background:linear-gradient(0deg,#0407038f 0%,transparent 52%)}
+/* Name line under the artwork: two clamped lines at a readable 14px — no overlay, no shadow and
+   no gradient padding. pointer-events:none keeps the whole card one click/tap target. */
+.sd-card .sd-name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin:0;padding:0;font-size:14px;font-weight:700;line-height:1.34;letter-spacing:-.1px;color:#f1f3e8;text-shadow:none;overflow-wrap:anywhere;pointer-events:none}
+/* Top-left chip: sits on the artwork, never interactive. */
 .sd-badge{position:absolute;left:8px;top:8px;z-index:3;padding:3px 6px;font-size:12px;line-height:1.3;letter-spacing:.4px;color:#dfe7d5;background:#0a100bdb;border:1px solid #ffffff21;border-radius:3px;pointer-events:none}
 
-/* Top games: outlined rank beside the artwork, tucked at most 6px behind its left edge ---- */
-/* The tuck is a fixed 6px (not an em fraction of a clamp-sized numeral), so the rank can never
-   reach the name, which is inset 10px from the card's left edge and paints above it (z-index 2
-   inside .sd-art's own isolated stacking context; the tuck sits under the artwork at z-index 0).
-   The numeral is the site's own body font (Space) at its heaviest weight, not the pixel logo, so
-   the digits read as rank rather than as wordmark. */
-.sd-row .sd-ranked{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:end;overflow:visible}
-.sd-rank{position:relative;z-index:0;font-family:Space,Arial,sans-serif;font-weight:900;font-size:clamp(50px,5.6vw,88px);line-height:.78;letter-spacing:-3px;color:#c4fa53;opacity:.5;margin-right:-6px;padding-bottom:2px;pointer-events:none;user-select:none}
+/* Top games: one column of portrait posters with an oversized outlined rank overlapping the
+   poster's lower-left corner (Netflix style). The rank is taken out of flow and absolutely
+   positioned over the artwork, so every card in the row is exactly the same width and the
+   numerals line up down the row. The poster is indented by the numeral's width (30px) and
+   offset by exactly that amount, so the rank sits in the gutter beside the name/art edge
+   rather than over the cover's own subject. The numeral is the site's own body font (Space)
+   at its heaviest weight, not the pixel logo, so digits read as rank, not as wordmark. */
+.sd-ranked{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"art" "name";position:relative;align-items:end}
+.sd-ranked .sd-art{grid-area:art;position:relative;z-index:1;width:calc(100% - 30px);margin-left:30px}
+.sd-ranked .sd-name{grid-area:name;margin-top:8px;margin-left:30px}
+.sd-row[data-portrait] .sd-art{aspect-ratio:2/3}
+.sd-rank{position:absolute;left:0;bottom:44px;z-index:2;font-family:Space,Arial,sans-serif;font-weight:900;font-size:clamp(100px,11vw,168px);line-height:1;letter-spacing:-10px;color:#c4fa53;opacity:.5;text-shadow:0 4px 16px #000;pointer-events:none;user-select:none}
 @supports(-webkit-text-stroke:1px #000){
   /* Netflix-style hollow numeral: transparent fill, thick lime outline, highest contrast. */
-  .sd-rank{color:transparent;opacity:1;-webkit-text-stroke:2.4px var(--lime)}
+  .sd-rank{color:transparent;opacity:1;-webkit-text-stroke:3px var(--lime)}
   .sd-ranked:hover .sd-rank,.sd-ranked:focus-within .sd-rank{-webkit-text-stroke-color:#e4ff9c}
 }
-.sd-ranked .sd-art{position:relative;z-index:1}
+/* Rank 10 is two digits wide: a smaller size plus tighter tracking keeps both digits inside the
+   gutter so they never clip the adjacent card's poster. */
+.sd-ranked:last-child .sd-rank{font-size:clamp(80px,8vw,122px);letter-spacing:-12px}
 
-/* Shelf headings: original title + count + subtitle, arrows on the right ----------- */
+/* Shelf headings: decorative mark, title, count, optional Preview chip, arrows on the right */
 .sd-shelf .shelf-heading h3{font-size:19px;letter-spacing:-.4px}
 .sd-shelf-title{min-width:0}
 .sd-shelf .shelf-subtitle{max-width:62ch}
+/* The editorial Top games row is the page's lime accent row: its title, count and subtitle carry
+   the brand colour alongside the outlined numerals. */
+.sd-shelf[data-sd-shelf="top"] .shelf-heading h3,
+.sd-shelf[data-sd-shelf="top"] .shelf-heading h3 small,
+.sd-shelf[data-sd-shelf="top"] .shelf-subtitle{color:var(--lime)}
+.sd-glyph{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;margin-right:8px;color:var(--lime)}
+.sd-glyph svg{width:12px;height:12px;display:block;fill:currentColor}
+.sd-preview-tag{flex:0 0 auto;padding:2px 8px;border:1px solid #c4fa5366;border-radius:999px;color:var(--lime);font-family:var(--font);font-size:12px;font-weight:700;letter-spacing:.7px;text-transform:uppercase}
 
-/* Rows: hidden scrollbar, arrows, swipes and keyboard steps keep working ----------- */
-.sd-row{--sd-gap:16px;gap:var(--sd-gap);grid-auto-columns:calc((100% - 96px)/7)}
+/* Rows: hidden scrollbar; six whole cards at >=1200px; arrows, swipes and keyboard keep working. */
+/* Each width subtracts one extra pixel so sub-pixel rounding can never turn a fitted row into a
+   1px scroller. */
+.sd-row{--sd-gap:16px;gap:var(--sd-gap);grid-auto-columns:calc((100% - 81px)/6)}
 .sd-row{scrollbar-width:none;-ms-overflow-style:none}
 .sd-row::-webkit-scrollbar{display:none;width:0;height:0}
 .page-spotlight,.page-spotlight .filters,.sd-panel-body{scrollbar-width:none}
 .page-spotlight::-webkit-scrollbar,.page-spotlight .filters::-webkit-scrollbar,.sd-panel-body::-webkit-scrollbar{display:none}
-/* Seven whole cards fit at >=1200px, so a curated row has nothing to scroll. Rows with eight
-   games keep the last card one arrow-step away, never behind a scrollbar. Each width subtracts
-   one extra pixel so sub-pixel rounding can never turn a fitted row into a 1px scroller. */
-@media(max-width:1199px){.sd-row{grid-auto-columns:calc((100% - 81px)/6)}}
-@media(max-width:1023px){.sd-row{--sd-gap:14px;grid-auto-columns:calc((100% - 57px)/5)}}
-@media(max-width:860px){.sd-row{--sd-gap:14px;grid-auto-columns:calc((100% - 43px)/4)}}
+@media(max-width:1199px){.sd-row{grid-auto-columns:calc((100% - 65px)/5)}}
+@media(max-width:1023px){.sd-row{--sd-gap:14px;grid-auto-columns:calc((100% - 43px)/4)}}
+@media(max-width:860px){.sd-row{--sd-gap:14px;grid-auto-columns:calc((100% - 29px)/3)}}
 @media(max-width:720px){.sd-row{--sd-gap:12px;grid-auto-columns:calc((100% - 25px)/3)}}
 @media(max-width:520px){.sd-row{--sd-gap:12px;grid-auto-columns:calc((100% - 13px)/2)}}
 
@@ -75,24 +94,24 @@
 .sd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
 .sd-grid .sd-card{min-width:0}
 
-/* Floating detail card ------------------------------------------------------------ */
-.sd-panel{position:fixed;z-index:80;width:min(430px,92vw);display:flex;flex-direction:column;background:#151a13;border:1px solid var(--border);border-radius:10px;box-shadow:0 30px 70px #000000c4;animation:sd-panel-in .18s ease-out}
+/* Floating detail card: ~30% narrower, compact vertical rhythm, 44px action targets -- */
+.sd-panel{position:fixed;z-index:80;width:min(300px,92vw);display:flex;flex-direction:column;background:#151a13;border:1px solid var(--border);border-radius:10px;box-shadow:0 30px 70px #000000c4;animation:sd-panel-in .18s ease-out}
 /* Transparent bridge across the gap, so a pointer travelling from the card into the panel
    never leaves "hovered" ground and the panel does not flicker shut. */
 .sd-panel::before{content:'';position:absolute;left:0;right:0;height:14px;top:-13px}
 .sd-panel[data-flip="above"]::before{top:auto;bottom:-13px}
 .sd-panel-art{position:relative;border-radius:10px 10px 0 0;overflow:hidden;background:#23291c}
-.sd-panel-img{display:block;width:100%;aspect-ratio:16/9;max-height:34vh;object-fit:cover}
-.sd-panel-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:7px;max-height:52vh;overflow:auto}
-.sd-panel-title{margin:0;font-size:17px;line-height:1.25;letter-spacing:-.2px}
-.sd-panel-genre{margin:0;font-size:14px;color:#b2bca7}
-.sd-panel-copy{margin:0;font-size:14px;line-height:1.6;color:#dbe2d1}
-.sd-panel-avail{margin:0;font-size:14px;line-height:1.55;color:#b2bca7;padding-left:10px;border-left:2px solid #c4fa5366}
+.sd-panel-img{display:block;width:100%;aspect-ratio:16/9;max-height:24vh;object-fit:cover}
+.sd-panel-body{padding:11px 12px 12px;display:flex;flex-direction:column;gap:5px;max-height:46vh;overflow:auto}
+.sd-panel-title{margin:0;font-size:15px;line-height:1.25;letter-spacing:-.2px}
+.sd-panel-genre{margin:0;font-size:12px;color:#b2bca7}
+.sd-panel-copy{margin:0;font-size:13px;line-height:1.55;color:#dbe2d1}
+.sd-panel-avail{margin:0;font-size:12px;line-height:1.5;color:#b2bca7;padding-left:10px;border-left:2px solid #c4fa5366}
 .sd-panel-avail.is-pending{color:#cbd6bd}
-.sd-panel-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
-.sd-panel-actions .button{min-height:44px;flex:1 1 auto;justify-content:center;font-size:14px}
+.sd-panel-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
+.sd-panel-actions .button{min-height:44px;flex:1 1 auto;justify-content:center;font-size:13px;padding:10px 12px}
 .sd-panel-actions .heart-inline{display:inline-flex;align-items:center;gap:8px}
-.sd-panel-actions .heart-inline svg{width:16px;height:16px}
+.sd-panel-actions .heart-inline svg{width:15px;height:15px}
 .sd-panel-actions .heart-inline.saved{color:var(--lime);border-color:var(--lime)}
 @keyframes sd-panel-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
 
@@ -102,14 +121,22 @@
   .sd-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 }
 @media(max-width:720px){
-  .sd-panel{width:min(430px,94vw)}
-  .sd-panel-img{max-height:30vh}
-  .sd-panel-body{max-height:46vh;padding:12px 13px 14px}
+  .sd-panel{width:min(300px,94vw)}
+  .sd-panel-img{max-height:22vh}
+  .sd-panel-body{max-height:44vh;padding:10px 11px 12px}
   .sd-panel-actions .button{flex:1 1 46%}
   .sd-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
-  /* The name keeps its 14px minimum at every width: no smaller type and no gradient padding, so
-     the two-line box stays fully readable on phones instead of being clamped to one clipped line. */
-  .sd-rank{font-size:clamp(36px,9vw,50px);letter-spacing:-2px}
+  /* The name keeps its 14px size at every width: no smaller type, so the two-line box stays fully
+     readable on phones. The rank rides further left and shrinks with the viewport, and the poster
+     gutter narrows to 20px so the cover keeps the bulk of the tile. */
+  .sd-ranked .sd-art{width:calc(100% - 20px);margin-left:20px}
+  .sd-ranked .sd-name{margin-left:20px}
+  /* The rank is scaled to the 2:3 portrait (was clamp(56px,13vw,90px), too small beside a 225px
+     tall cover): clamp(100px,28vw,130px) keeps it legible on a phone and the 92px override on the
+     rank-10 card keeps the two digits whole instead of crowding the poster. Letter-spacing and the
+     20px gutter are unchanged, as is the rest of the mobile layout. */
+  .sd-rank{font-size:clamp(100px,28vw,130px);letter-spacing:-6px}
+  .sd-ranked:last-child .sd-rank{font-size:92px;letter-spacing:-8px}
 }
 @media(prefers-reduced-motion:reduce){
   .sd-panel{animation:none}

@@ -1,0 +1,62 @@
+{
+  "halo": {
+    "src": "assets/portraits/halo.png",
+    "sourceUrl": "https://raw.githubusercontent.com/libretro-thumbnails/Microsoft_-_Xbox/master/Named_Boxarts/Halo%20-%20Combat%20Evolved%20(USA).png",
+    "width": 512,
+    "height": 735
+  },
+  "bo1": {
+    "src": "assets/portraits/bo1.jpg",
+    "sourceUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/42700/library_600x900_2x.jpg",
+    "width": 600,
+    "height": 900
+  },
+  "quake3": {
+    "src": "assets/portraits/quake3.jpg",
+    "sourceUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/2200/library_600x900_2x.jpg",
+    "width": 600,
+    "height": 900
+  },
+  "diablo": {
+    "src": "assets/portraits/diablo.jpg",
+    "sourceUrl": "https://archive.org/download/diablo-1-v-1.00-1996-en-windows-95-dx-3.-7z/Diablo%201%20%5BWIN%5D%20-%20Cover%20BOX%20Front.png",
+    "width": 710,
+    "height": 900
+  },
+  "webxash": {
+    "src": "assets/portraits/webxash.jpg",
+    "sourceUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/70/library_600x900_2x.jpg",
+    "width": 600,
+    "height": 900
+  },
+  "vicecity": {
+    "src": "assets/portraits/vicecity.jpg",
+    "sourceUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/12110/library_600x900_2x.jpg",
+    "width": 600,
+    "height": 900
+  },
+  "skate": {
+    "src": "assets/portraits/skate.jpg",
+    "sourceUrl": "https://images.launchbox-app.com/698d7162-7656-4f70-a399-b2d247640928.jpg",
+    "width": 645,
+    "height": 900
+  },
+  "simpsons": {
+    "src": "assets/portraits/simpsons.jpg",
+    "sourceUrl": "https://images.launchbox-app.com/1bbb7d22-b337-439e-95e3-763fb939e40b.jpg",
+    "width": 645,
+    "height": 900
+  },
+  "pes6": {
+    "src": "assets/portraits/pes6.png",
+    "sourceUrl": "https://raw.githubusercontent.com/libretro-thumbnails/Sony_-_PlayStation_2/master/Named_Boxarts/Pro%20Evolution%20Soccer%206%20(Europe).png",
+    "width": 512,
+    "height": 724
+  },
+  "quake": {
+    "src": "assets/portraits/quake.jpg",
+    "sourceUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/2310/library_600x900_2x.jpg",
+    "width": 600,
+    "height": 900
+  }
+}

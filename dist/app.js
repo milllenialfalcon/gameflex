@@ -15,6 +15,10 @@ let discovery = null;
 // Set on the spotlight page only, from spotlight-media.json (artwork worker output). Keyed by
 // game id; an absent file or entry just means the catalogue's own hero art stands.
 let spotlightMedia = null;
+// Set on the spotlight page only, from spotlight-portraits.json (artwork worker output). Keyed
+// by game id and holding one real portrait poster per ranked Top game; an absent file or entry
+// falls back to the catalogue's own landscape artwork.
+let spotlightPortraits = null;
 try { const stored = JSON.parse(localStorage.getItem('gameflex:favourites') || '[]'); if (Array.isArray(stored)) favourites = new Set(stored.filter(id => typeof id === 'string')); } catch { /* Browsing still works when storage is unavailable. */ }
 const sections = [
   { id:'top', title:'Straight to the good stuff', subtitle:'A few classics to get you started.', match:g => g.featured },
@@ -147,6 +151,29 @@ function mediaEntryFor(id) {
   const entry = spotlightMedia[id];
   return isMediaEntry(entry) ? entry : null;
 }
+// Spotlight page only. spotlight-portraits.json maps a game id to {src, sourceUrl, width,
+// height}: the artwork worker's real portrait poster for a ranked Top game. It gets the same
+// untrusted treatment as the media map — a missing file, a non-object root, a missing entry and
+// each malformed field all fall back to the catalogue's own artwork instead of throwing. Only
+// `src` paths under the local assets/ directory are honoured.
+async function loadSpotlightPortraits() {
+  if (!spotlightPage) return null;
+  try {
+    const response = await fetch('spotlight-portraits.json');
+    if (!response.ok) return null;
+    const data = await response.json();
+    return isMediaEntry(data) ? data : null;
+  } catch { return null; }
+}
+// The portrait src for one game, or '' when the map or entry is malformed, the game is absent,
+// or the path is not a local asset. Own properties only, so inherited names cannot pose as ids.
+function portraitSrcFor(id) {
+  if (!isMediaEntry(spotlightPortraits)) return '';
+  if (!Object.prototype.hasOwnProperty.call(spotlightPortraits, id)) return '';
+  const entry = spotlightPortraits[id];
+  if (!isMediaEntry(entry)) return '';
+  return isLocalArtPath(entry.src) ? entry.src : '';
+}
 // Spotlight page only: the quality-curated hero pool. The artwork worker's media map is the
 // source of truth for which featured games carry authentic, high-quality local artwork, so a
 // featured game stays in the hero only when the map holds an entry whose `src` is a usable
@@ -162,6 +189,46 @@ function curatedHeroPool(featured) {
   return curated.length >= HERO_MIN_CURATED ? curated : featured;
 }
 
+// The promotional slide, spotlight page only. It is not a catalogue game: it carries brand copy,
+// a CSS collage built from artwork already shipped in assets/, and a single call to action that
+// scrolls to the catalogue. It never names a game and it never reaches the player. It is spliced
+// into the shuffled hero pool at a fresh random point on every load, so it reappears somewhere
+// new each refresh, and the up-next strip skips it so at least five real games stay previewed.
+const BRAND_ID = 'gameflex-promo';
+// Two-part headlines in the original promo's voice: a fixed "Old favourites." opener with a short
+// second line that rotates. Kept here as one list so the wording is easy to tune.
+const BRAND_HEADLINES = ['New tab.', 'Right here.', 'No installs.', 'No extra tabs.', 'One click.', 'Back in frame.', 'One more go.'];
+// Existing local artwork only: six landscape covers laid out as a 3x2 collage under the hero
+// shade. No new image is fetched or generated for the brand slide.
+const BRAND_COLLAGE = ['assets/quake.jpg', 'assets/halo.jpg', 'assets/bo1.jpg', 'assets/cs.jpg', 'assets/quake2.jpg', 'assets/quake3.jpg'];
+const BRAND_TILE_POSITION = ['0% 0%', '50% 0%', '100% 0%', '0% 100%', '50% 100%', '100% 100%'];
+const brandSlide = () => ({
+  id: BRAND_ID, brand: true, title: 'GAMEFLEX', tag: 'THE BROWSER IS YOUR CONSOLE',
+  genre: 'Curated classics · Zero launchers',
+  description: 'The games you grew up on. A few you missed. They open right here inside gameflex.',
+  requirements: 'Some ports need your original game files. No installs. No extra tabs.',
+  // A real local cover for the up-next strip and the progress pills. The on-slide backdrop is the
+  // collage below, so this is only used by the thumbnail layer.
+  heroArt: BRAND_COLLAGE[0],
+});
+// Rotates on each appearance rather than on a timer, so the same slide never reads the same twice
+// in a row and nothing on the page changes without a slide change.
+let brandHeadlineIndex = Math.floor(Math.random() * BRAND_HEADLINES.length);
+const nextBrandHeadline = () => {
+  brandHeadlineIndex = (brandHeadlineIndex + 1) % BRAND_HEADLINES.length;
+  return `Old favourites. ${BRAND_HEADLINES[brandHeadlineIndex]}`;
+};
+// Appends the promotional slide to an already-shuffled pool. The pool is copied first, so the
+// caller's array is untouched. It is deliberately the last slide: the brand promo must never be
+// the very first thing a visitor sees, and keeping it off the front leaves the opener (and the
+// five up-next previews that follow it) a genuine game. The games themselves are reshuffled on
+// every load, so the promo still lands in a different context each refresh.
+function withBrandSlide(slides) {
+  const pool = slides.slice();
+  pool.push(brandSlide());
+  return pool;
+}
+
 // Listeners let spotlight.mjs restart its own 7-second countdown after a manual change,
 // without this file knowing anything about autoplay.
 const heroListeners = new Set();
@@ -173,23 +240,47 @@ function heroAnnounce() {
 function paintHero(announce = true) {
   const game = hero.slides[hero.index];
   if (!game) return;
-  const art = heroArtOf(game), image = $('#hero-image');
-  image.style.backgroundImage = art ? `url("${art.replace(/["\\]/g, '\\$&')}")` : 'none';
-  image.classList.toggle('hero-image-empty', !art);
+  const image = $('#hero-image');
+  if (spotlightPage && game.brand) {
+    // Brand slide: a 3x2 collage of existing local covers instead of one game image. The tiles
+    // are offset so the hero shade and lime glow read on top of them.
+    image.style.backgroundImage = BRAND_COLLAGE.map(source => `url("${source}")`).join(', ');
+    // '33.34% auto' keeps the 16:9 tiles at their own aspect ratio instead of stretching each
+    // into a tall rectangle; the positions and no-repeat below still tile them 3x2, and the
+    // game-slide branch clears these values so the stylesheet's single cover is restored.
+    image.style.backgroundSize = BRAND_COLLAGE.map(() => '33.34% auto').join(', ');
+    image.style.backgroundPosition = BRAND_TILE_POSITION.join(', ');
+    image.style.backgroundRepeat = BRAND_COLLAGE.map(() => 'no-repeat').join(', ');
+    image.classList.remove('hero-image-empty');
+  } else {
+    const art = heroArtOf(game);
+    image.style.backgroundImage = art ? `url("${art.replace(/["\\]/g, '\\$&')}")` : 'none';
+    // Clearing the collage-only inline values restores the stylesheet's single cover image, so a
+    // game slide that follows the brand slide is never left tiled or letterboxed.
+    image.style.backgroundSize = '';
+    image.style.backgroundRepeat = '';
+    image.classList.toggle('hero-image-empty', !art);
+  }
   // Per-game crop point from spotlight-media.json. Homepage slides never carry a position,
   // and the branch is spotlight-only, so the baseline hero keeps its CSS background-position.
   // The same branch stamps data-hero-game with the live game id, so QA can read the game the
   // spotlight is actually showing (the homepage DOM is untouched).
-  if (spotlightPage) { image.style.backgroundPosition = game.heroPosition || ''; image.setAttribute('data-hero-game', game.id); }
+  if (spotlightPage) {
+    if (!game.brand) image.style.backgroundPosition = game.heroPosition || '';
+    image.setAttribute('data-hero-game', game.id);
+  }
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
     image.classList.remove('hero-fade');
     void image.offsetWidth;
     image.classList.add('hero-fade');
   }
-  $('#spotlight-name').textContent = game.title;
+  $('#spotlight-name').textContent = game.brand ? nextBrandHeadline() : game.title;
   const tag = $('#spotlight-tag'); if (tag) tag.textContent = game.tag || 'IN THE SPOTLIGHT';
   const genre = $('#spotlight-genre');
-  if (genre) genre.textContent = [game.genre, game.availability === 'sandbox-pending' ? 'Sandbox pending' : (game.platform || 'Desktop')].filter(Boolean).join(' · ');
+  if (genre) {
+    // The brand slide is not a game: it shows its own line and never the platform fallback.
+    genre.textContent = game.brand ? game.genre : [game.genre, game.availability === 'sandbox-pending' ? 'Sandbox pending' : (game.platform || 'Desktop')].filter(Boolean).join(' · ');
+  }
   $('#spotlight-description').textContent = game.description || '';
   $('#spotlight-requirements').textContent = game.requirements || '';
   document.querySelectorAll('[data-hero-index]').forEach((dot, index) => {
@@ -203,8 +294,15 @@ function paintHero(announce = true) {
   const single = hero.slides.length < 2;
   $('#hero-prev').disabled = single; $('#hero-next').disabled = single;
   $('#hero-play').disabled = false;
-  $('#hero-play').setAttribute('aria-label', `Open ${game.title} in the Gameflex player`);
-  $('#hero-play').lastChild.textContent = game.availability === 'sandbox-pending' ? 'View game' : "Let's play";
+  if (game.brand) {
+    // The brand slide's call to action scrolls to the catalogue; it never names a game and never
+    // opens the player, so there is no fake route behind it.
+    $('#hero-play').setAttribute('aria-label', 'Scroll to the game collection');
+    $('#hero-play').lastChild.textContent = 'Show me the games';
+  } else {
+    $('#hero-play').setAttribute('aria-label', `Open ${game.title} in the Gameflex player`);
+    $('#hero-play').lastChild.textContent = game.availability === 'sandbox-pending' ? 'View game' : "Let's play";
+  }
   const activeDot = document.querySelector(`[data-hero-index="${hero.index}"]`);
   if (activeDot) {
     const dots = activeDot.parentElement;
@@ -226,15 +324,16 @@ function buildHero() {
     // first, then shuffle the survivors, then clone each slide so per-game media can override
     // the catalogue's heroArt and add a crop position without mutating the shared entries. A
     // malformed entry (non-object, or an src/position of the wrong type) is ignored outright,
-    // leaving the slide as the catalogue served it.
-    ? shuffleSlides(curatedHeroPool(featured)).map(game => {
+    // leaving the slide as the catalogue served it. Finally the promotional slide is spliced into
+    // the shuffled pool at a fresh random point, so it lands somewhere different every refresh.
+    ? withBrandSlide(shuffleSlides(curatedHeroPool(featured)).map(game => {
         const media = mediaEntryFor(game.id);
         if (!media) return game;
         const clone = { ...game };
         if (isLocalArtPath(media.src)) clone.heroArt = media.src;
         if (typeof media.position === 'string') clone.heroPosition = media.position;
         return clone;
-      })
+      }))
     : featured;
   hero.index = 0;
   const total = hero.slides.length;
@@ -335,7 +434,17 @@ document.addEventListener('click', event => {
 $('#search').addEventListener('input', event => { search = event.target.value.trim(); render(); });
 $('#reset').addEventListener('click', reset);
 $('#surprise').addEventListener('click', () => { const filtered = filteredGames(); if (filtered.length) openPlayer(filtered[Math.floor(Math.random()*filtered.length)].id); });
-$('#hero-play').addEventListener('click', () => { const game = hero.slides[hero.index]; if (game) openPlayer(game.id); });
+$('#hero-play').addEventListener('click', () => {
+  const game = hero.slides[hero.index];
+  if (!game) return;
+  // Brand slide: scroll to the real catalogue instead of opening anything. No game and no player
+  // route is faked behind the promotional call to action.
+  if (spotlightPage && game.brand) {
+    document.getElementById('catalogue')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    return;
+  }
+  openPlayer(game.id);
+});
 $('#about-button').addEventListener('click', () => $('#about').showModal());
 document.addEventListener('keydown', event => {
   if (isPlayerOpen()) return;
@@ -364,10 +473,11 @@ document.addEventListener('keydown', event => {
 window.addEventListener('resize',updateArrows);
 window.addEventListener('storage',event => { if (event.key !== 'gameflex:favourites') return; try { const values = JSON.parse(event.newValue || '[]'); favourites = new Set(Array.isArray(values) ? values.filter(id => typeof id === 'string') : []); render(); } catch { /* Ignore corrupted storage from other tabs. */ } });
 let catalogueLoaded = false;
-// Spotlight page only: the artwork worker's media map is fetched before the hero is built so
-// the shuffled slides carry the overridden art and crop from the very first paint. A missing
-// file resolves to null and the catalogue art stands.
+// Spotlight page only: the artwork workers' maps are fetched before the hero is built so the
+// shuffled slides carry the overridden art and crop from the very first paint, and the Top games
+// shelf can use the portrait posters. A missing file resolves to null and the catalogue art stands.
 spotlightMedia = await loadSpotlightMedia();
+spotlightPortraits = await loadSpotlightPortraits();
 try {
   const response = await fetch('games.json'); if (!response.ok) throw new Error('catalogue unavailable'); games = await response.json();
   buildHero();
@@ -393,6 +503,9 @@ if (spotlightPage && catalogueLoaded) {
       games,
       mode: id => gameMode(id),
       isFavourite: id => favourites.has(id),
+      // Real portrait posters for the ranked Top games shelf, when the artwork worker supplied
+      // them; an empty string means the catalogue's own artwork is used instead.
+      portraitSrc: id => portraitSrcFor(id),
       syncHearts,
     });
   } catch { /* The homepage shelves still work when the browse module cannot load. */ }
