@@ -7,6 +7,7 @@ This is the discovery and review queue, separate from the 16 live catalogue entr
 - `gameflex-candidates.sqlite`: actual SQLite database, regenerated locally from the JSON. Ignored by Git to keep review history readable.
 - `candidates.csv`: spreadsheet-friendly view.
 - `review-queue.md`: readable game links, sources and questions for our joint review.
+- `catalogue-baseline.json`: the 16 destinations already released before this research workflow. The catalogue check requires both research reviews for any new destination outside that baseline.
 
 ## Research and review
 

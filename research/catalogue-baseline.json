@@ -1,0 +1,82 @@
+[
+  {
+    "id": "halo",
+    "title": "Halo: Combat Evolved",
+    "url": "https://mitchellhynes.com/halo/"
+  },
+  {
+    "id": "bo1",
+    "title": "Black Ops Zombies",
+    "url": "https://vel.gg/bo1z"
+  },
+  {
+    "id": "quake3",
+    "title": "Quake III Arena",
+    "url": "https://q3.pieter.com/"
+  },
+  {
+    "id": "surf",
+    "title": "CS Surf",
+    "url": "https://surfd.net/"
+  },
+  {
+    "id": "quake",
+    "title": "Quake",
+    "url": "https://q1.pieter.com/"
+  },
+  {
+    "id": "quake2",
+    "title": "Quake II",
+    "url": "https://q2.pieter.com/"
+  },
+  {
+    "id": "rtcw",
+    "title": "Return to Castle Wolfenstein",
+    "url": "https://rtcw.pieter.com/"
+  },
+  {
+    "id": "urbanterror",
+    "title": "Urban Terror",
+    "url": "https://ut.pieter.com/"
+  },
+  {
+    "id": "webxash",
+    "title": "Half-Life / Counter-Strike 1.6",
+    "url": "https://x8bitrain.github.io/webXash/"
+  },
+  {
+    "id": "halomobile",
+    "title": "Halo CE Mobile",
+    "url": "https://hcemobile.com/"
+  },
+  {
+    "id": "pes6",
+    "title": "PES 6",
+    "url": "https://pes6.optijuegos.net/"
+  },
+  {
+    "id": "skate",
+    "title": "Skate 3 — Fan Game",
+    "url": "https://skate.aaddpp.lol/"
+  },
+  {
+    "id": "vicecity",
+    "title": "GTA: Vice City",
+    "url": "https://joncodeofficial.github.io/gta-vice-city-wasm/"
+  },
+  {
+    "id": "simpsons",
+    "title": "The Simpsons: Hit & Run",
+    "url": "https://shar-wasm.cjoseph.workers.dev/?skipmovie"
+  },
+  {
+    "id": "diablo",
+    "title": "Diablo",
+    "url": "https://johnimril.github.io/diablo_web/"
+  },
+  {
+    "id": "wasmarcade",
+    "title": "WASM Arcade",
+    "url": "https://wasmarcade.com/pc-games"
+  }
+]
