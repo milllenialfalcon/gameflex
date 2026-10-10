@@ -46,12 +46,22 @@ export function defaultConfig(overrides = {}) {
   return { ...cfg, ...overrides };
 }
 
+// Catalogue availability values that must never become runnable. 'sandbox-pending'
+// means the listing was published for review, NOT that the port is playable: the
+// dist player refuses it (dist/player.mjs) and the remote API must agree, otherwise
+// the streaming path would re-open a destination the site itself refuses to launch.
+const PENDING_AVAILABILITY = 'sandbox-pending';
+
 export function loadCatalog(catalogPath) {
   const raw = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
   if (!Array.isArray(raw)) throw new Error(`catalogue ${catalogPath} must be a JSON array`);
   const byId = new Map();
   for (const entry of raw) {
     if (!entry || typeof entry.id !== 'string' || typeof entry.url !== 'string') continue;
+    // Listing approval is not gameplay approval: an entry still marked
+    // sandbox-pending is dropped from the allowlist instead of being filtered
+    // later, so it can never be resolved into a session target.
+    if (entry.availability === PENDING_AVAILABILITY) continue;
     let url;
     try { url = new URL(entry.url); } catch { continue; }
     if (url.protocol !== 'https:' && url.protocol !== 'http:') continue;
@@ -69,6 +79,10 @@ export function resolveGame(catalog, gameId, { denyIds = [] } = {}) {
   if (denyIds.includes(gameId)) return { ok: false, code: 'game_denied' };
   const game = catalog.get(gameId);
   if (!game) return { ok: false, code: 'unknown_game' };
+  // Defence in depth for catalogues assembled outside loadCatalog (callers may
+  // inject a Map). A pending listing is refused here too: publishing a listing
+  // is not approval to run it, so it must never resolve into a session target.
+  if (game.availability === PENDING_AVAILABILITY) return { ok: false, code: 'game_denied' };
   return { ok: true, game };
 }
 

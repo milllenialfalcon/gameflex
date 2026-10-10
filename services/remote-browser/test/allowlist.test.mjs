@@ -1,5 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { loadCatalog, resolveGame, classifyAddress, classifyHost } from '../src/config.mjs';
@@ -76,4 +79,52 @@ test('a host that resolves to a private address is refused (pre-flight check)', 
   const dnsFailure = await assertPublicHost('https://nope.invalid/', { lookup: async () => { throw Object.assign(new Error('ENOTFOUND'), { code: 'ENOTFOUND' }); } });
   assert.equal(dnsFailure.ok, false);
   assert.equal(dnsFailure.code, 'dns_lookup_failed');
+});
+
+// Availability gate. A listing published for review (availability:
+// sandbox-pending) must not become a runnable target over the remote API, even
+// though it is a well-formed https entry. Written to a temp catalogue file so
+// the assertion exercises the real loader, not a hand-built Map.
+test('sandbox-pending catalogue entries cannot resolve, ordinary https entries still do', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'gf-catalog-'));
+  const file = path.join(dir, 'games.json');
+  try {
+    fs.writeFileSync(file, JSON.stringify([
+      {
+        id: 'dos-doom-dec-1993',
+        title: 'DOOM',
+        url: 'https://dos.zone/doom-dec-1993/',
+        provider: 'dos-zone',
+        availability: 'sandbox-pending',
+        verificationLevel: 'launch-page',
+      },
+      {
+        id: 'quake',
+        title: 'Quake',
+        url: 'https://q1.pieter.com',
+      },
+    ]));
+
+    const loaded = loadCatalog(file);
+    // Skipped at load time, so it is not even in the allowlist.
+    assert.equal(loaded.has('dos-doom-dec-1993'), false);
+    assert.deepEqual(resolveGame(loaded, 'dos-doom-dec-1993'), { ok: false, code: 'unknown_game' });
+
+    // An ordinary https entry with no availability field is unaffected.
+    assert.equal(loaded.has('quake'), true);
+    const quake = resolveGame(loaded, 'quake');
+    assert.equal(quake.ok, true);
+    assert.equal(quake.game.url, 'https://q1.pieter.com/');
+    assert.equal(quake.game.origin, 'https://q1.pieter.com');
+
+    // Defence in depth: a Map injected by a caller (as the gateway allows) still
+    // cannot resolve a pending entry, and leaks no url.
+    const injected = new Map([['dos-doom-dec-1993', {
+      id: 'dos-doom-dec-1993', title: 'DOOM', url: 'https://dos.zone/doom-dec-1993/',
+      origin: 'https://dos.zone', availability: 'sandbox-pending',
+    }]]);
+    assert.deepEqual(resolveGame(injected, 'dos-doom-dec-1993'), { ok: false, code: 'game_denied' });
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });

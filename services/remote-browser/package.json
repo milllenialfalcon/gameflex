@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "description": "Gameflex remote browser streaming prototype: host session gateway + dockerised Chromium runner.",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node src/gateway.mjs",
     "test": "node --test test/*.test.mjs",
@@ -15,6 +17,6 @@
   },
   "dependencies": {
     "playwright": "1.62.1",
-    "ws": "8.18.3"
+    "ws": "8.22.0"
   }
 }

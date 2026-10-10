@@ -31,7 +31,7 @@ playable through it.
 
     cd services/remote-browser
     npm install                       # or npm ci
-    npm test                          # 54 tests, no Docker required
+    npm test                          # 55 tests, no Docker required
     npm run build:runner              # builds gameflex/browser-runner:0.1.0
     npm run sandbox:check             # container self-check, must exit 0
     npm run sandbox:selftest          # fault injection: must detect an unsandboxed launch

@@ -98,7 +98,7 @@ Engine: Docker Desktop 4.92.0, engine 29.8.0, linux/amd64. Runner image
 
 ## 5. Measured results (executed)
 
-`node --test --test-reporter=tap test/*.test.mjs` → 54/54 pass (auth, allowlist,
+`node --test --test-reporter=tap test/*.test.mjs` → 55/55 pass (auth, allowlist,
 input validation, TTL/idle/capacity, HTTP+CORS+key, WebSocket relay, teardown,
 log redaction, plus the review regressions: concurrent capacity reservation,
 abort-mid-create cleanup, input-driven idle expiry). The regressions cover the
@@ -159,13 +159,28 @@ The prototype is local-only by design. To put it in front of players it needs:
 `services/remote-browser/README.md` §API is the contract. Blockers for the UI
 worker today:
 
-1. There is no access-key field in the frontend, and there must not be one: for
-   local development the key should be injected by a same-origin development
-   reverse proxy, with the gateway bound to loopback and the proxy's origin
-   listed in `GF_RB_ORIGINS`. Production needs the authenticated broker above.
+1. The frontend offers a memory-only owner-key field only when both the page
+   and gateway are loopback. It never stores that key or offers it on the hosted
+   site. Production needs the authenticated broker above, not a shared key in
+   the public client.
 2. The viewer must scale pointer coordinates from its rendered rect to the
    960×540 stream viewport and send them as `input` events; coordinates are not
    normalised.
-3. The player must treat `status: egress_blocked` and `error` frames as
-   user-visible failures rather than retrying blindly, and must not offer an
-   external-new-tab fallback (AGENTS.md).
+3. Before public streaming, the client must distinguish fatal runner errors
+   from blocked nonessential requests and surface meaningful recovery. The
+   current preview primarily handles socket failure and first-frame timeout.
+   It must never offer an external-new-tab fallback (AGENTS.md).
+
+## Integration follow-up, 2026-10-10
+
+The catalogue now includes 21 DOS listings marked `sandbox-pending`. `loadCatalog`
+omits pending entries, and `resolveGame` also refuses injected pending records.
+Listing approval cannot enable a remote session. A local fixture test covers
+both paths and confirms ordinary catalogue games still resolve: 55 tests pass.
+
+Pinned `ws` was updated from 8.18.3 to 8.22.0 after npm reported known
+vulnerabilities. The updated package audit reports zero vulnerabilities. The
+runner image was rebuilt; its sandbox check passed, and a fresh Quake smoke
+test returned its first frame in 7.1 seconds, streamed 8 frames at about 11 fps,
+accepted 6 input events and deleted its session with no containers left behind.
+These remain short feasibility samples, not gameplay certification.
