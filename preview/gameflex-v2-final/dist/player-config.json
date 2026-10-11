@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "remote": {
+    "enabled": false,
+    "apiBase": ""
+  },
+  "games": {
+    "halo": { "mode": "iframe" },
+    "bo1": { "mode": "iframe" },
+    "quake3": { "mode": "iframe" },
+    "surf": { "mode": "iframe" },
+    "quake": { "mode": "iframe" },
+    "quake2": { "mode": "iframe" },
+    "rtcw": { "mode": "iframe" },
+    "urbanterror": { "mode": "iframe" },
+    "webxash": { "mode": "iframe" },
+    "halomobile": { "mode": "iframe" },
+    "pes6": { "mode": "iframe" },
+    "skate": { "mode": "iframe" },
+    "vicecity": { "mode": "iframe" },
+    "simpsons": { "mode": "iframe" },
+    "diablo": { "mode": "iframe" },
+    "wasmarcade": {
+      "mode": "unavailable",
+      "reason": "WASM Arcade's own terms prohibit embedding their pages, so gameflex can't load it in this player."
+    }
+  }
+}
