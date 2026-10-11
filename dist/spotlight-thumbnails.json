@@ -148,9 +148,12 @@
     "source": "https://images.gog-statics.com/4ea0ed20f38cb0ab4696c219c37fecfe662befd500670fea3921dc865000db58.png"
   },
   "dos-descent": {
-    "image": "assets/thumbnails/dos-descent.svg",
-    "source": "assets/dos-descent.webp",
-    "composition": "vector title card"
+    "image": "assets/supplied-artwork/dos-descent.webp",
+    "source": "descent-offer-8hanc.jpg",
+    "composition": "user-supplied artwork",
+    "width": 1280,
+    "height": 720,
+    "crop": "source already 16:9; proportional resize, no crop"
   },
   "dos-fallout": {
     "image": "assets/thumbnails/dos-fallout.jpg",
