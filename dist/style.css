@@ -10,47 +10,117 @@
 @media(max-width:1050px){.site-header{gap:24px}.site-header nav{gap:18px}.search-box{width:28%}}
 @media(max-width:720px){.site-header{column-gap:12px;row-gap:12px}.site-header>.wordmark{font-size:28px}.site-header nav{gap:14px}.nav-link{font-size:13px}.nav-link span{font-size:12px}.search-box{margin-top:0;width:100%}.hero{height:560px}.hero-content p{font-size:16px}.hero-note{font-size:12px}.hero-content .eyebrow{font-size:12px;letter-spacing:1px}.hero-actions .button{font-size:13px;padding:12px 13px}.collection-count{font-size:12px;white-space:normal;text-align:right;max-width:90px}.catalogue-intro .eyebrow{font-size:12px;line-height:1.5;letter-spacing:1px}.catalogue-intro h2{font-size:25px}.featured-caption .eyebrow{font-size:12px}.featured-caption strong{font-size:16px}.hero-index{display:none}.small-print{gap:14px}.small-print strong{font-size:14px}.small-print p{font-size:13px}.small-print button{font-size:13px}.footer-right{font-size:12px}.card-title-row a{font-size:16px}.card-meta{font-size:13px}.shelf-subtitle{font-size:14px}.filter{font-size:14px}.surprise{font-size:14px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
-/* In-site player ------------------------------------------------------------------ */
+/* In-site player ------------------------------------------------------------------
+   Bounded layout: the player is a fixed, viewport-height dialog whose grid rows are
+   the toolbar / stage / notes button. The stage row is the only 1fr row and every
+   row has min-height:0, so the frame fills whatever is left of the viewport and the
+   player itself never scrolls. 100dvh is used where supported (the mobile URL bar
+   shrinks the visible height), with 100vh as the fallback for older engines. */
 [hidden]{display:none!important}
 /* While the player view is open the catalogue chrome is hidden but keeps its layout, so the page scroll position survives. */
 html.player-open,html.player-open body{overflow:hidden}
+/* The catalogue keeps its layout while the player is open, but a tall catalogue still
+   grows the document box (visible scrollHeight) and a hidden catalogue can still take
+   pointer events. Collapsing the layout viewport and cutting pointer events is what
+   makes the open player the only thing that can scroll or be clicked. */
+html.player-open>body>*:not(.player):not(#toast),html.player-open body>dialog{pointer-events:none}
+html.player-open>body{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
 html.player-open>body>header,html.player-open>body>main,html.player-open>body>footer,html.player-open>body>.skip-link{visibility:hidden!important}
-.player{position:fixed;inset:0;z-index:60;height:100%;background:var(--bg);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+.player{position:fixed;inset:0;z-index:60;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;overscroll-behavior:contain;background:var(--bg)}
 .player[hidden]{display:none}
 .player [hidden]{display:none!important}
-.player-key{display:inline-flex;align-items:center;gap:9px;font-size:13px;color:#b2bca7}
-.player-key input{background:#12160f;border:1px solid #4a553e;border-radius:4px;color:var(--white);font-size:14px;padding:10px 12px;min-width:180px;max-width:240px}
-.player-key input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
-.player-shell{min-height:100%;display:flex;flex-direction:column}
-.player-bar{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:18px 4.6%;background:#101210f5;border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
-.player-back{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:11px 16px;background:#181d16;border:1px solid #4a553e;border-radius:4px;font-size:14px;font-weight:700;color:var(--white);white-space:nowrap}
+/* The shell is the grid's only non-stage row wrapper; display:contents lets the bar,
+   the stage and the foot sit directly on the player grid without an extra box. */
+.player-shell{display:contents}
+.player-bar{position:relative;z-index:3;display:flex;align-items:center;gap:12px;min-width:0;min-height:0;padding:8px 14px;background:#101210f5;border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+.player-brand{display:inline-flex;min-height:44px;align-items:center;gap:4px;font-family:Pixel,monospace;font-size:17px;letter-spacing:-1.1px;line-height:1;color:var(--lime);white-space:nowrap;flex:0 0 auto}
+.player-brand .logo-pixel{margin:0;width:4px;height:4px}
+.player-back{display:inline-flex;align-items:center;gap:7px;min-height:44px;min-width:44px;justify-content:center;padding:9px 13px;background:#181d16;border:1px solid #4a553e;border-radius:4px;font-size:14px;font-weight:700;color:var(--white);white-space:nowrap;flex:0 0 auto}
 .player-back:hover{border-color:var(--lime);color:var(--lime)}
-.player-heading{flex:1 1 240px;min-width:190px}
-.player-heading .eyebrow{color:var(--lime);font-size:12px;letter-spacing:1.2px}
-.player-heading h2{margin:6px 0 4px;font-size:clamp(22px,2.6vw,32px);letter-spacing:-.9px;line-height:1.15}
-.player-heading h2:focus{outline:0}
-.player-meta{margin:0;font-size:13px;color:#b2bca7}
-.player-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-.player-actions .button{min-height:44px}
-.player-actions .heart-inline{display:inline-flex;align-items:center;gap:9px}
-.player-actions .heart-inline svg{width:17px;height:17px}
-.player-stage{position:relative;flex:1;display:grid;place-items:center;margin:22px 4.6% 0;min-height:min(62vh,640px);background:#0b0d0a;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+/* min-width:0 on the heading is what lets a long title ellipsize instead of pushing
+   the toolbar actions off the viewport. */
+.player-heading{flex:1 1 auto;min-width:0}
+.player-heading{margin:0;font-size:15px;font-weight:700;line-height:1.25;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-heading:focus{outline:0}
+.player-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+.player-actions .button{min-height:44px;min-width:44px;padding:9px 13px;font-size:14px;justify-content:center}
+.player-actions .button svg{width:18px;height:18px}
+.player-actions .heart-inline svg{width:18px;height:18px}
+.player-key{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#b2bca7;min-width:0}
+.player-key input{background:#12160f;border:1px solid #4a553e;border-radius:4px;color:var(--white);font-size:14px;padding:9px 11px;min-width:0;max-width:200px}
+.player-key input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+/* The stage is the single flexible row: min-height:0 + overflow:hidden is what keeps
+   the frame inside the remaining viewport instead of forcing the player to scroll. */
+.player-stage{position:relative;min-width:0;min-height:0;overflow:hidden;background:#0b0d0a}
+/* The state layer: panels, loading label, frame and remote canvas are all drawn here,
+   beside the Notes overlay, so restarts never destroy the overlay. */
+.player-view{position:absolute;inset:0;display:grid;place-items:center;min-width:0;min-height:0;overflow:hidden}
 .player-frame{position:absolute;inset:0;z-index:1;width:100%;height:100%;border:0;background:#0b0d0a}
-.player-stage-label{position:absolute;z-index:2;top:18px;left:50%;transform:translateX(-50%);margin:0;pointer-events:none;background:#101210e0;border:1px solid var(--border);border-radius:4px;padding:9px 14px;font-size:13px;color:#dfe7d5}
+.player-stage-label{position:absolute;z-index:2;top:14px;left:50%;transform:translateX(-50%);margin:0;pointer-events:none;background:#101210e0;border:1px solid var(--border);border-radius:4px;padding:8px 12px;font-size:12px;color:#dfe7d5}
 .player-canvas{display:block;max-width:100%;max-height:100%;background:#0b0d0a;border:0;touch-action:none}
 .player-canvas:focus-visible{outline:2px solid var(--lime);outline-offset:-4px}
-.player-panel{max-width:640px;padding:36px 26px;text-align:center}
-.player-panel h3{margin:0 0 12px;font-size:23px;letter-spacing:-.4px}
-.player-panel p{margin:0 0 12px;font-size:15px;line-height:1.75;color:#b2bca7}
-.player-panel .player-panel-note{font-size:13px;color:#98a38c}
-.player-panel .player-actions{justify-content:center;margin-top:22px}
-.player-panel .pixel-decoration{display:block;margin-bottom:12px;font-size:30px}
-.player-badge{display:inline-block;margin-bottom:14px;padding:4px 9px;background:var(--lime);border-radius:3px;font-size:12px;font-weight:700;letter-spacing:1px;color:#15200c}
-.player-foot{display:flex;align-items:flex-start;justify-content:space-between;gap:26px;flex-wrap:wrap;padding:18px 4.6% 34px}
-.player-foot .requirements{max-width:620px;margin:0}
-.player-note{max-width:540px;margin:0;font-size:13px;line-height:1.75;color:#b2bca7}
-.player-stream-note{width:100%;margin:0;font-size:13px;color:#b2bca7}
-@media(max-width:720px){.player-bar{gap:12px;padding:14px 5%}.player-heading{flex-basis:100%}.player-heading h2{font-size:22px}.player-actions{width:100%;gap:8px}.player-actions .button{flex:1 1 46%;justify-content:center;font-size:13px}.player-key{width:100%;justify-content:space-between}.player-key input{flex:1;max-width:none}.player-stage{margin:16px 5% 0;min-height:52vh}.player-panel{padding:26px 18px}.player-panel h3{font-size:20px}.player-foot{gap:16px;padding:16px 5% 28px}}
+/* Panels scroll on their own when a small viewport cannot hold the copy. */
+.player-panel{max-width:640px;max-height:100%;overflow:auto;padding:26px 22px;text-align:center}
+.player-panel h3{margin:0 0 9px;font-size:19px;letter-spacing:-.3px}
+.player-panel p{margin:0 0 9px;font-size:14px;line-height:1.6;color:#b2bca7}
+.player-panel .player-panel-note{font-size:12px;color:#98a38c}
+.player-panel .player-actions{justify-content:center;margin-top:16px;flex-wrap:wrap}
+.player-panel .pixel-decoration{display:block;margin-bottom:9px;font-size:26px}
+.player-badge{display:inline-block;margin-bottom:9px;padding:3px 8px;background:var(--lime);border-radius:3px;font-size:11px;font-weight:700;letter-spacing:1px;color:#15200c}
+/* Only the disabled remote prototype needs a footer for its connection notes. */
+.player-foot{display:none;align-items:center;justify-content:space-between;gap:12px;min-width:0;padding:8px 14px;border-top:1px solid var(--border)}
+.player:has(.player-stage[data-state="streaming"]) .player-foot{display:flex}
+.player-note{margin:0;font-size:13px;line-height:1.5;color:#b2bca7;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.player-stream-note{margin:0;font-size:12px;color:#b2bca7;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Notes overlay. Owned by the Notes toolbar button (aria-expanded / aria-controls).
+   It overlays the stage rather than pushing it, so the game keeps its viewport area,
+   and it scrolls inside its own max-height. default closed: [hidden] plus aria-expanded=false. */
+.player-notes{position:absolute;z-index:4;top:0;right:0;bottom:0;width:min(420px,88vw);max-height:100%;overflow:auto;overscroll-behavior:contain;padding:16px 18px 22px;background:#13170ff7;border-left:1px solid var(--border);box-shadow:-18px 0 44px #00000059;backdrop-filter:blur(9px)}
+.player-notes h3{margin:0 0 10px;font-size:13px;letter-spacing:1.1px;text-transform:uppercase;color:var(--lime)}
+.player-notes .player-notes-close{position:absolute;top:12px;right:12px;width:44px;height:44px;display:grid;place-items:center;background:#1b2117;border:1px solid #4a553e;border-radius:4px;color:var(--white)}
+.player-notes .player-notes-close:hover{border-color:var(--lime);color:var(--lime)}
+.player-notes dl{display:grid;grid-template-columns:auto;gap:2px;margin:0 0 14px}
+.player-notes dt{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#98a38c;margin-top:10px}
+.player-notes dd{margin:0;font-size:14px;line-height:1.6;color:var(--white)}
+.player-notes .requirements{margin:0}
+.player-notes .requirements strong{display:block;font-size:12px;letter-spacing:1px;color:var(--lime);margin-bottom:6px}
+.player-notes .requirements p{margin:0;font-size:14px;line-height:1.65;color:#dfe7d5}
+.player-notes .player-note{margin-top:14px;font-size:13px;white-space:normal;color:#b2bca7}
+
+/* Wider phones keep one toolbar row; small screens use a fixed two-row grid. */
+@media(max-width:900px){
+  .player-brand{display:none}
+  .player-actions .heart-inline span{display:none}
+  .player-notes{width:min(420px,100%)}
+}
+@media(max-width:600px){
+  .player-bar{display:grid;grid-template-columns:44px minmax(0,1fr);grid-template-rows:44px auto;gap:6px 10px;padding:6px 10px}
+  .player-back{grid-column:1;grid-row:1}
+  .player-heading{grid-column:2;grid-row:1;font-size:14px}
+  .player-bar>.player-actions{grid-column:1/-1;grid-row:2;min-width:0;flex-wrap:nowrap;justify-content:flex-end}
+  .player-actions .button{font-size:13px;padding:9px 10px}
+  .player-panel{padding:20px 14px}
+  .player-panel h3{font-size:17px}
+  .player-panel p{font-size:13px}
+}
+@media(max-width:520px){
+  .player-brand{font-size:15px}
+  .player-heading{font-size:14px}
+  .player-actions .button{font-size:12px;padding:9px 10px}
+  .player-panel{padding:16px 12px}
+  .player-panel h3{font-size:16px}
+}
+/* Landscape phones: the shortest viewport in the suite (844x390). The toolbar drops to
+   its narrowest form and the stage keeps every remaining line. */
+@media(max-height:520px){
+  .player-bar{padding:5px 10px;gap:6px}
+  .player-back{padding:7px 10px}
+  .player-foot{padding:5px 10px}
+  .player-heading{font-size:14px}
+  .player-panel{padding:14px 12px}
+  .player-panel h3{font-size:15px}
+  .player-panel p{font-size:12px}
+}
 
 /* --- Hero carousel (spotlight slides) --- */
 .hero-slider{position:absolute;right:4.7%;bottom:34px;width:min(370px,42vw);display:flex;flex-direction:column;gap:10px;text-align:right;padding:18px 18px 14px;border-radius:8px;border:1px solid #ffffff12;background:linear-gradient(180deg,#0b100b14,#0b100bde 55%,#0b100bf2);backdrop-filter:blur(7px);z-index:2}

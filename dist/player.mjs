@@ -49,6 +49,8 @@ let savedScroll = 0;
 let stageState = 'idle';
 let remote = null;
 let pushDepth = 0;
+let notesOpen = false;
+let notesOrigin = null;
 
 /* ---------------------------------------------------------------- helpers */
 
@@ -112,10 +114,15 @@ function setStatus(message) {
   if (els.status) els.status.textContent = message;
 }
 
+/**
+ * The stage container also holds the Notes overlay, so replacing the whole stage would
+ * destroy it. Every state writes into a dedicated .player-view layer instead, and the
+ * overlay survives restarts, timeouts and remote errors.
+ */
 function setStage(state, html) {
   stageState = state;
   els.stage.dataset.state = state;
-  if (typeof html === 'string') els.stage.innerHTML = html;
+  if (typeof html === 'string' && els.view) els.view.innerHTML = html;
 }
 
 function panel({ badge = '', heading, copy, actions = '', extraNote = '' }) {
@@ -129,10 +136,14 @@ function setChrome() {
   const game = byId(currentId);
   const entry = entryFor(currentId);
   const canStart = entry.mode === 'iframe';
-  const mine = entry.mode === 'remote';
-  els.tag.textContent = game ? (game.tag || '') : '';
   els.title.textContent = game ? game.title : 'Game not found';
-  els.meta.textContent = game ? [game.genre, game.platform || 'Desktop', game.ownFiles ? 'Own files' : ''].filter(Boolean).join(' · ') : 'That address is not part of the gameflex catalogue.';
+  els.title.title = game ? game.title : '';
+  // Tag, genre, platform and own-files meta moved out of the toolbar and into the Notes
+  // overlay, so the toolbar stays a single compact row on desktop.
+  if (els.notesTag) els.notesTag.textContent = game ? (game.tag || '—') : '—';
+  if (els.notesGenre) els.notesGenre.textContent = game ? (game.genre || '—') : '—';
+  if (els.notesPlatform) els.notesPlatform.textContent = game ? (game.platform || 'Desktop') : '—';
+  if (els.notesFiles) els.notesFiles.textContent = game ? (game.ownFiles ? 'Own files required' : 'No own files noted') : '—';
   const startLabel = stageState === 'loaded' ? 'Restart game' : 'Start game';
   els.start.hidden = !(canStart && (stageState === 'loaded' || stageState === 'timeout' || stageState === 'remote-error'));
   els.start.textContent = startLabel;
@@ -145,6 +156,54 @@ function setChrome() {
   els.requirements.hidden = !game?.requirements;
   if (game?.requirements) els.requirementsCopy.textContent = game.requirements;
   syncPlayerFavourite();
+}
+
+/* --------------------------------------------------------------- notes overlay */
+
+/**
+ * The Notes overlay is opened by the toolbar Notes button (aria-expanded / aria-controls)
+ * and closed by the same button, its own close button, or Escape. It overlays the stage
+ * instead of shrinking it, so the game keeps its viewport area, and it scrolls inside its
+ * own max-height. Focus moves to the close button when it opens, Tab is trapped inside it,
+ * and focus returns to whichever Notes button opened it.
+ */
+export function isNotesOpen() { return notesOpen; }
+
+function notesTriggers() { return [els.notesButton, els.notesOpen].filter(Boolean); }
+
+export function openNotes() {
+  if (notesOpen || !els.notes) return;
+  notesOpen = true;
+  notesOrigin = document.activeElement instanceof HTMLElement && document.activeElement.closest('#player-notes') === null
+    ? document.activeElement
+    : null;
+  els.notes.hidden = false;
+  els.view.inert = true;
+  notesTriggers().forEach(button => button.setAttribute('aria-expanded', 'true'));
+  setStatus('Game notes opened. Press Escape to close them.');
+  const target = els.notesClose || els.notes;
+  if (target && typeof target.focus === 'function') target.focus({ preventScroll: true });
+}
+
+export function closeNotes({ restore = true } = {}) {
+  if (!notesOpen || !els.notes) return;
+  notesOpen = false;
+  els.notes.hidden = true;
+  els.view.inert = false;
+  notesTriggers().forEach(button => button.setAttribute('aria-expanded', 'false'));
+  setStatus('Game notes closed.');
+  const target = notesOrigin && notesOrigin.isConnected ? notesOrigin : els.notesButton;
+  notesOrigin = null;
+  if (restore && target && typeof target.focus === 'function') target.focus({ preventScroll: true });
+}
+
+function toggleNotes() { if (notesOpen) closeNotes(); else openNotes(); }
+
+/** Keeps Tab inside the overlay while it is open, so Escape is always reachable. */
+function trapNotes(event, items) {
+  const first = items[0], last = items[items.length - 1];
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
 }
 
 /* -------------------------------------------------------------- favourites */
@@ -243,7 +302,7 @@ function teardownFrame() {
   generation += 1;
   clearTimeout(loadTimer);
   loadTimer = 0;
-  els.stage.querySelectorAll('iframe.player-frame, canvas.player-canvas').forEach(node => node.remove());
+  els.view.querySelectorAll('iframe.player-frame, canvas.player-canvas').forEach(node => node.remove());
   clearStageNote();
   if (remote) { stopRemote(remote); remote = null; }
   els.fullscreen.hidden = true;
@@ -274,7 +333,7 @@ function startFrame() {
     if (gen !== generation) return;
     clearTimeout(loadTimer);
     loadTimer = 0;
-    els.stage.querySelector('.player-stage-label')?.remove();
+    els.view.querySelector('.player-stage-label')?.remove();
     els.stage.dataset.state = 'loaded';
     stageState = 'loaded';
     setStatus(`${game.title} game page opened. If it stays blank, use Restart game.`);
@@ -284,12 +343,12 @@ function startFrame() {
     if (gen !== generation) return;
     renderTimeout();
   });
-  els.stage.append(frame);
+  frame.src = url;
   loadTimer = setTimeout(() => {
     if (gen !== generation) return;
     renderTimeout();
   }, timeoutMs());
-  frame.src = url;
+  els.view.append(frame);
 }
 
 /* --------------------------------------------------------- remote prototype */
@@ -298,7 +357,7 @@ function startRemote() {
   const base = remoteApiBase();
   if (!base) return renderStart();
   const game = byId(currentId);
-  const field = els.stage.querySelector('#player-remote-key');
+  const field = els.view.querySelector('#player-remote-key');
   const createKey = field && ownerKeyEligible() ? field.value.trim() : '';
   teardownFrame();
   const gen = generation;
@@ -357,8 +416,8 @@ function openSocket(base, session, gen) {
   canvas.setAttribute('aria-label', `Remote preview stream for ${byId(currentId)?.title || 'this game'}. Click the canvas to send keyboard input.`);
   setStage('streaming');
   els.stage.dataset.state = 'streaming';
-  els.stage.innerHTML = '';
-  els.stage.append(canvas);
+  els.view.innerHTML = '';
+  els.view.append(canvas);
   const context = canvas.getContext('2d');
   const state = { width: canvas.width, height: canvas.height };
   let socket;
@@ -493,6 +552,7 @@ function setPageInert(on) {
 
 export function openPlayer(id, { push = true, focus = true } = {}) {
   const safeId = typeof id === 'string' && ID_PATTERN.test(id) ? id : '';
+  const switching = open && currentId !== safeId;
   currentId = safeId;
   if (!open) {
     restoreFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -502,6 +562,8 @@ export function openPlayer(id, { push = true, focus = true } = {}) {
     setPageInert(true);
     open = true;
   }
+  // Notes default closed: every open and every game switch starts with the overlay shut.
+  if (notesOpen || switching) closeNotes({ restore: false });
   if (push) {
     const url = `${location.pathname}${location.search}#play/${safeId}`;
     if (location.hash !== `#play/${safeId}`) {
@@ -536,9 +598,10 @@ export function closePlayer() {
 }
 
 function teardown() {
+  closeNotes({ restore: false });
   teardownFrame();
   if (document.fullscreenElement) document.exitFullscreen().catch(() => { /* already exiting */ });
-  els.stage.innerHTML = '';
+  els.view.innerHTML = '';
   setStage('idle', '');
   els.root.hidden = true;
   open = false;
@@ -555,7 +618,7 @@ function teardown() {
 }
 
 function focusPlayer() {
-  const primary = els.stage.querySelector('[data-player-action="start"]');
+  const primary = els.view.querySelector('[data-player-action="start"]');
   const target = primary || (els.start.hidden ? els.close : els.start);
   target.focus({ preventScroll: true });
   // Making the catalogue inert can move focus after the fact, so re-assert it on the next frame.
@@ -576,20 +639,33 @@ function syncFromLocation() {
   if (open) closePlayer();
 }
 
-function focusables() {
-  return [...els.root.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])')]
+function focusables(scope = els.root) {
+  return [...scope.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])')]
     .filter(node => !node.hidden && node.offsetParent !== null);
 }
 
+/**
+ * Escape closes the notes overlay first and the player only on a second press. While the
+ * overlay is open, Tab is trapped inside it; otherwise it is trapped inside the player, so
+ * the catalogue behind stays unreachable.
+ */
 function onKeydown(event) {
   if (!open) return;
-  if (event.key === 'Escape') { event.preventDefault(); closePlayer(); return; }
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    if (notesOpen) closeNotes();
+    else closePlayer();
+    return;
+  }
   if (event.key !== 'Tab') return;
-  const items = focusables();
+  const items = notesOpen ? focusables(els.notes) : focusables(els.root);
   if (!items.length) return;
-  const first = items[0], last = items[items.length - 1];
-  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  if (notesOpen) trapNotes(event, items);
+  else {
+    const first = items[0], last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
 }
 
 function onFullscreenChange() {
@@ -603,20 +679,30 @@ export async function initPlayer(playerHost = {}) {
   els = {
     root: document.getElementById('player'),
     close: document.getElementById('player-close'),
-    tag: document.getElementById('player-tag'),
     title: document.getElementById('player-title'),
-    meta: document.getElementById('player-meta'),
     start: document.getElementById('player-start'),
     remote: document.getElementById('player-remote'),
     fullscreen: document.getElementById('player-fullscreen'),
     favourite: document.getElementById('player-favourite'),
     stage: document.getElementById('player-stage'),
     foot: document.querySelector('.player-foot'),
+    notes: document.getElementById('player-notes'),
+    notesButton: document.getElementById('player-notes-button'),
+    notesOpen: document.getElementById('player-notes-open'),
+    notesClose: document.getElementById('player-notes-close'),
+    notesTag: document.getElementById('player-notes-tag'),
+    notesGenre: document.getElementById('player-notes-genre'),
+    notesPlatform: document.getElementById('player-notes-platform'),
+    notesFiles: document.getElementById('player-notes-files'),
     requirements: document.getElementById('player-requirements'),
     requirementsCopy: document.getElementById('player-requirements-copy'),
     status: document.getElementById('player-status'),
   };
   if (!els.root || !els.stage) return false;
+  // The stage keeps its own Notes overlay, so game surfaces live in a view layer beside it.
+  els.view = document.createElement('div');
+  els.view.className = 'player-view';
+  els.stage.prepend(els.view);
 
   try {
     const response = await fetch('player-config.json', { cache: 'no-cache' });
@@ -630,6 +716,9 @@ export async function initPlayer(playerHost = {}) {
   }
 
   els.close.addEventListener('click', () => closePlayer());
+  els.notesButton?.addEventListener('click', () => toggleNotes());
+  els.notesOpen?.addEventListener('click', () => toggleNotes());
+  els.notesClose?.addEventListener('click', () => closeNotes());
   els.start.addEventListener('click', () => startFrame());
   els.remote.addEventListener('click', () => startRemote());
   els.favourite.addEventListener('click', () => {
