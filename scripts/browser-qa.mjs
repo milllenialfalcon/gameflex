@@ -247,7 +247,7 @@ assert(await playerOpen(), 'a tile click opens the in-site player');
 assert.equal(await page.locator('#player').getAttribute('role'), 'dialog');
 assert.equal(await page.locator('#player').getAttribute('aria-modal'), 'true');
 assert.equal((await page.locator('#player-title').textContent()).trim(), 'Halo: Combat Evolved');
-assert(await page.locator('#player-requirements').isVisible());
+assert(await page.locator('#player-requirements').isHidden(), 'requirements stay in the closed Notes overlay');
 assert((await page.locator('#player-requirements-copy').textContent()).includes('XISO'));
 const focusSettled = await page.waitForFunction(() => Boolean(document.querySelector('#player')?.contains(document.activeElement)), null, { timeout: 2000 }).then(() => true).catch(() => false);
 assert(focusSettled, 'focus moves into the player when it opens');
@@ -261,6 +261,10 @@ assert(!(await page.locator('body > main').isVisible()), 'the catalogue is not v
 assert(!(await page.locator('body > footer').isVisible()), 'the footer is not visible behind the player');
 assert.equal(interceptedUrls.filter(url => url.includes('/api/sessions')).length, 0, 'the shipped config makes no relay calls');
 assert((await statusText()).includes('Player open for'), 'opening announces the player');
+await page.locator('#player-notes-button').click();
+assert(await page.locator('#player-requirements').isVisible(), 'requirements remain available on demand');
+await page.keyboard.press('Escape');
+assert(await playerOpen(), 'closing Notes does not close the player');
 pass('tile launch opens the player with title, requirements, focus and scroll lock; catalogue chrome, remote and Fullscreen stay hidden');
 
 /* ---------------------------------------------------------- player: iframe */
@@ -418,10 +422,15 @@ await panelStart().click();
 await page.waitForFunction(() => document.getElementById('player-stage').dataset.state === 'loaded');
 assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the open player has no mobile horizontal overflow');
 await page.screenshot({ path: 'artifacts/qa/mobile-player.png', fullPage: true });
-for (const selector of ['#player-start', '#player-close', '#player-favourite', '#player-note', '.player-meta']) {
+for (const selector of ['#player-start', '#player-close', '#player-favourite', '#player-notes-button']) {
   assert(await page.locator(selector).isVisible(), `${selector} is usable on mobile`);
   assert(await page.locator(selector).evaluate(el => parseFloat(getComputedStyle(el).fontSize) >= 12), `${selector} readable on mobile`);
 }
+await page.locator('#player-notes-button').click();
+for (const selector of ['#player-note', '#player-notes dl']) {
+  assert(await page.locator(selector).isVisible(), `${selector} is readable inside mobile Notes`);
+}
+await page.keyboard.press('Escape');
 const startBox = await page.locator('#player-start').boundingBox();
 assert(startBox.x >= 0 && startBox.x + startBox.width <= 391, 'player actions stay inside the mobile viewport');
 assert(startBox.height >= 44, 'the primary player action keeps a 44px touch target');
