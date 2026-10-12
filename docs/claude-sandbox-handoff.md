@@ -8,7 +8,7 @@ You are the Gameflex backend engineer. GPT (ChatGPT desktop) owns frontend archi
 
 Use Trello board **Gameflex** as the shared progress surface: https://trello.com/b/1kXnmQJJ/gameflex. Each substantial task gets an owner, concise scope, acceptance checks and links to its GitHub branch/PR. Move cards through the existing workflow and leave brief comments at start, when blocked, and when ready for review. GitHub commits/PRs remain the technical record; Trello mirrors status and links. Never report another agent's work as your own.
 
-No shared mutable checkout. Use a separate Git worktree/branch per human or Hermes task, push early, and coordinate file ownership in the Trello card. Do not edit another active worker's assigned files. Keep product source changes in PRs; the primary agent owns merges, deployment and Trello edits unless the owner explicitly changes that arrangement.
+No shared mutable checkout. Use a separate Git worktree/branch per human or Hermes task, push early, and coordinate file ownership in the Trello card. Do not edit another active worker's assigned files. Keep product source changes in PRs. Each human engineer updates the Trello card they own; the release owner handles merges and Sites publication.
 
 ## Read first
 
@@ -53,9 +53,11 @@ Use `gameflexresearch` for external discovery or broad research. Always provide 
 
 ## Shared progress and notifications
 
-Trello is the shared coordination board, not an instant cross-app chat. Keep each card current with owner, status, next action, blockers and links. GitHub PRs are the authoritative source for code changes and review. Both Claude Code and ChatGPT can work from GitHub and the same Trello board, but each app's local context does not automatically synchronize to the other.
+Trello is the shared progress record, not shared model memory. Keep each card current with owner, status, next action, blockers and branch/PR links. GitHub PRs are authoritative for code and review. Both desktop apps are separate clients; Claude cannot see GPT's conversation, and GPT cannot see Claude's. Each engineer must leave a short Trello update when starting, blocked, or ready for review.
 
-For near-real-time updates, first use Trello's built-in notifications and GitHub PR notifications. A later integration can relay GitHub PR/CI events into Trello comments (and optionally Trello card events back to a chat/notification destination) through a small webhook service. Use authenticated, idempotent events and a narrow allowlist; never expose Hermes or a local Claude/ChatGPT CLI as a public webhook endpoint. Polling is a simpler fallback, but not instant and can create noise. Propose the event bridge as its own scoped task; don't build it into the sandbox broker by accident.
+The ChatGPT desktop task already has a connected Trello tool. Claude Code can connect to MCP servers, but do not assume that connection is present: verify Trello read/write access in Claude before relying on it. If there is no approved Trello connector for Claude, keep the shared board open in a browser and post updates there manually while we select a supported MCP/API integration. Store any auth in the client's protected local credential store, never `.mcp.json` or Git. A checked-in project MCP config must contain only non-secret endpoint metadata.
+
+For fast human awareness, enable Trello card/board notifications and GitHub PR/CI notifications in both apps. Webhooks can deliver GitHub/Trello events into a shared notification service or activity feed, but they do not automatically inject messages into an idle Claude or ChatGPT conversation. A custom event bridge should be a separate, small project with an authenticated receiver, signature validation, an allowlist, deduplication and clear retention. Never expose Hermes or a local Claude/ChatGPT CLI as a public webhook endpoint.
 
 ## Prompt to start Claude Code
 
