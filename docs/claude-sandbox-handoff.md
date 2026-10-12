@@ -1,0 +1,76 @@
+# Claude handoff: Gameflex sandbox backend
+
+Updated 2026-10-12. Repo: https://github.com/milllenialfalcon/gameflex. Start from `fix/player-viewport` / PR #14 (commit `959125d`), which is the latest published frontend baseline. Do not start from an older player branch without reconciling it first.
+
+## Role and working agreement
+
+You are the Gameflex backend engineer. GPT (ChatGPT desktop) owns frontend architecture, UI implementation, integration and product release. Hermes is the shared heavy worker for bounded research, bulk checks and routine implementation; either engineer can invoke it from a terminal. The human product owner reviews material product/security choices and verifies new games before publication.
+
+Use Trello board **Gameflex** as the shared progress surface: https://trello.com/b/1kXnmQJJ/gameflex. Each substantial task gets an owner, concise scope, acceptance checks and links to its GitHub branch/PR. Move cards through the existing workflow and leave brief comments at start, when blocked, and when ready for review. GitHub commits/PRs remain the technical record; Trello mirrors status and links. Never report another agent's work as your own.
+
+No shared mutable checkout. Use a separate Git worktree/branch per human or Hermes task, push early, and coordinate file ownership in the Trello card. Do not edit another active worker's assigned files. Keep product source changes in PRs; the primary agent owns merges, deployment and Trello edits unless the owner explicitly changes that arrangement.
+
+## Read first
+
+1. `AGENTS.md` and `README.md` for project rules and the Hermes invocation.
+2. `docs/player-ui.md` for the frontend's current remote-session request/response contract and failure cleanup.
+3. `docs/player-isolation-audit.md` and `docs/player-viewport-qa.md` for verified hosting limits and frontend evidence.
+4. PR #14 and its base `codex/supplied-artwork`; check GitHub for newer merged work before coding.
+5. `docs/worker.md` and `research/browser-hosting/recommendation.md` for the current Hermes setup and previous infrastructure review.
+
+Treat every document as dated context. Confirm the actual code and current deployment before relying on old branch notes or measurements.
+
+## Current product/runtime state
+
+- Live site: https://www.gameflex.lol (public audience). Static frontend under `dist/`; this release has no application backend, account system, telemetry, or server-side favourites.
+- All launches stay inside the Gameflex player. Sandboxed iframe mode is the shipped path for selected records. There is no new-tab fallback.
+- `dist/player-config.json` has `remote.enabled: false`. A prototype client contract exists in `dist/player.mjs`, but the public site does not call a production broker.
+- Prototype API: `POST /api/sessions` with `{ gameId }` returns `{ id, token, wsUrl, expiresAt }`; WebSocket accepts bounded `{type:"input", event:…}` and emits `{type:"frame", data:<base64 JPEG>, width, height}`; DELETE session ends it. See `docs/player-ui.md` for exact types and generation/late-create cleanup.
+- This prototype is JPEG-only, with no audio and no production identity or broker authorization flow. A loopback owner key exists for local development only. Do not extend it into a public shared secret.
+- BO1 reports SharedArrayBuffer unavailable; Hermes traced its exact message to a `crossOriginIsolated` capability check. Halo CE Mobile and The Simpsons also use shared-memory paths. See `docs/player-isolation-audit.md`. Adding headers to an unrelated origin, a frame load, or HTTP 200 is not proof of a fix or playable game.
+- Remote-streamed sessions are different from first-party static game hosting and from iframe embedding. Do not proxy third-party sites to strip security headers. Do not assume hosting, framing, streaming, game-file, or ad/monetization rights.
+- No production deployment credentials belong in Git, prompts, Trello, logs, or Hermes memory.
+
+## First task: own the backend discovery and pilot
+
+Start by posting an update on the Trello card for **Production sandbox broker and isolated game runner** (create one in the existing Backlog/To do lane if absent). Link this handoff and PR #14. Then:
+
+1. Inspect the current source, relevant open PRs, service prototype and hosting recommendation. Locate what is already implemented; do not recreate or overwrite it.
+2. Write a short, evidence-backed backend proposal covering the smallest production vertical slice: broker API/auth, isolated per-session browser or runtime, game allowlist, input/video/audio, lifecycle/cleanup, quotas/abuse controls, secrets, hosting/cost, observability and operational failure modes. Separate local prototype behavior from tested production facts.
+3. Identify decisions only the owner can make, especially provider/budget, retention, public access/rate limits, audio requirements and monetization policy. Put the concrete options, tradeoffs and recommendation in the Trello card and a repo note/PR; ask the owner in Claude Code before making a costly or externally visible choice.
+4. Once those choices are resolved, implement one vertical slice on your own branch/worktree. Keep remote mode disabled on the live frontend until the broker and runner pass the agreed release checks. Do not deploy, merge, edit `dist/games.json`, change verification decisions, or enable monetization as part of backend work without owner approval.
+5. Include abuse/security tests and a repeatable local run. Validate create → connect → stream → input → delete, unauthorized access, limits, expiry, disconnect, abandoned creation, concurrent sessions, and runner isolation. Document what remains untested. Request frontend contract changes through a Trello card/PR comment so GPT can adapt its owned UI.
+
+## Hermes use
+
+Both engineers can run the installed Hermes CLI from Claude Code or ChatGPT's terminal, using the shared profiles and model. The project-required form is:
+
+```powershell
+hermes -p gameflex --in D:\AI\Gameflex --provider opencode-go -m deepseek-v4.1-flash -t terminal,file -z 'Bounded task. Read AGENTS.md first. Modify only the files assigned below. Report changed paths, commands/results, limitations, and do not commit, push, publish, or update Trello.'
+```
+
+Use `gameflexresearch` for external discovery or broad research. Always provide a bounded scope, exact file ownership, and a report path under `research/` for research work. Hermes workers do not commit, push, merge, publish, change Trello, or edit another worker's files; their human owner reviews and integrates. Never paste secrets into a worker prompt. If CLI/profile configuration differs on Claude's machine, inspect `docs/worker.md` and validate the profile without copying API credentials into the repo.
+
+## Shared progress and notifications
+
+Trello is the shared coordination board, not an instant cross-app chat. Keep each card current with owner, status, next action, blockers and links. GitHub PRs are the authoritative source for code changes and review. Both Claude Code and ChatGPT can work from GitHub and the same Trello board, but each app's local context does not automatically synchronize to the other.
+
+For near-real-time updates, first use Trello's built-in notifications and GitHub PR notifications. A later integration can relay GitHub PR/CI events into Trello comments (and optionally Trello card events back to a chat/notification destination) through a small webhook service. Use authenticated, idempotent events and a narrow allowlist; never expose Hermes or a local Claude/ChatGPT CLI as a public webhook endpoint. Polling is a simpler fallback, but not instant and can create noise. Propose the event bridge as its own scoped task; don't build it into the sandbox broker by accident.
+
+## Prompt to start Claude Code
+
+Paste the following after opening this repository at the handoff branch:
+
+> You are the Gameflex backend engineer. Read `docs/claude-sandbox-handoff.md`, `AGENTS.md`, `docs/player-ui.md`, `docs/player-isolation-audit.md`, `docs/worker.md`, and `research/browser-hosting/recommendation.md`. Check for newer GitHub changes than this handoff before you act. First inspect the existing remote-session prototype and all relevant backend/service branches or PRs. Then create/update the Trello card **Production sandbox broker and isolated game runner**, assign yourself as owner in the description, and post a short start update. Do not edit files yet. Return: (1) what backend code already exists and its tested state, (2) a recommended minimum production architecture that fits the existing frontend API, (3) risks/cost drivers and concrete owner decisions needed, and (4) a proposed vertical-slice scope with acceptance tests. Do not deploy, enable remote mode, change game approvals, or put secrets in Git. When the owner answers the listed choices, continue implementation in your own worktree/branch, delegate bounded bulk work to Hermes using the Gameflex profile and `--in D:\AI\Gameflex`, and keep Trello and GitHub current. If you need clarification from GPT, ask in the shared Trello card with a direct question and tag/link the relevant PR; do not assume GPT can see your Claude conversation.
+
+## Claude's questions for the owner
+
+Ask only after the initial code/PR audit, and group them into one short Trello comment:
+
+- Which hosting provider and monthly spend ceiling should the first pilot target?
+- Should pilot sessions be open to every visitor, or limited to a private test group?
+- What is the maximum session length and concurrency? Should any video/session data be retained (recommend no recording by default)?
+- Is audio required for the first pilot, or can a silent visual/input slice validate the runner first?
+- Should monetization/ad insertion remain explicitly out of scope until hosting and game distribution rights are reviewed per title?
+
+Default recommendation: private pilot, no recording, short session TTL, conservative concurrency/rate limits, audio called out as a release requirement before public launch, and no ad insertion until per-title rights and product policy are established.
