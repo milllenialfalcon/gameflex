@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!--
+  Content Security Policy for the EmulatorJS host page. Every byte the emulator needs is
+  vendored under ejs/4.2.3/, so no non-self origin is ever allowed. Blocking other origins
+  is also how the upstream CDN core fallback, the version check, netplay (socket.io) and ad
+  slots stay switched off; EJS_netplayServer and EJS_AdUrl are left unset as well.
+
+  Two deviations from the plan's starting policy, both measured against the vendored 4.2.3
+  build (see docs/emulator.md for the evidence):
+    1. `blob:` in script-src — EmulatorJS runs the core script it decompresses out of
+       <core>-wasm.data from an object URL (data/src/emulator.js, initGameCore).
+    2. `'unsafe-eval'` in script-src — the 7z decompression worker EmulatorJS builds for
+       those core archives (compression/extract7z.js, an emscripten build using eval in
+       getCFunc/cwrap) is refused without it.
+-->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval' 'unsafe-eval' blob:; worker-src 'self' blob:; connect-src 'self' blob: data:; img-src 'self' blob: data:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; font-src 'self'; base-uri 'none'; form-action 'none'">
+<title>GAMEFLEX player</title>
+<style>
+:root{--bg:#101210;--panel:#191c18;--muted:#92998b;--white:#f4f4eb;--lime:#c4fa53;--border:#30362c}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--white);font-family:Space,Arial,sans-serif;font-size:15px;overflow:hidden}
+[hidden]{display:none!important}
+#game{position:fixed;inset:0}
+#boot{position:fixed;inset:auto 0 0;padding:14px 18px;font-size:13px;color:var(--muted);background:linear-gradient(0deg,#101210f2,#10121000)}
+#boot strong{color:var(--lime);font-weight:700}
+#panel{position:fixed;inset:0;display:grid;place-items:center;padding:24px;background:var(--bg);overflow:auto}
+.panel-card{max-width:520px;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:26px 24px;box-shadow:0 18px 60px #0006}
+.panel-mark{font-family:Pixel,monospace;font-size:15px;letter-spacing:-.4px;color:var(--lime);margin:0 0 14px}
+.panel-card h1{font-size:21px;line-height:1.25;letter-spacing:-.5px;margin:0 0 12px}
+.panel-card p{font-size:14px;line-height:1.7;color:#c6ccbe;margin:0}
+.panel-card details{margin-top:18px;font-size:12px;color:var(--muted)}
+.panel-card summary{cursor:pointer;color:#b2bca7}
+.panel-card code{display:block;margin-top:8px;word-break:break-word;white-space:pre-wrap;color:#dfeacb;border-left:2px solid var(--lime);padding:8px 12px;background:#c4fa5308}
+.panel-card .panel-foot{font-size:12px;color:var(--muted);margin-top:18px;border-top:1px solid var(--border);padding-top:14px}
+</style>
+</head>
+<body>
+<div id="game"></div>
+<p id="boot">Loading <strong id="boot-name">the emulator</strong>…</p>
+<div id="panel" hidden>
+  <div class="panel-card">
+    <p class="panel-mark">GAMEFLEX</p>
+    <h1 id="panel-title">This game can’t start</h1>
+    <p id="panel-note"></p>
+    <details id="panel-detail" hidden><summary>Details</summary><code id="panel-code"></code></details>
+    <p class="panel-foot">Nothing left your device. This page only loads files from gameflex itself.</p>
+  </div>
+</div>
+<script type="module" src="./play.mjs"></script>
+</body>
+</html>

@@ -1090,5 +1090,125 @@
       "DOS Zone",
       "The Lost Vikings"
     ]
+  },
+  {
+    "id": "super-tilt-bro",
+    "title": "Super Tilt Bro.",
+    "url": "https://gameflex.lol/#play/super-tilt-bro",
+    "genre": "Versus fighter",
+    "category": "retro",
+    "tag": "TILT TO WIN",
+    "art": "assets/emu-super-tilt-bro.png",
+    "artFit": "contain",
+    "platform": "NES",
+    "description": "A NES fighter where every clean hit sends you flying. Two buttons, one net, and a CPU that never misses a ledge.",
+    "requirements": "Arrows move and aim, Z jumps, X attacks, Enter starts. Homebrew by Sylvain Gadrat, published under the WTFPL. Runs on this device from a ROM gameflex hosts.",
+    "tags": [
+      "Homebrew",
+      "NES",
+      "Fighting",
+      "WTFPL"
+    ],
+    "checkedAt": "2026-10-12"
+  },
+  {
+    "id": "tobu-tobu-girl",
+    "title": "Tobu Tobu Girl",
+    "url": "https://gameflex.lol/#play/tobu-tobu-girl",
+    "genre": "Arcade platformer",
+    "category": "retro",
+    "tag": "BOUNCE UP",
+    "art": "assets/emu-tobu-tobu-girl.png",
+    "artFit": "contain",
+    "platform": "Game Boy",
+    "description": "Bounce off enemies to climb, dash in eight directions, and try not to fall. A Game Boy arcade platformer with a chiptune you will hum all day.",
+    "requirements": "Arrows move, Z jumps, X dashes, Enter pauses. Code by Simon Larsen (Tangram Games) under the MIT licence; art, text and music by the same author under CC BY 4.0. Runs on this device from a ROM gameflex hosts.",
+    "tags": [
+      "Homebrew",
+      "Game Boy",
+      "Platformer",
+      "CC BY 4.0"
+    ],
+    "checkedAt": "2026-10-12"
+  },
+  {
+    "id": "ucity",
+    "title": "µCity",
+    "url": "https://gameflex.lol/#play/ucity",
+    "genre": "City builder",
+    "category": "retro",
+    "tag": "MAYOR OF EVERYTHING",
+    "art": "assets/emu-ucity.png",
+    "artFit": "contain",
+    "platform": "Game Boy Color",
+    "description": "Build a city on a Game Boy Color, one tile at a time, and try to keep the citizens smiling about it.",
+    "requirements": "Arrow keys move the cursor, Z confirms, X cancels, Enter opens the menu. City builder by Antonio Niño Díaz (AntonioND). GPL-3.0-or-later: the source for this build is the µCity repository, version 1.3 (codeberg.org/SkyLyrac/ucity). Runs on this device from a ROM gameflex hosts.",
+    "tags": [
+      "Homebrew",
+      "Game Boy Color",
+      "City builder",
+      "GPL-3.0"
+    ],
+    "checkedAt": "2026-10-12"
+  },
+  {
+    "id": "blind-jump",
+    "title": "BlindJump",
+    "url": "https://gameflex.lol/#play/blind-jump",
+    "genre": "Action adventure",
+    "category": "retro",
+    "tag": "DOWN YOU GO",
+    "art": "assets/emu-blind-jump.png",
+    "artFit": "contain",
+    "platform": "Game Boy Advance",
+    "description": "A torch, a gun, a long way down. Cave-diving adventure with a map you have to earn.",
+    "requirements": "Arrows move, Z jumps, X fires, Enter pauses. Homebrew by Evan Bowman under the MIT licence. Runs on this device from a ROM gameflex hosts.",
+    "tags": [
+      "Homebrew",
+      "Game Boy Advance",
+      "Adventure",
+      "MIT"
+    ],
+    "checkedAt": "2026-10-12"
+  },
+  {
+    "id": "zerosouls",
+    "title": "ZeroSouls",
+    "url": "https://gameflex.lol/#play/zerosouls",
+    "genre": "Dungeon crawler",
+    "category": "retro",
+    "tag": "ONE MORE DUNGEON",
+    "art": "assets/emu-zerosouls.png",
+    "artFit": "contain",
+    "platform": "Mega Drive",
+    "description": "A Mega Drive dungeon crawler with a sword, a shield and no map. Find the stairs, fight what is waiting on them.",
+    "requirements": "Arrows move, Z jumps, X attacks, Enter starts. GPL-3.0: the source for this build is the ZeroSouls repository (github.com/CartridgeStack/ZeroSouls), the committed build output out/zerosouls.bin. Runs on this device from a ROM gameflex hosts.",
+    "tags": [
+      "Homebrew",
+      "Mega Drive",
+      "Dungeon crawler",
+      "GPL-3.0"
+    ],
+    "checkedAt": "2026-10-12"
+  },
+  {
+    "id": "240p-test-suite-snes",
+    "title": "240p Test Suite (SNES)",
+    "url": "https://gameflex.lol/#play/240p-test-suite-snes",
+    "genre": "Display test suite",
+    "category": "retro",
+    "tag": "TEST PATTERNS",
+    "art": "assets/emu-240p-test-suite-snes.png",
+    "artFit": "contain",
+    "platform": "Super Nintendo",
+    "description": "Colour bars, grids, scroll tests and timing patterns for checking a screen. Not a game — a measuring tool with a menu.",
+    "requirements": "Arrows pick a test, Z or X confirms, Enter backs out. Display test suite by Artemio Urbina, GPL-2.0-or-later: the source for this build is the 240p Test Suite repository, SNES version 1.10 (NTSC build). Runs on this device from a ROM gameflex hosts.",
+    "tags": [
+      "Homebrew",
+      "SNES",
+      "Test suite",
+      "GPL-2.0"
+    ],
+    "checkedAt": "2026-10-12"
   }
 ]

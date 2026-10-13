@@ -44,6 +44,8 @@ const GAMES = JSON.parse(await readFile(path.resolve('dist/games.json'), 'utf8')
 const LISTINGS = GAMES.length;
 const CATALOGUE_IDS = GAMES.map(game => game.id).sort();
 const DOS_LISTINGS = GAMES.filter(game => game.provider === 'dos-zone');
+// Hosted EmulatorJS test listings (category retro) are tracked by scripts/emulator-qa.mjs.
+const EMULATOR_LISTINGS = GAMES.filter(game => game.category === 'retro');
 const PENDING_LISTINGS = GAMES.filter(game => game.availability === 'sandbox-pending');
 const countFor = (predicate) => GAMES.filter(predicate).length;
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf' };
@@ -138,10 +140,10 @@ const count = await shelfCards().count();
 // Reachability is measured over the rendered Spotlight cards: every catalogue id must be on
 // screen as a `[data-game]` card somewhere in the browse layer.
 const uniqueRenderedIds = [...new Set(await page.evaluate(() => [...document.querySelectorAll('#shelves [data-game]')].map(node => node.dataset.game)))].sort();
-assert.equal(LISTINGS - DOS_LISTINGS.length, 16, 'the catalogue preserves the 16 original listings');
+assert.equal(LISTINGS - DOS_LISTINGS.length - EMULATOR_LISTINGS.length, 16, 'the catalogue preserves the 16 original listings');
 assert(DOS_LISTINGS.length >= 21, 'the catalogue preserves the existing DOS listings');
 assert.equal(PENDING_LISTINGS.length, DOS_LISTINGS.length, 'every DOS listing is still marked sandbox-pending');
-assert.equal(countFor(g => !g.provider), 16, 'the catalogue keeps its 16 reviewed games');
+assert.equal(countFor(g => !g.provider && g.category !== 'retro'), 16, 'the catalogue keeps its 16 reviewed games');
 assert(count >= LISTINGS, 'the Spotlight shelves still render cards');
 assert.deepEqual(uniqueRenderedIds, CATALOGUE_IDS, 'every catalogue listing is reachable from a rendered card');
 // Every rendered card is labelled with its own game: an ordinary (captionless) card keeps its
@@ -594,7 +596,7 @@ remotePage.on('pageerror', error => remoteErrors.push(error.message));
 remotePage.on('console', message => { if (message.type() !== 'error') return; if (/Failed to load resource: the server responded with a status of 401/.test(message.text())) expectedAuthErrors.push(message.text()); else remoteErrors.push(`console: ${message.text()}`); });
 // Two configs are exercised: the loopback mock relay, then a non-loopback HTTPS
 // broker. Neither request leaves the machine — the route below answers both.
-const remoteConfig = { version: 1, remote: { enabled: true, apiBase: mockBase }, games: { halo: { mode: 'iframe' } } };
+const remoteConfig = { version: 2, remote: { enabled: true, apiBase: mockBase }, games: { halo: { mode: 'iframe' } } };
 await remotePage.route('**/player-config.json', route => route.fulfill({
   status: 200,
   contentType: 'application/json; charset=utf-8',

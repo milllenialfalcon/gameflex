@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "remote": {
     "enabled": false,
     "apiBase": ""
@@ -23,6 +23,60 @@
     "wasmarcade": {
       "mode": "unavailable",
       "reason": "WASM Arcade's own terms prohibit embedding their pages, so gameflex can't load it in this player."
+    },
+    "super-tilt-bro": {
+      "mode": "emulator",
+      "system": "nes",
+      "core": "fceumm",
+      "rom": "emulator/roms/nes/super-tilt-bro.nes",
+      "sha256": "847155bb712e474f71554174c9d9ed402bf651b13ff1e4afc9a42ec69cd03d8d",
+      "licence": "WTFPL",
+      "title": "Super Tilt Bro."
+    },
+    "tobu-tobu-girl": {
+      "mode": "emulator",
+      "system": "gb",
+      "core": "gambatte",
+      "rom": "emulator/roms/gb/tobu-tobu-girl.gb",
+      "sha256": "5d3871cae77db2287807e8914fd21f76203e73aa3fec20955489d45cb4571d8f",
+      "licence": "MIT (code) + CC-BY-4.0 (assets)",
+      "title": "Tobu Tobu Girl"
+    },
+    "ucity": {
+      "mode": "emulator",
+      "system": "gbc",
+      "core": "gambatte",
+      "rom": "emulator/roms/gbc/ucity.gbc",
+      "sha256": "9422ee2ca7b7ea1d46b58b2a429fff3f354dfd3e732dee1e7ae6220f148ce6e0",
+      "licence": "GPL-3.0-or-later",
+      "title": "µCity"
+    },
+    "blind-jump": {
+      "mode": "emulator",
+      "system": "gba",
+      "core": "mgba",
+      "rom": "emulator/roms/gba/blind-jump.gba",
+      "sha256": "597d11e93567f14f97ba4bc44bf41691b5e0fbac8dd169e6b559bb9086a1739d",
+      "licence": "MIT",
+      "title": "BlindJump"
+    },
+    "zerosouls": {
+      "mode": "emulator",
+      "system": "segaMD",
+      "core": "genesis_plus_gx",
+      "rom": "emulator/roms/segaMD/zerosouls.bin",
+      "sha256": "127fa9c093093101203092917926edbb3be9a8531157abb5891bf097797afa80",
+      "licence": "GPL-3.0",
+      "title": "ZeroSouls"
+    },
+    "240p-test-suite-snes": {
+      "mode": "emulator",
+      "system": "snes",
+      "core": "snes9x",
+      "rom": "emulator/roms/snes/240p-test-suite-snes.sfc",
+      "sha256": "8c3f6028bb1246d2a4c5a695f9fb7b237b73dbb7c8242f042f11d8a85476cef8",
+      "licence": "GPL-2.0-or-later",
+      "title": "240p Test Suite (SNES)"
     }
   }
 }

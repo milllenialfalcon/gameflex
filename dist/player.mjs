@@ -16,12 +16,21 @@
  */
 
 const DEFAULT_LOAD_TIMEOUT_MS = 20000;
+/* PS1, N64 and DS cores plus large ROMs can take well past 20 s to boot without threads. */
+const EMULATOR_LOAD_TIMEOUT_MS = 90000;
 const REMOTE_CREATE_TIMEOUT_MS = 60000;
 const REMOTE_CONNECT_TIMEOUT_MS = 10000;
 const REMOTE_FIRST_FRAME_MS = 15000;
 const MAX_FRAME_BYTES = 4_000_000;
 const MAX_DIMENSION = 4096;
 const FRAME_SANDBOX = 'allow-scripts allow-same-origin allow-forms allow-pointer-lock';
+/**
+ * The emulator frame is our own same-origin page, so it needs no allow-forms. It is not a
+ * security boundary either: scripts plus same-origin means the frame can reach this document.
+ * What keeps the emulator honest is that every byte it runs is a vendored, pinned file and its
+ * page carries its own strict CSP (dist/emulator/play.html, docs/emulator.md).
+ */
+const EMULATOR_SANDBOX = 'allow-scripts allow-same-origin allow-pointer-lock';
 const FRAME_ALLOW = 'fullscreen; autoplay; gamepad';
 const ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
 const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '::1', '[::1]']);
@@ -56,6 +65,11 @@ let notesOrigin = null;
 
 const byId = (id) => host.games().find(game => game.id === id) || null;
 
+/**
+ * The one decision record for a launch: the catalogue entry, the sandbox-pending override and
+ * the player config, in that order. Only iframe and emulator modes can start here; every other
+ * value (a missing entry, an unknown mode, an unreadable config) fails closed.
+ */
 function entryFor(id) {
   const game = byId(id);
   if (!game) return { mode: 'unavailable', reason: 'That game is not in this collection.' };
@@ -64,8 +78,12 @@ function entryFor(id) {
   const entry = config?.games?.[id];
   if (!entry || !entry.mode) return { mode: 'unavailable', reason: 'This game is not ready to play here yet.' };
   if (entry.mode === 'iframe') return { mode: 'iframe' };
+  if (entry.mode === 'emulator') return { mode: 'emulator' };
   return { mode: 'unavailable', reason: typeof entry.reason === 'string' && entry.reason ? entry.reason : 'This game cannot play inside gameflex.' };
 }
+
+/** The player can start these modes; everything else is the blocked panel. */
+const startable = entry => entry.mode === 'iframe' || entry.mode === 'emulator';
 
 /** Only a host URL straight from the catalogue is ever framed. Hash and query input is ignored. */
 function frameUrl(game) {
@@ -100,9 +118,9 @@ function ownerKeyEligible() {
   return Boolean(url) && LOOPBACK_HOSTS.has(location.hostname) && LOOPBACK_HOSTS.has(url.hostname);
 }
 
-function timeoutMs() {
+function timeoutMs(fallback = DEFAULT_LOAD_TIMEOUT_MS) {
   const override = Number(globalThis.__GAMEFLEX_PLAYER_TIMEOUT_MS);
-  return Number.isFinite(override) && override > 200 ? override : DEFAULT_LOAD_TIMEOUT_MS;
+  return Number.isFinite(override) && override > 200 ? override : fallback;
 }
 
 function remoteCreateTimeoutMs() {
@@ -135,7 +153,7 @@ const actionStart = (label = 'Start game') => `<button class="button lime" type=
 function setChrome() {
   const game = byId(currentId);
   const entry = entryFor(currentId);
-  const canStart = entry.mode === 'iframe';
+  const canStart = startable(entry);
   els.title.textContent = game ? game.title : 'Game not found';
   els.title.title = game ? game.title : '';
   // Tag, genre, platform and own-files meta moved out of the toolbar and into the Notes
@@ -145,10 +163,11 @@ function setChrome() {
   if (els.notesPlatform) els.notesPlatform.textContent = game ? (game.platform || 'Desktop') : '—';
   if (els.notesFiles) els.notesFiles.textContent = game ? (game.ownFiles ? 'Own files required' : 'No own files noted') : '—';
   const startLabel = stageState === 'loaded' ? 'Restart game' : 'Start game';
-  els.start.hidden = !(canStart && (stageState === 'loaded' || stageState === 'timeout' || stageState === 'remote-error'));
+  els.start.hidden = !(canStart && (stageState === 'loaded' || stageState === 'timeout' || stageState === 'remote-error' || stageState === 'failed'));
   els.start.textContent = startLabel;
   els.start.disabled = stageState === 'loading';
-  els.remote.hidden = !(canStart && remoteApiBase());
+  // The remote prototype streams a game host's page, so it is only offered for iframe mode.
+  els.remote.hidden = !(entry.mode === 'iframe' && remoteApiBase());
   els.fullscreen.hidden = !(stageState === 'loaded' || stageState === 'streaming');
   els.fullscreen.setAttribute('aria-pressed', String(document.fullscreenElement === els.root));
   els.favourite.hidden = !game;
@@ -238,19 +257,23 @@ function renderBlocked() {
 
 function renderStart() {
   const game = byId(currentId);
+  const entry = entryFor(currentId);
   teardownFrame();
-  const remoteAvailable = Boolean(remoteApiBase());
+  const remoteAvailable = entry.mode === 'iframe' && Boolean(remoteApiBase());
   const keyField = ownerKeyEligible()
     ? '<label class="player-key">Owner key <input type="password" id="player-remote-key" autocomplete="off" aria-label="Owner access key for the loopback remote relay"></label>'
     : '';
-  const remoteNote = remoteAvailable && !keyField
-    ? 'The owner key is only offered for a relay on this machine.'
-    : 'Some ports may not load here yet.';
+  // Emulator games run on the visitor's device, so the remote-relay note does not apply.
+  const note = entry.mode === 'emulator'
+    ? 'Runs on this device. Save states stay in this browser.'
+    : remoteAvailable && !keyField
+      ? 'The owner key is only offered for a relay on this machine.'
+      : 'Some ports may not load here yet.';
   setStage('ready', panel({
     badge: 'IN-SITE PLAYER',
     heading: `Play ${game.title} here`,
     copy: game.description,
-    extraNote: remoteNote,
+    extraNote: note,
     actions: `${actionStart()}${remoteAvailable ? `${keyField}<button class="button ghost" type="button" data-player-action="remote">Remote session</button>` : ''}`,
   }));
   setStatus(`Player open for ${game.title}.`);
@@ -264,6 +287,8 @@ function renderLoading(mode) {
       copy: 'Requesting a remote preview session.',
       actions: actionBack,
     }));
+  } else if (mode === 'emulator') {
+    setStage('loading', '<p class="player-stage-label">Starting the emulator…</p>');
   } else {
     setStage('loading', '<p class="player-stage-label">Loading the host page…</p>');
   }
@@ -298,12 +323,22 @@ function renderRemoteError(message) {
 
 /* --------------------------------------------------------------- iframe path */
 
+/**
+ * The frame the player is currently listening to. Only this frame's messages are accepted:
+ * event.source must be this iframe's contentWindow, the origin must be ours, and the payload
+ * must be one of ours. Restart and exit clear it, so a late message from a torn-down frame is
+ * ignored rather than acted on.
+ */
+let emulatorFrame = null;
+
 function teardownFrame() {
   generation += 1;
   clearTimeout(loadTimer);
   loadTimer = 0;
   els.view.querySelectorAll('iframe.player-frame, canvas.player-canvas').forEach(node => node.remove());
+  emulatorFrame = null;
   clearStageNote();
+  hidePadHint();
   if (remote) { stopRemote(remote); remote = null; }
   els.fullscreen.hidden = true;
 }
@@ -349,6 +384,154 @@ function startFrame() {
     renderTimeout();
   }, timeoutMs());
   els.view.append(frame);
+}
+
+/* ------------------------------------------------------------- emulator path */
+
+/**
+ * "Controller? Press any button." — a nudge shown in the stage while the emulator frame has seen
+ * no controller. It makes no promise: only a real pad can hide it, because the frame is the only
+ * thing here that can see one (the game polls the same Gamepad API the visitor's device feeds),
+ * and it reports that back with {type:'gameflex-emulator', state:'gamepad'}.
+ */
+function showPadHint() {
+  hidePadHint();
+  const hint = document.createElement('p');
+  hint.className = 'player-pad-hint';
+  hint.id = 'player-pad-hint';
+  hint.textContent = 'Controller? Press any button.';
+  els.stage.append(hint);
+}
+
+function hidePadHint() {
+  els.stage.querySelectorAll('.player-pad-hint').forEach(node => node.remove());
+}
+
+/**
+ * Hands focus to the emulator frame, so a gamepad button press lands in the frame's own
+ * document: browsers expose a pad to a document only after a press while that document has
+ * focus, and the runtime only focuses its own container once the game has started — during the
+ * boot, focus would otherwise sit on the player page. A toolbar control the visitor just used
+ * keeps focus, and the Notes overlay keeps it while it is open.
+ */
+function focusEmulatorFrame() {
+  const frame = emulatorFrame;
+  if (!frame || !frame.isConnected || notesOpen) return;
+  const active = document.activeElement;
+  if (active instanceof HTMLElement && active !== document.body && els.root.contains(active) && !active.closest('#player-stage')) return;
+  try { frame.focus({ preventScroll: true }); } catch { /* the frame may already be gone */ }
+  try { frame.contentWindow?.focus(); } catch { /* same-origin only, and best effort */ }
+}
+
+/**
+ * Keydown from inside a frame never reaches the parent's own handler, so Escape would stop
+ * working as soon as focus moved into the emulator. The frame is same-origin, so the player can
+ * listen on it directly and keep Escape behaving exactly as it does in the toolbar. While the
+ * emulator is in its own fullscreen, Escape is left to the browser, which is what leaves it.
+ */
+function watchFrameKeys(frame, gen) {
+  let doc = null;
+  try { doc = frame.contentDocument; } catch { doc = null; }
+  if (!doc) return;
+  doc.addEventListener('keydown', event => {
+    if (gen !== generation || !open || event.key !== 'Escape') return;
+    if (doc.fullscreenElement) return;
+    event.preventDefault();
+    if (notesOpen) closeNotes();
+    else closePlayer();
+  }, true);
+}
+
+/**
+ * Runs one of our own vendored emulators in a same-origin frame.
+ *
+ * The frame URL is built from the catalogue id only, never from user input, and the frame gets
+ * the same generation/teardown/timeout treatment as the cross-origin path, so restart and exit
+ * remove it (which is what stops the audio and releases the emulator's WebGL context).
+ *
+ * `started` and `error` come from dist/emulator/play.mjs. `started` is EmulatorJS's own boot
+ * event: the emulator booted the ROM. It is not gameplay verification.
+ */
+function startEmulator() {
+  const game = byId(currentId);
+  const entry = config?.games?.[currentId];
+  if (!entry || entry.mode !== 'emulator') return renderBlocked();
+  teardownFrame();
+  const gen = generation;
+  renderLoading('emulator');
+  const frame = document.createElement('iframe');
+  frame.className = 'player-frame';
+  frame.setAttribute('sandbox', EMULATOR_SANDBOX);
+  frame.setAttribute('allow', FRAME_ALLOW);
+  frame.setAttribute('allowfullscreen', '');
+  frame.setAttribute('referrerpolicy', 'no-referrer');
+  frame.setAttribute('loading', 'eager');
+  frame.title = `${game.title} inside the gameflex player`;
+  frame.dataset.generation = String(gen);
+  emulatorFrame = frame;
+  frame.addEventListener('load', () => {
+    if (gen !== generation) return;
+    // Focus goes into the frame as soon as its document exists, so a controller press during the
+    // boot lands in the frame's document rather than on the player page behind it.
+    focusEmulatorFrame();
+    watchFrameKeys(frame, gen);
+  });
+  loadTimer = setTimeout(() => {
+    if (gen !== generation) return;
+    renderTimeout();
+  }, timeoutMs(EMULATOR_LOAD_TIMEOUT_MS));
+  // Only the id travels in the URL; play.mjs reads core, ROM and hash from player-config.json.
+  frame.src = `emulator/play.html?id=${encodeURIComponent(currentId)}`;
+  els.view.append(frame);
+  showPadHint();
+}
+
+function renderEmulatorError(message) {
+  teardownFrame();
+  setStage('failed', panel({
+    badge: 'EMULATOR',
+    heading: `${byId(currentId)?.title || 'That game'} could not start`,
+    copy: message,
+    extraNote: 'This ran on your device from files gameflex ships. Nothing was uploaded.',
+    actions: `${actionStart('Try again')}${actionBack}`,
+  }));
+  setStatus(`${byId(currentId)?.title || 'That game'} could not start in this player. ${message}`);
+  setChrome();
+}
+
+/** Accepts a boot report only from the frame this player created, on our own origin. */
+function onFrameMessage(event) {
+  if (!open || !emulatorFrame) return;
+  if (event.origin !== location.origin) return;
+  if (event.source !== emulatorFrame.contentWindow) return;
+  const data = event.data;
+  if (!data || data.type !== 'gameflex-emulator') return;
+  if (Number(emulatorFrame.dataset.generation) !== generation) return;
+  if (data.state === 'started') {
+    clearTimeout(loadTimer);
+    loadTimer = 0;
+    els.view.querySelector('.player-stage-label')?.remove();
+    els.stage.dataset.state = 'loaded';
+    stageState = 'loaded';
+    // The runtime takes focus for its own container at this point; make sure it is ours to keep,
+    // so a controller press cannot land on the player page instead.
+    focusEmulatorFrame();
+    setStatus(`${byId(currentId)?.title || 'The game'}: the emulator booted the game file. Restart game replays it from the beginning.`);
+    setChrome();
+    return;
+  }
+  if (data.state === 'gamepad') {
+    // The frame saw a controller. Nothing here has to know whether the visitor presses it.
+    hidePadHint();
+    const assigned = typeof data.assigned === 'boolean' ? data.assigned : null;
+    setStatus(assigned === false
+      ? 'A controller was detected in the emulator.'
+      : 'A controller was detected and is set to Player 1.');
+    return;
+  }
+  if (data.state === 'error') {
+    renderEmulatorError(typeof data.message === 'string' && data.message ? data.message : 'The emulator stopped before the game started.');
+  }
 }
 
 /* --------------------------------------------------------- remote prototype */
@@ -587,6 +770,13 @@ function renderBlockedOrStart() {
   return renderStart();
 }
 
+/** One start path for both modes, so restart keeps using whichever mode the entry declares. */
+function startCurrent() {
+  const entry = entryFor(currentId);
+  if (entry.mode === 'emulator') return startEmulator();
+  return startFrame();
+}
+
 export function closePlayer() {
   if (!open) return;
   // Leaving costs one history step per entry the player pushed, so switching
@@ -708,7 +898,7 @@ export async function initPlayer(playerHost = {}) {
     const response = await fetch('player-config.json', { cache: 'no-cache' });
     if (!response.ok) throw new Error('player config unavailable');
     const loaded = await response.json();
-    if (!loaded || loaded.version !== 1 || typeof loaded.games !== 'object' || loaded.games === null) throw new Error('player config invalid');
+    if (!loaded || loaded.version !== 2 || typeof loaded.games !== 'object' || loaded.games === null) throw new Error('player config invalid');
     config = loaded;
   } catch {
     config = null;
@@ -719,7 +909,7 @@ export async function initPlayer(playerHost = {}) {
   els.notesButton?.addEventListener('click', () => toggleNotes());
   els.notesOpen?.addEventListener('click', () => toggleNotes());
   els.notesClose?.addEventListener('click', () => closeNotes());
-  els.start.addEventListener('click', () => startFrame());
+  els.start.addEventListener('click', () => startCurrent());
   els.remote.addEventListener('click', () => startRemote());
   els.favourite.addEventListener('click', () => {
     if (!currentId) return;
@@ -734,13 +924,14 @@ export async function initPlayer(playerHost = {}) {
   els.stage.addEventListener('click', event => {
     const button = event.target.closest('[data-player-action]');
     if (!button) return;
-    if (button.dataset.playerAction === 'start') startFrame();
+    if (button.dataset.playerAction === 'start') startCurrent();
     if (button.dataset.playerAction === 'remote') startRemote();
     if (button.dataset.playerAction === 'back') closePlayer();
   });
 
   document.addEventListener('keydown', onKeydown, true);
   document.addEventListener('fullscreenchange', onFullscreenChange);
+  window.addEventListener('message', onFrameMessage);
   window.addEventListener('popstate', syncFromLocation);
   window.addEventListener('hashchange', syncFromLocation);
   syncFromLocation();

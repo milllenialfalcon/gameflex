@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/serve.mjs",
+    "dev:roms": "node scripts/serve.mjs --test-roms",
     "check": "node --check dist/app.js && node --check dist/player.mjs && node scripts/check-catalog.mjs",
     "test:browser": "node scripts/browser-qa.mjs",
     "research:import": "node scripts/research-db.mjs import research/discoveries.json",
@@ -13,7 +14,8 @@
     "test:catalogue-gate": "node scripts/catalogue-gate.test.mjs",
     "test:hero": "node scripts/hero-comparison-qa.mjs",
     "test:discovery": "node scripts/spotlight-discovery-qa.mjs",
-    "test:library": "node scripts/spotlight-library-qa.mjs"
+    "test:library": "node scripts/spotlight-library-qa.mjs",
+    "test:emulator": "node scripts/emulator-qa.mjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

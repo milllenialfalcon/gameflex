@@ -7,3 +7,4 @@ worker-logs/
 test-results/
 research/*.sqlite
 research/*.sqlite-*
+test-roms/

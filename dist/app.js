@@ -21,11 +21,12 @@ let spotlightMedia = null;
 let spotlightPortraits = null;
 try { const stored = JSON.parse(localStorage.getItem('gameflex:favourites') || '[]'); if (Array.isArray(stored)) favourites = new Set(stored.filter(id => typeof id === 'string')); } catch { /* Browsing still works when storage is unavailable. */ }
 const sections = [
+  { id:'test-roms', title:'Test ROMs', subtitle:'Local file drop only. Never part of the published catalogue.', match:g => g.category === 'test-roms' },
   { id:'top', title:'Straight to the good stuff', subtitle:'A few classics to get you started.', match:g => g.featured },
   { id:'dos-zone', title:'DOS Zone', subtitle:'Original classics. Sandbox integration is on the way.', match:g => g.provider === 'dos-zone' },
   { id:'zombies', title:'One more round', subtitle:'Board up. Gear up. Try to make it to morning.', match:g => g.category === 'zombies' },
   { id:'shooters', title:'The classics hit different', subtitle:'Arena legends, alien invasions, and the original headshots.', match:g => g.category === 'shooters' },
-  { id:'other', title:'Change the pace', subtitle:'Step away from the crosshair for a minute.', match:g => !['shooters','zombies'].includes(g.category) },
+  { id:'other', title:'Change the pace', subtitle:'Step away from the crosshair for a minute.', match:g => !['shooters','zombies','test-roms'].includes(g.category) },
 ];
 function storageSave() {
   try { localStorage.setItem('gameflex:favourites', JSON.stringify([...favourites])); return true; } catch { return false; }
@@ -51,7 +52,8 @@ function art(game, className = '') {
 }
 function card(game) {
   const title = escape(game.title), id = escape(game.id), href = `#play/${id}`;
-  const playable = gameMode(game.id).mode === 'iframe';
+  const mode = gameMode(game.id).mode;
+  const playable = mode === 'iframe' || mode === 'emulator';
   return `<article class="game-card"><a class="game-art" href="${href}" data-play="${id}" aria-label="${playable ? `Play ${title} in the gameflex player` : `Open ${title} — not playable in the gameflex player`}">${art(game)}<span class="card-tag">${escape(game.tag)}</span><span class="play-hover"><span>${playable ? 'Play in gameflex' : 'Not playable here'}</span></span></a><button class="heart" data-favourite="${id}" aria-pressed="false" aria-label="Save ${title} to favourites">${icons.heart}</button><div class="card-title-row"><a href="${href}" data-play="${id}">${title}</a><button class="info-button" data-details="${id}" aria-label="Details for ${title}">ⓘ</button></div><p class="card-meta"><span>${escape(game.genre)}</span><span class="dot"></span><span>${escape(game.platform || 'Desktop')}</span>${game.ownFiles ? '<span class="dot"></span><span class="file-tag">Own files</span>' : ''}</p>${game.availability === 'sandbox-pending' ? '<p class="pending-label">Sandbox pending</p>' : ''}</article>`;
 }
 function shelf(section, items) {
@@ -370,12 +372,14 @@ function details(id) {
   discovery?.close();
   const host = new URL(game.url).hostname;
   const mode = gameMode(game.id);
-  const playable = mode.mode === 'iframe';
+  const playable = mode.mode === 'iframe' || mode.mode === 'emulator';
   const action = playable
     ? `<a class="button lime" href="#play/${escape(game.id)}" data-play="${escape(game.id)}">Play in gameflex</a>`
     : `<a class="button ghost" href="#play/${escape(game.id)}" data-play="${escape(game.id)}">Why it can’t play here</a>`;
   const note = playable
-    ? `${host} · Page checked ${game.checkedAt}.<br>Play frames this page inside the gameflex player. Compatibility isn’t guaranteed.`
+    ? mode.mode === 'emulator'
+      ? `Runs on your device from a game file gameflex hosts · checked ${game.checkedAt}.<br>Nothing is uploaded, and saves stay in this browser.`
+      : `${host} · Page checked ${game.checkedAt}.<br>Play frames this page inside the gameflex player. Compatibility isn’t guaranteed.`
     : `${host} · Page checked ${game.checkedAt}.<br>${mode.reason}`;
   $('#dialog-content').innerHTML = `${art(game,'dialog-cover')}<div class="dialog-body"><span class="eyebrow lime-text">${escape(game.tag)}</span><h2 id="dialog-title">${escape(game.title)}</h2><div class="dialog-meta"><span>${escape(game.genre)}</span><span>${escape(game.platform || 'Desktop')}</span></div><p>${escape(game.description)}</p><div class="requirements"><strong>BEFORE YOU JUMP IN</strong><p>${escape(game.requirements || 'Runs in a desktop browser with keyboard and mouse.')}</p></div><div class="dialog-actions">${action}<button class="button ghost heart-inline" data-favourite="${escape(game.id)}" aria-pressed="false">${icons.heart} Favourite</button></div><p class="dialog-note">${escape(note)}</p></div>`;
   syncHearts(); $('#details').showModal();
